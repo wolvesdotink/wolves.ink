@@ -67,7 +67,7 @@ export const projects: Project[] = [
     featured: true,
     description: [
       'Hinterland is a love letter to the outdoors with a checkout flow attached. It connects independent hosts of cabins, treehouses, fire-towers and pitch-your-tent meadows to the people who would rather sleep under stars than under chandeliers.',
-      'The product was born out of frustration with the giants. Hinterland keeps fees low, surfaces real photos in real weather, and treats availability like a serious calendar — not a marketing surface.',
+      'Hinterland was built to connect people with nature and make the close surroundings fun to explore. It keeps fees low, surfaces real photos in real weather, and treats availability like a serious calendar — not a marketing surface.',
     ],
     status: { label: 'Live', tone: 'live' },
     year: '2020 →',
