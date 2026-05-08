@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="800" fill="#f1e9d8"/>
+  <!-- A messy stack of test prints, stacked at varying tilts -->
+  <g transform="translate(60 220) rotate(-7)">
+    <rect width="380" height="280" fill="#fbf6e9" stroke="#0d0c0a" stroke-width="3"/>
+    <rect x="20" y="20" width="340" height="200" fill="#0d0c0a" opacity="0.85"/>
+    <text x="190" y="260" text-anchor="middle" font-family="monospace" font-size="14" letter-spacing="3" fill="#0d0c0a">001 / DRAFT</text>
+  </g>
+  <g transform="translate(180 280) rotate(4)">
+    <rect width="380" height="280" fill="#fbf6e9" stroke="#0d0c0a" stroke-width="3"/>
+    <g fill="#0d0c0a" opacity="0.85">
+      <rect x="20" y="20" width="160" height="200"/>
+      <rect x="200" y="20" width="160" height="90"/>
+      <rect x="200" y="130" width="160" height="90"/>
+    </g>
+    <text x="190" y="260" text-anchor="middle" font-family="monospace" font-size="14" letter-spacing="3" fill="#0d0c0a">002 / GRID</text>
+  </g>
+  <g transform="translate(280 360) rotate(-3)">
+    <rect width="380" height="280" fill="#fbf6e9" stroke="#0d0c0a" stroke-width="3"/>
+    <!-- Halftone test -->
+    <g fill="#0d0c0a">
+      <circle cx="60" cy="60" r="4"/><circle cx="100" cy="60" r="6"/><circle cx="140" cy="60" r="8"/>
+      <circle cx="180" cy="60" r="10"/><circle cx="220" cy="60" r="12"/><circle cx="260" cy="60" r="14"/>
+      <circle cx="300" cy="60" r="16"/><circle cx="340" cy="60" r="18"/>
+      <circle cx="60" cy="120" r="6"/><circle cx="100" cy="120" r="8"/><circle cx="140" cy="120" r="10"/>
+      <circle cx="180" cy="120" r="12"/><circle cx="220" cy="120" r="14"/><circle cx="260" cy="120" r="16"/>
+      <circle cx="300" cy="120" r="18"/><circle cx="340" cy="120" r="20"/>
+    </g>
+    <text x="190" y="260" text-anchor="middle" font-family="monospace" font-size="14" letter-spacing="3" fill="#0d0c0a">003 / DOTS</text>
+  </g>
+  <g transform="translate(140 460) rotate(8)">
+    <rect width="380" height="280" fill="#fbf6e9" stroke="#0d0c0a" stroke-width="3"/>
+    <text x="40" y="80" font-family="serif" font-style="italic" font-size="36" fill="#0d0c0a">"the work</text>
+    <text x="40" y="130" font-family="serif" font-style="italic" font-size="36" fill="#0d0c0a">gets honest</text>
+    <text x="40" y="180" font-family="serif" font-style="italic" font-size="36" fill="#0d0c0a">at this hour."</text>
+    <text x="190" y="260" text-anchor="middle" font-family="monospace" font-size="14" letter-spacing="3" fill="#0d0c0a">004 / TYPE</text>
+  </g>
+</svg>

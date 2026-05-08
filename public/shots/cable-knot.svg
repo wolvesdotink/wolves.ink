@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="800" fill="#f1e9d8"/>
+  <!-- One continuous tangled line, deliberately knotted -->
+  <path d="M 100 200 C 200 150, 300 250, 400 200 S 600 100, 700 200
+           C 750 280, 600 320, 550 400
+           C 500 480, 650 520, 600 600
+           C 550 680, 350 700, 300 600
+           C 260 520, 380 460, 320 380
+           C 260 300, 150 380, 200 460
+           C 240 540, 180 600, 250 660"
+        fill="none" stroke="#0d0c0a" stroke-width="14" stroke-linecap="round"/>
+  <!-- Plug end -->
+  <rect x="80" y="180" width="40" height="40" fill="#0d0c0a"/>
+  <rect x="50" y="194" width="30" height="12" fill="#0d0c0a"/>
+  <!-- Plug end 2 -->
+  <rect x="240" y="640" width="40" height="40" fill="#0d0c0a"/>
+  <rect x="210" y="654" width="30" height="12" fill="#0d0c0a"/>
+  <!-- A few cable highlights for the riso feel -->
+  <path d="M 110 215 C 200 165, 300 265, 400 215" fill="none" stroke="#f1e9d8" stroke-width="2"/>
+</svg>

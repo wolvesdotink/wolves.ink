@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+  <!-- Background paper-tone — gives the print body when used as an <img>. -->
+  <rect width="800" height="800" fill="#f1e9d8"/>
+  <!-- Window glow in the corner — late-night cue -->
+  <rect x="540" y="60" width="200" height="220" fill="#fbf6e9" opacity="0.85"/>
+  <line x1="640" y1="60" x2="640" y2="280" stroke="#0d0c0a" stroke-width="3"/>
+  <line x1="540" y1="170" x2="740" y2="170" stroke="#0d0c0a" stroke-width="3"/>
+  <!-- Workbench top — heavy line -->
+  <rect x="40" y="540" width="720" height="14" fill="#0d0c0a"/>
+  <!-- Hammer silhouette -->
+  <rect x="120" y="430" width="14" height="120" fill="#0d0c0a"/>
+  <rect x="80" y="410" width="100" height="34" fill="#0d0c0a"/>
+  <!-- Ruler -->
+  <rect x="220" y="520" width="280" height="18" fill="#0d0c0a"/>
+  <g stroke="#f1e9d8" stroke-width="2">
+    <line x1="240" y1="520" x2="240" y2="538"/>
+    <line x1="280" y1="520" x2="280" y2="538"/>
+    <line x1="320" y1="520" x2="320" y2="538"/>
+    <line x1="360" y1="520" x2="360" y2="538"/>
+    <line x1="400" y1="520" x2="400" y2="538"/>
+    <line x1="440" y1="520" x2="440" y2="538"/>
+    <line x1="480" y1="520" x2="480" y2="538"/>
+  </g>
+  <!-- Coffee mug -->
+  <path d="M 540 460 L 540 540 L 620 540 L 620 460 Z" fill="#0d0c0a"/>
+  <path d="M 620 478 q 22 0 22 22 q 0 22 -22 22" fill="none" stroke="#0d0c0a" stroke-width="6"/>
+  <ellipse cx="580" cy="460" rx="40" ry="6" fill="#0d0c0a" opacity="0.5"/>
+  <!-- Wood-grain hint on bench -->
+  <g stroke="#0d0c0a" stroke-width="1.5" opacity="0.35">
+    <line x1="40" y1="600" x2="760" y2="600"/>
+    <line x1="40" y1="650" x2="760" y2="650"/>
+    <line x1="40" y1="700" x2="760" y2="700"/>
+  </g>
+</svg>

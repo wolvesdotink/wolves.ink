@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="800" fill="#f1e9d8"/>
+  <!-- Monitor body -->
+  <rect x="120" y="160" width="560" height="360" fill="#0d0c0a"/>
+  <rect x="140" y="180" width="520" height="320" fill="#14130f"/>
+  <!-- Corner crop brackets — that pre-roll feel -->
+  <g stroke="#f1e9d8" stroke-width="3" fill="none">
+    <polyline points="170,210 170,240 200,240"/>
+    <polyline points="630,210 630,240 600,240"/>
+    <polyline points="170,470 170,440 200,440"/>
+    <polyline points="630,470 630,440 600,440"/>
+  </g>
+  <!-- Big play triangle, classic stream still cue -->
+  <polygon points="360,280 360,400 470,340" fill="#f1e9d8"/>
+  <!-- Stand -->
+  <rect x="370" y="520" width="60" height="60" fill="#0d0c0a"/>
+  <rect x="280" y="580" width="240" height="14" fill="#0d0c0a"/>
+  <!-- Live dot -->
+  <circle cx="180" cy="200" r="8" fill="#0d0c0a"/>
+  <!-- Cable snake -->
+  <path d="M 400 590 q 60 60 -40 80 q -60 12 -40 80" fill="none" stroke="#0d0c0a" stroke-width="6"/>
+</svg>

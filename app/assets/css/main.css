@@ -1,0 +1,502 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Registered custom properties
+   Must live globally — Vue 3 scoped styles can swallow @property declarations
+   silently, and an unregistered length variable can't interpolate (it'd jump
+   discretely between keyframe values), which means animations that drive
+   the variable look static. Registering them here as real <length>s makes
+   the gradient stops in HeroDisplay.vue's W actually slide on hover.
+   ========================================================================== */
+
+@property --hero-w-stripe-shift {
+  syntax: "<length>";
+  initial-value: 0px;
+  inherits: false;
+}
+
+/* ==========================================================================
+   Design tokens — Editorial Pop
+   Dark warm-ink canvas, cream paper foreground, riso-print accents.
+   ========================================================================== */
+
+@theme {
+  /* Surfaces */
+  --color-ink: #0d0c0a;
+  --color-ink-soft: #14130f;
+  --color-ink-deep: #050504;
+  --color-cream: #f1e9d8;
+  --color-cream-dim: #d8cdb8;
+  --color-paper: #fbf6e9;
+  --color-bone: #b6ac95;
+
+  /* Pop accents — riso ink palette */
+  --color-pop-magenta: #ff4869; /* riso fluorescent pink */
+  --color-pop-magenta-soft: #ffb3c2;
+  --color-pop-yellow: #ffe94e; /* sunshine yellow */
+  --color-pop-yellow-soft: #fff4a5;
+  --color-pop-orange: #ff6c2f; /* riso fluorescent orange */
+  --color-pop-orange-soft: #ffb999;
+  --color-pop-blue: #3d5dc9; /* riso federal blue */
+
+  /* Per-project accents */
+  --color-hinterland: var(--color-pop-orange);
+  --color-owlat: var(--color-pop-magenta);
+  --color-draw: var(--color-pop-yellow);
+
+  /* Typography */
+  --font-display: "Anton", "Archivo Black", system-ui, sans-serif;
+  --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  /* Easings */
+  --ease-pop: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.86, 0, 0.07, 1);
+
+  /* ----------------------------------------------------------------------
+     Container max-widths — drives the `section-container` utility.
+     Most index/section layouts use `--container-page` (1600px); the
+     project pull-quote uses `--container-spread`; the field-note
+     detail body uses `--container-note`; long-form prose uses
+     `--container-prose`. Set via the `width` prop on <PageMasthead>
+     or directly via the `data-width` attribute on `.section-container`.
+     ---------------------------------------------------------------------- */
+  --container-page: 1600px;
+  --container-spread: 1400px;
+  --container-note: 1200px;
+  --container-prose: 820px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color: var(--color-cream);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "ss02", "cv11", "kern";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background: var(--color-ink);
+    color: var(--color-cream);
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-pop-yellow);
+    color: var(--color-ink);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Custom focus ring — outline-only, in pop yellow */
+  :focus-visible {
+    outline: 2px solid var(--color-pop-yellow);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+}
+
+/* ==========================================================================
+   Custom utilities — display type
+   ========================================================================== */
+
+@utility text-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.85;
+  text-transform: uppercase;
+}
+
+@utility text-display-mega {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 0.78;
+  text-transform: uppercase;
+  font-size: clamp(5rem, 22vw, 28rem);
+}
+
+@utility text-display-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 0.82;
+  text-transform: uppercase;
+  font-size: clamp(3.25rem, 14vw, 14rem);
+}
+
+@utility text-display-lg {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.88;
+  text-transform: uppercase;
+  font-size: clamp(2.5rem, 8vw, 7rem);
+}
+
+@utility text-display-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+}
+
+@utility text-editorial {
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+@utility text-mono-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@utility text-mono-meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+/* ==========================================================================
+   Layout primitives — section container + dimmed eyebrow
+   Replaces the previously-repeated chains:
+     `mx-auto max-w-[1600px] px-4 ... md:px-8 ...` (8+ occurrences)
+     `text-mono-eyebrow text-cream/60` (20+ occurrences)
+   <PageMasthead> renders `.section-container` and toggles its max-width
+   via the `data-width` attribute (see overrides under "Misc" below).
+   ========================================================================== */
+
+@utility section-container {
+  margin-inline: auto;
+  max-width: var(--container-page);
+  padding-inline: 1rem;        /* px-4 */
+  @media (min-width: 768px) {
+    padding-inline: 2rem;      /* md:px-8 — canonical container padding */
+  }
+}
+
+@utility eyebrow-dim {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(241 233 216 / 0.6); /* cream/60 */
+}
+
+/* ==========================================================================
+   Texture & ornament
+   ========================================================================== */
+
+@utility grain {
+  position: relative;
+  isolation: isolate;
+}
+
+@utility halftone {
+  background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1.5px);
+  background-size: 6px 6px;
+}
+
+@utility tape-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-pop-yellow) 0,
+    var(--color-pop-yellow) 8px,
+    var(--color-ink) 8px,
+    var(--color-ink) 16px
+  );
+}
+
+/* Sticker shadow — slight, like a real vinyl sticker */
+@utility sticker-shadow {
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.6)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35));
+}
+
+/* View Transition root tuning */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-pop);
+}
+
+::view-transition-group(*) {
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-pop);
+}
+
+/* ==========================================================================
+   Marquee
+   ========================================================================== */
+
+@keyframes wolf-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+@utility animate-marquee {
+  animation: wolf-marquee 32s linear infinite;
+}
+
+@keyframes wolf-marquee-rev {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+@utility animate-marquee-rev {
+  animation: wolf-marquee-rev 38s linear infinite;
+}
+
+/* ==========================================================================
+   Sticker tilt — randomized per element via inline style
+   ========================================================================== */
+
+@keyframes sticker-jiggle {
+  0%, 100% { transform: rotate(var(--tilt, -3deg)) translateY(0); }
+  50% { transform: rotate(calc(var(--tilt, -3deg) + 1deg)) translateY(-2px); }
+}
+
+@utility sticker-jiggle {
+  animation: sticker-jiggle 4.2s var(--ease-pop) infinite;
+}
+
+/* ==========================================================================
+   Reveal — fade up on scroll (used with motion-v alternative)
+   ========================================================================== */
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@utility reveal-up {
+  animation: reveal-up 760ms var(--ease-pop) both;
+}
+
+/* ==========================================================================
+   Misc
+   ========================================================================== */
+
+/* Hide native scrollbar visually but keep it functional on the snap rail */
+.scroll-rail {
+  scrollbar-width: none;
+}
+.scroll-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* ==========================================================================
+   Section container width overrides
+   Set `data-width="spread"` (project pull-quote, 1400) or
+   `data-width="note"` (field-note detail body, 1200) on a
+   `.section-container` element. Default is `--container-page` (1600).
+   We use a data attribute rather than a Tailwind class because Tailwind
+   v4's JIT scanner does not extract dynamic `max-w-[var(...)]` cleanly
+   when the variable changes per-instance.
+   ========================================================================== */
+[data-width="spread"].section-container { max-width: var(--container-spread); }
+[data-width="note"].section-container   { max-width: var(--container-note); }
+[data-width="prose"].section-container  { max-width: var(--container-prose); }
+
+/* Subtle blink for "live" dots */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@utility pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   Manifesto card hover — tilt + riso ink aberration
+   ========================================================================== */
+
+@keyframes manifesto-num-aberrate {
+  0% {
+    text-shadow:
+       0.05em  0.05em 0 var(--color-pop-magenta),
+      -0.05em -0.05em 0 #5ec8e5,
+       0.06em -0.05em 0 var(--color-pop-yellow);
+  }
+  33% {
+    text-shadow:
+      -0.05em  0.05em 0 var(--color-pop-yellow),
+       0.05em -0.05em 0 var(--color-pop-magenta),
+       0.06em  0.06em 0 #5ec8e5;
+  }
+  66% {
+    text-shadow:
+       0.06em  0.04em 0 #5ec8e5,
+      -0.05em -0.05em 0 var(--color-pop-yellow),
+      -0.06em  0.06em 0 var(--color-pop-magenta);
+  }
+  100% {
+    text-shadow:
+       0.05em  0.05em 0 var(--color-pop-magenta),
+      -0.05em -0.05em 0 #5ec8e5,
+       0.06em -0.05em 0 var(--color-pop-yellow);
+  }
+}
+
+/* Tilt + lift: the article shifts up and rotates a hair when hovered.
+   The number explodes into riso ink and the hairline rule on top thickens. */
+.manifesto-card {
+  transition: transform 420ms var(--ease-pop), border-color 320ms ease-out;
+  position: relative;
+  cursor: pointer;
+}
+.manifesto-card::before {
+  /* Decorative tape corner that grows in on hover */
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 0;
+  height: 6px;
+  background: var(--color-pop-magenta);
+  transition: width 540ms var(--ease-pop);
+}
+.manifesto-card:hover {
+  transform: translateY(-4px) rotate(-0.4deg);
+  border-color: var(--color-pop-magenta) !important;
+}
+.manifesto-card:hover::before {
+  width: 56px;
+}
+.manifesto-card:hover .manifesto-num {
+  animation: manifesto-num-aberrate 900ms steps(1, jump-none) infinite;
+  transform: rotate(-2deg) scale(1.04);
+  color: var(--color-pop-magenta);
+}
+.manifesto-num {
+  display: inline-block;
+  transition: color 260ms ease-out, transform 320ms var(--ease-pop);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .manifesto-card,
+  .manifesto-card:hover { transform: none; }
+  .manifesto-card:hover .manifesto-num {
+    animation: none;
+    transform: none;
+    text-shadow: 0.04em 0.04em 0 var(--color-pop-magenta);
+  }
+}
+
+/* ==========================================================================
+   Big-quote opening mark — riso shimmy when in view, slammed on hover
+   ========================================================================== */
+
+@keyframes big-quote-shimmy {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0);
+    text-shadow:
+       0.06em  0.06em 0 var(--color-pop-yellow),
+      -0.06em -0.06em 0 #5ec8e5;
+  }
+  50% {
+    transform: translate(-2px, -1px) rotate(-1deg);
+    text-shadow:
+       0.10em  0.10em 0 var(--color-pop-yellow),
+      -0.10em -0.10em 0 #5ec8e5;
+  }
+}
+
+.big-quote-mark {
+  display: inline-block;
+  color: var(--color-pop-magenta);
+  text-shadow:
+     0.05em  0.05em 0 var(--color-pop-yellow),
+    -0.04em -0.04em 0 #5ec8e5;
+  transition: transform 320ms var(--ease-pop), text-shadow 320ms var(--ease-pop);
+  cursor: default;
+}
+.big-quote-mark.in-view {
+  animation: big-quote-shimmy 5s ease-in-out infinite;
+}
+.big-quote-mark:hover {
+  transform: scale(1.06) rotate(-3deg);
+  text-shadow:
+     0.18em  0.16em 0 var(--color-pop-yellow),
+    -0.12em -0.12em 0 #5ec8e5,
+     0.10em -0.06em 0 var(--color-pop-orange);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .big-quote-mark,
+  .big-quote-mark.in-view,
+  .big-quote-mark:hover {
+    animation: none;
+    transform: none;
+    text-shadow: 0.05em 0.05em 0 var(--color-pop-yellow), -0.04em -0.04em 0 #5ec8e5;
+  }
+}
+
+/* ==========================================================================
+   "Turn the page" scroll cue — line draws down + arrow pulses
+   ========================================================================== */
+
+@keyframes turn-page-line {
+  0%   { transform: scaleY(0); transform-origin: 0 0; }
+  100% { transform: scaleY(1); transform-origin: 0 0; }
+}
+
+@keyframes turn-page-arrow {
+  0%, 100% { transform: translateY(0); opacity: 0.85; }
+  50%      { transform: translateY(6px); opacity: 1; }
+}
+
+.turn-page__line {
+  display: block;
+  width: 1px;
+  height: 48px;
+  background: var(--color-cream);
+  opacity: 0.35;
+  animation: turn-page-line 1.4s var(--ease-pop) both,
+             turn-page-line 2.6s var(--ease-pop) infinite alternate;
+}
+.turn-page__arrow {
+  display: inline-block;
+  animation: turn-page-arrow 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turn-page__line,
+  .turn-page__arrow { animation: none; }
+}
+
+/* ==========================================================================
+   Sticker peel — corner lifts, shadow deepens on hover
+   ========================================================================== */
+
+.sticker-shadow {
+  /* Already defined as @utility above, but we override transition here so
+     the StickerBadge wrapper animates filter on hover. */
+  transition: filter 320ms var(--ease-pop), transform 320ms var(--ease-pop);
+}
+
+[data-sticker]:hover {
+  filter:
+    drop-shadow(0 2px 0 rgba(0, 0, 0, 0.6))
+    drop-shadow(0 12px 18px rgba(0, 0, 0, 0.45));
+  transform: translateY(-2px) rotate(calc(var(--tilt, -3deg) - 2deg)) scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-sticker]:hover { transform: none; filter: none; }
+}

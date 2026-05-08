@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Browser-tab favicon — square format with a rounded ink backdrop so the
+  cream W stays legible whether the tab strip is light or dark. Mirrors
+  the wordmark glyph in AppHeader.vue (cream-on-ink stamp) so the brand
+  identity reads the same in the tab as it does on the page.
+
+  ViewBox math: the source W path lives in 0–550 × 0–414 after the inner
+  translate. Wrapping it in viewBox="-50 -118 650 650" gives us a 1:1
+  square with 50u left/right padding and 118u top/bottom padding,
+  visually centring the asymmetric mark.
+-->
+<svg viewBox="-50 -118 650 650" xmlns="http://www.w3.org/2000/svg">
+    <rect x="-50" y="-118" width="650" height="650" rx="100" fill="#0d0c0a"/>
+    <g transform="translate(-225 -304)" fill="#f1e9d8">
+        <path d="M627.879524,539 L689.506201,539 L624.324737,718.084599 L551.689519,718.084599 L400.975051,304 L462.601727,304 L588.007128,648.548508 L627.879524,539 Z M629.699376,534 L636.97878,514 L698.605457,514 L691.326052,534 L629.699376,534 Z M640.618483,504 L647.897887,484 L709.524564,484 L702.245159,504 L640.618483,504 Z M653.357441,469 L660.636845,449 L722.263522,449 L714.984117,469 L653.357441,469 Z M667.91625,429 L675.195655,409 L736.822332,409 L729.542927,429 L667.91625,429 Z M684.294911,384 L691.574315,364 L753.200992,364 L745.921587,384 L684.294911,384 Z M702.493422,334 L713.412529,304 L775.039206,304 L764.120099,334 L702.493422,334 Z M286.634022,304 L412.27267,649.189348 L456.401167,527.947298 L487.214505,612.606249 L448.823525,718.084599 L375.721814,718.084599 L225.007345,304 L286.634022,304 Z M537.911317,304 L599.537994,304 L544.219314,455.986823 L513.405976,371.327872 L537.911317,304 Z"/>
+    </g>
+</svg>

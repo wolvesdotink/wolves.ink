@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="800" fill="#f1e9d8"/>
+  <!-- Window frame -->
+  <rect x="100" y="100" width="600" height="600" fill="#0d0c0a"/>
+  <rect x="120" y="120" width="560" height="560" fill="#fbf6e9"/>
+  <line x1="400" y1="120" x2="400" y2="680" stroke="#0d0c0a" stroke-width="6"/>
+  <line x1="120" y1="400" x2="680" y2="400" stroke="#0d0c0a" stroke-width="6"/>
+  <!-- Venetian blinds — horizontal slats -->
+  <g fill="#0d0c0a">
+    <rect x="120" y="140" width="560" height="22"/>
+    <rect x="120" y="180" width="560" height="22"/>
+    <rect x="120" y="220" width="560" height="22"/>
+    <rect x="120" y="260" width="560" height="22"/>
+    <rect x="120" y="300" width="560" height="22"/>
+    <rect x="120" y="340" width="560" height="22"/>
+    <rect x="120" y="420" width="560" height="22"/>
+    <rect x="120" y="460" width="560" height="22"/>
+    <rect x="120" y="500" width="560" height="22"/>
+    <rect x="120" y="540" width="560" height="22"/>
+    <rect x="120" y="580" width="560" height="22"/>
+    <rect x="120" y="620" width="560" height="22"/>
+  </g>
+  <!-- Light bleeding through the gaps -->
+  <g fill="#ffe94e" opacity="0.0">
+    <rect x="120" y="162" width="560" height="18"/>
+  </g>
+  <!-- Sash cord -->
+  <line x1="640" y1="140" x2="640" y2="660" stroke="#0d0c0a" stroke-width="3" stroke-dasharray="2 6"/>
+  <circle cx="640" cy="660" r="10" fill="#0d0c0a"/>
+</svg>
