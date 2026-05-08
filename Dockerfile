@@ -10,18 +10,11 @@ RUN corepack enable
 
 FROM base AS build
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-# pnpm 10+ refuses to run dependency build scripts unless explicitly allowed.
-# These four need their postinstall: esbuild fetches its native binary, sharp
-# builds image bindings, vue-demi switches to Vue 3 mode, @parcel/watcher
-# fetches its native watcher. --allow-build approves them at install time
-# without depending on package.json or lockfile metadata being in sync.
+# pnpm-workspace.yaml carries the allowBuilds allowlist (pnpm 11 blocks
+# dependency lifecycle scripts unless they are listed there).
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile \
-      --allow-build="@parcel/watcher" \
-      --allow-build=esbuild \
-      --allow-build=sharp \
-      --allow-build=vue-demi
+    pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm run build
 

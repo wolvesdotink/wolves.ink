@@ -1,0 +1,11 @@
+# pnpm 11 blocks dependency lifecycle scripts unless allowlisted here.
+# These four need their postinstall to function:
+#   esbuild         — fetches its platform-specific native binary
+#   sharp           — builds image-processing bindings
+#   vue-demi        — switches to Vue 3 mode
+#   @parcel/watcher — fetches its native file-watcher binary
+allowBuilds:
+  - "@parcel/watcher"
+  - esbuild
+  - sharp
+  - vue-demi
