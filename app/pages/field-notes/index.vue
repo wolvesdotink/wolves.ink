@@ -16,8 +16,8 @@ const rest = computed(() => list.filter((n) => n.slug !== latest.slug))
 useSeoMeta({
   title: 'Field Notes',
   description:
-    'Writing from the workbench — what we shipped, what we broke, and what we learned. Field notes from the Wolves studio.',
-  ogTitle: 'Field Notes — Wolves',
+    'Writing from the workbench: what we shipped, what we broke, and what we learned. Field notes from the Wolves studio.',
+  ogTitle: 'Field Notes · Wolves',
   ogDescription: 'Notes written while the work is still warm.',
   ogType: 'website',
   twitterCard: 'summary_large_image',
@@ -42,7 +42,7 @@ useSchemaOrg([
   }),
   {
     '@type': 'Blog',
-    name: 'Field Notes — Wolves',
+    name: 'Field Notes · Wolves',
     description: 'Writing from the workbench at the Wolves studio.',
     publisher: { '@id': '#identity' },
     isPartOf: { '@id': '#website' },
@@ -77,7 +77,7 @@ useSchemaOrg([
       <template #body>
         <div class="mt-10 grid grid-cols-12 gap-x-6 gap-y-6">
           <p class="text-editorial col-span-12 max-w-[44ch] text-balance text-2xl text-cream/85 lg:col-span-7 lg:text-3xl">
-            Notes written while the work is still warm — what we shipped, what we
+            Notes written while the work is still warm: what we shipped, what we
             broke, and the small details we want to remember the next time we
             sit down at the desk.
           </p>
@@ -183,7 +183,7 @@ useSchemaOrg([
       <div class="mx-auto max-w-[1600px] px-4 py-20 md:px-8 md:py-28">
         <div class="grid grid-cols-12 items-end gap-x-6 gap-y-6 mb-12">
           <div class="col-span-12 lg:col-span-7">
-            <span class="text-mono-eyebrow text-cream/60">Logbook II — Earlier notes</span>
+            <span class="text-mono-eyebrow text-cream/60">Logbook II · Earlier notes</span>
             <h2 class="text-display-xl mt-4 text-cream">
               Earlier<br>
               <span class="text-pop-magenta">notes.</span>
@@ -192,7 +192,7 @@ useSchemaOrg([
           <div class="col-span-12 lg:col-span-5">
             <p class="text-editorial text-balance text-xl text-cream/85 md:text-2xl">
               Logged in chronological order, newest stays on top. We don't
-              prune — the half-formed notes live next to the polished ones,
+              prune. The half-formed notes live next to the polished ones,
               with the dates to prove which came first.
             </p>
           </div>
@@ -248,7 +248,7 @@ useSchemaOrg([
           v-if="rest.length === 0"
           class="mt-12 text-editorial text-cream/55"
         >
-          No earlier notes yet — the lead is the only one in the logbook.
+          No earlier notes yet. The lead is the only one in the logbook.
         </p>
       </div>
     </section>

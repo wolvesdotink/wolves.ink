@@ -83,7 +83,10 @@ useSchemaOrg([
 </script>
 
 <template>
-  <article v-if="note" class="grain">
+  <article
+    v-if="note"
+    class="grain"
+  >
     <!-- ══════════════════════════════════════════════════════════════════
          HEAD — note stamp + title
 
@@ -112,10 +115,16 @@ useSchemaOrg([
         />
       </div>
 
-      <div class="relative section-container pt-20 pb-16 md:pt-32 md:pb-24" data-width="note">
+      <div
+        class="relative section-container pt-20 pb-16 md:pt-32 md:pb-24"
+        data-width="note"
+      >
         <!-- Breadcrumb -->
         <div class="flex items-center gap-3 text-mono-eyebrow text-cream/50">
-          <NuxtLink to="/field-notes" class="hover:text-cream">Field Notes</NuxtLink>
+          <NuxtLink
+            to="/field-notes"
+            class="hover:text-cream"
+          >Field Notes</NuxtLink>
           <span class="opacity-40">/</span>
           <span class="text-cream/75">№{{ note.number }}</span>
         </div>
@@ -145,16 +154,20 @@ useSchemaOrg([
           style="--tilt: -8deg"
         >
           <div
-            class="sticker-jiggle sticker-shadow grid h-28 w-28 place-items-center rounded-full border-2 border-ink text-ink"
+            class="sticker-jiggle sticker-shadow relative grid h-28 w-28 place-items-center rounded-full border-2 border-ink text-ink"
             :class="accent.bg"
           >
-            <div class="text-center leading-none">
-              <div class="text-mono-eyebrow text-[0.55rem] opacity-80">note</div>
-              <div class="text-display mt-1 text-3xl">№{{ note.number }}</div>
-              <div class="text-mono-eyebrow mt-1 text-[0.55rem] opacity-80">
-                {{ note.date.slice(0, 7).replace('-', '.') }}
-              </div>
-            </div>
+            <span class="text-mono-eyebrow absolute top-3.5 left-1/2 -translate-x-1/2 text-[0.6rem]">
+              Note
+            </span>
+            <span class="text-display flex items-start text-4xl tabular-nums leading-none">
+              <span class="text-2xl leading-none mt-0.5 mr-px">№</span>{{ note.number }}
+            </span>
+            <span
+              class="text-mono-eyebrow absolute bottom-3.5 left-1/2 -translate-x-1/2 text-[0.6rem] tabular-nums tracking-[0.14em]"
+            >
+              {{ note.date.slice(0, 7).replace('-', '.') }}
+            </span>
           </div>
         </div>
       </div>
@@ -165,7 +178,10 @@ useSchemaOrg([
     ══════════════════════════════════════════════════════════════════ -->
     <section class="relative">
       <div class="mx-auto max-w-[820px] px-4 py-20 md:px-8 md:py-28">
-        <div v-if="note.body && note.body.length" class="space-y-7 text-pretty leading-relaxed text-lg text-cream/85">
+        <div
+          v-if="note.body && note.body.length"
+          class="space-y-7 text-pretty leading-relaxed text-lg text-cream/85"
+        >
           <p
             v-for="(para, i) in note.body"
             :key="i"
@@ -183,8 +199,11 @@ useSchemaOrg([
           </p>
         </div>
 
-        <p v-else class="text-editorial text-xl text-cream/55">
-          This note is in the logbook — the long-form hasn't landed yet.
+        <p
+          v-else
+          class="text-editorial text-xl text-cream/55"
+        >
+          This note is in the logbook. The long-form hasn't landed yet.
         </p>
       </div>
     </section>
@@ -195,7 +214,7 @@ useSchemaOrg([
     <PullQuoteSection
       v-if="note.pullQuote"
       :quote="note.pullQuote"
-      :attribution="`— Field Notes № ${note.number}`"
+      :attribution="`Field Notes № ${note.number}`"
       :accent="note.accent"
       width="note"
     />
