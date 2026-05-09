@@ -68,7 +68,7 @@ function onPointerDown(e: PointerEvent) {
 function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
   const dx = e.clientX - dragStartX
-  setTenths(dragStartTenths + dx / PX_PER_TICK)
+  setTenths(dragStartTenths - dx / PX_PER_TICK)
 }
 function onPointerUp(e: PointerEvent) {
   if (!dragging.value || !trackEl.value) return
