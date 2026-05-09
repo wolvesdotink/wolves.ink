@@ -177,7 +177,7 @@ useSchemaOrg([
             </li>
           </ul>
 
-          <div class="mt-12 grid gap-3 md:grid-cols-2">
+          <div class="mt-12 grid gap-y-3 gap-x-12 md:grid-cols-2">
             <a
               v-if="project.links.live"
               :href="project.links.live.href"
