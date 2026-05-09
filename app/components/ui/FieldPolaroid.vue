@@ -46,8 +46,14 @@
 import { site } from '~/data/site'
 import { useTodaysShot } from '~/composables/useTodaysShot'
 import { useFieldCam } from '~/composables/useFieldCam'
+import { useFieldPrints, type PersistedPrint } from '~/composables/useFieldPrints'
 
 const { shot, dateKey, printLabel } = useTodaysShot()
+
+// Persistence + daily-limit gate. `recordCamPrint` is the only writer
+// into localStorage; `hasCamShotToday` derives from `lastCamUtcDate`.
+// Curated prints stay transient — they don't pass through here.
+const { hasCamShotToday, recordCamPrint, getRecentForStack } = useFieldPrints()
 // Destructured so the template can bind `ref="videoEl"` directly and
 // reference the status as `camStatus` rather than `cam.status` (Vue
 // auto-unwraps top-level refs in templates; properties of a plain
@@ -106,11 +112,13 @@ interface Print {
   viewedBack: boolean
 }
 
-let printCounter = 0
+// `crypto.randomUUID` is in every browser that ships `getUserMedia`, so
+// the collision risk the old module-scoped counter carried (it resets to
+// 0 on every component mount, so freshly captured prints would collide
+// with hydrated persisted ids) is gone.
 function makePrint(source: 'cam' | 'curated', image: string, backNote: string): Print {
-  printCounter += 1
   return {
-    id: `print-${printCounter}-${Date.now().toString(36)}`,
+    id: `print-${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 8)}`,
     takenAt: Date.now(),
     flipped: false,
     source,
@@ -155,7 +163,11 @@ const shutterPulse = ref(false)
 
 // ── Derived ────────────────────────────────────────────────────────────
 const hasPrints = computed(() => prints.value.length > 0)
-const shutterDisabled = computed(() => ejecting.value)
+// `shutterLocked` only fires on the live cam path — when permission was
+// denied/unavailable the curated fallback is the artifact, and that one
+// is already deterministic per UTC day so there's nothing to limit.
+const shutterLocked = computed(() => camStatus.value === 'live' && hasCamShotToday.value)
+const shutterDisabled = computed(() => ejecting.value || shutterLocked.value)
 
 // Caption time-stamp printed into the bottom border. Kept user-local
 // so the diary feel matches what's on the visitor's wall clock; the
@@ -301,7 +313,21 @@ async function fireShutter() {
   // line — variation lives in the stack.
   const fresh = makePrint(source, image, pickBackNote(source))
   developingId.value = fresh.id
-  prints.value = [fresh, ...prints.value].slice(0, MAX_STACK)
+  // Cam shots persist (and trip the daily gate). Curated shots only
+  // live in memory — they're regenerable from `useTodaysShot()` and
+  // shouldn't push the user past their daily lockout.
+  if (source === 'cam') {
+    recordCamPrint({
+      id: fresh.id,
+      takenAt: fresh.takenAt,
+      image: fresh.image,
+      backNote: fresh.backNote,
+    })
+  }
+  // Visible stack now mirrors the persisted archive depth — no upper
+  // cap here; the stack v-for renders all of them but `isVisibleInStack`
+  // (below) keeps DOM cost bounded by only mounting imgs for the front 5.
+  prints.value = [fresh, ...prints.value]
   frontIndex.value = 0
 
   setTimeout(() => { ejecting.value = false }, EJECT_MS)
@@ -763,17 +789,66 @@ function stackStyle(idx: number) {
   }
 }
 
+// Depth-gated render flag — mirrors `Math.min(depth, 4)` in `stackStyle`
+// so any print beyond the visually-distinct front 5 is replaced with a
+// cream placeholder. Cheaper than rendering 50+ base64 imgs into the DOM
+// and lets the browser free decoded bitmaps as prints scroll out of the
+// fan. Riffling re-mounts the underlying img — first paint takes one
+// frame, which reads as a tiny "develop" beat (acceptable).
+function isVisibleInStack(idx: number): boolean {
+  const len = prints.value.length || 1
+  let depth = idx - frontIndex.value
+  if (depth < 0) depth += len
+  return depth <= 4
+}
+
 // Each print's photo URL exposed as a CSS var so the develop CMY mask
 // layers can reference it without baking the path into stylesheet.
 function maskUrlFor(p: Print): string {
   return `url('${p.image}')`
 }
 
+// ── Archive thumbnail strip — horizontal scroller that surfaces the
+// full persisted history beneath the visible stack. Only renders when
+// the archive overflows the visual fan (`prints.length > MAX_STACK`),
+// so first-time visitors with 0–5 prints don't see chrome they don't
+// need. We keep a ref to the strip so we can auto-scroll the focused
+// thumb back into view when the user riffles via arrows / drag.
+const archiveStripEl = ref<HTMLElement | null>(null)
+watch(frontIndex, () => {
+  if (!archiveStripEl.value) return
+  const cur = archiveStripEl.value.querySelector('.is-current') as HTMLElement | null
+  if (!cur) return
+  cur.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' })
+})
+
 // ── Lifecycle — bind the window-scoped keydown listener while the
 // modal is deployed; tear it down on retract / unmount so we don't
-// keep a stale closure around.
+// keep a stale closure around. Also hydrate the persisted cam-print
+// archive into the visible stack on first mount so returning visitors
+// land on their own previous selfies.
 onMounted(() => {
   if (typeof window === 'undefined') return
+  // Hydrate from the persisted archive. We seed the visible stack with
+  // the most recent N (matching MAX_STACK depth) — the rest live in the
+  // archive ref and surface in the thumbnail strip. `viewedBack: true`
+  // suppresses the "↻ flip me" sticker on hydrated prints since the
+  // user has presumably already discovered the flip mechanic last
+  // session; we don't re-arm the easter egg every page load.
+  if (prints.value.length === 0) {
+    const recent = getRecentForStack(MAX_STACK)
+    if (recent.length > 0) {
+      prints.value = recent.map<Print>((p: PersistedPrint) => ({
+        id: p.id,
+        takenAt: p.takenAt,
+        flipped: false,
+        source: 'cam',
+        image: p.image,
+        backNote: p.backNote,
+        viewedBack: true,
+      }))
+    }
+  }
   window.addEventListener('keydown', onWindowKeydown)
 })
 onBeforeUnmount(() => {
@@ -989,20 +1064,28 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <!-- Shutter row + small live caption. -->
+          <!-- Shutter row + small live caption. The lockout state only
+               applies to the live-cam path: the curated fallback is
+               deterministic per UTC day so it has no rate-limit semantics. -->
           <div class="camera-shutter-row">
             <button
               type="button"
               class="camera-shutter"
-              :class="shutterDisabled ? 'is-busy' : ''"
+              :class="[
+                shutterLocked ? 'is-locked' : '',
+                ejecting ? 'is-busy' : '',
+              ]"
               :disabled="shutterDisabled"
-              :aria-label="shutterDisabled ? 'Camera busy — print developing' : 'Take a polaroid (Space)'"
+              :aria-label="shutterLocked
+                ? 'One field-cam print per day — back tomorrow'
+                : (ejecting ? 'Camera busy — print developing' : 'Take a polaroid (Space)')"
               @click="fireShutter"
             >
               <span class="shutter-cap" />
               <span class="shutter-ring" />
             </button>
-            <span class="camera-shutter__label">Press</span>
+            <span class="camera-shutter__label">{{ shutterLocked ? 'One a day' : 'Press' }}</span>
+            <span v-if="shutterLocked" class="camera-shutter__hint">back tomorrow · UTC</span>
           </div>
 
           <!-- Stack — fans out below the camera within the modal.
@@ -1057,28 +1140,44 @@ onBeforeUnmount(() => {
                   </transition>
 
                   <div class="print-photo">
-                    <img
-                      :src="p.image"
-                      :alt="captionFor(p)"
-                      class="print-photo__base"
-                      draggable="false"
-                    >
+                    <!-- Depth-gated render: only the front 5 prints
+                         actually mount the img + CMY ink layers (the
+                         expensive, base64-bearing nodes). Anything
+                         deeper renders a cream placeholder so the
+                         border still has something to frame. v-if
+                         (not :src='') because we need the data URL
+                         and the --shot-mask ink-layer var both gone
+                         from the DOM for the browser to free the
+                         decoded bitmap. -->
+                    <template v-if="isVisibleInStack(idx)">
+                      <img
+                        :src="p.image"
+                        :alt="captionFor(p)"
+                        class="print-photo__base"
+                        draggable="false"
+                      >
+                      <span
+                        class="print-photo__ink print-photo__ink--c"
+                        :style="{ '--shot-mask': maskUrlFor(p) }"
+                        aria-hidden="true"
+                      />
+                      <span
+                        class="print-photo__ink print-photo__ink--m"
+                        :style="{ '--shot-mask': maskUrlFor(p) }"
+                        aria-hidden="true"
+                      />
+                      <span
+                        class="print-photo__ink print-photo__ink--y"
+                        :style="{ '--shot-mask': maskUrlFor(p) }"
+                        aria-hidden="true"
+                      />
+                      <span class="print-photo__grain" aria-hidden="true" />
+                    </template>
                     <span
-                      class="print-photo__ink print-photo__ink--c"
-                      :style="{ '--shot-mask': maskUrlFor(p) }"
+                      v-else
+                      class="print-photo__placeholder"
                       aria-hidden="true"
                     />
-                    <span
-                      class="print-photo__ink print-photo__ink--m"
-                      :style="{ '--shot-mask': maskUrlFor(p) }"
-                      aria-hidden="true"
-                    />
-                    <span
-                      class="print-photo__ink print-photo__ink--y"
-                      :style="{ '--shot-mask': maskUrlFor(p) }"
-                      aria-hidden="true"
-                    />
-                    <span class="print-photo__grain" aria-hidden="true" />
                   </div>
 
                   <div class="print-border">
@@ -1126,6 +1225,50 @@ onBeforeUnmount(() => {
               </div>
             </article>
           </div>
+
+          <!-- Archive thumbnail strip — surfaces the full persisted
+               history of cam selfies as a horizontal scroller beneath
+               the visible stack. Only renders when the archive overflows
+               the visual fan (5 prints), so first-time visitors don't
+               see chrome they don't need. Native `loading="lazy"` on
+               each thumb defers off-screen image decoding; clicking a
+               thumb riffles the stack to it via the existing
+               `focusPrint` (line 634). The stack→strip auto-scroll is
+               wired from a watch on `frontIndex` in the script. -->
+          <nav
+            v-if="prints.length > MAX_STACK"
+            class="print-archive"
+            aria-label="Print archive"
+          >
+            <span class="print-archive__count">Archive · {{ prints.length }} prints</span>
+            <ol ref="archiveStripEl" class="print-archive__strip">
+              <li
+                v-for="(p, idx) in prints"
+                :key="`thumb-${p.id}`"
+                class="print-archive__item"
+              >
+                <button
+                  type="button"
+                  class="print-archive__thumb"
+                  :class="idx === frontIndex ? 'is-current' : ''"
+                  :aria-label="`Show print taken ${timeStamp(p.takenAt)}`"
+                  :aria-current="idx === frontIndex ? 'true' : 'false'"
+                  @click="focusPrint(idx)"
+                >
+                  <img
+                    v-if="p.image"
+                    :src="p.image"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  >
+                  <span v-else class="print-archive__tomb" aria-hidden="true" />
+                  <span class="print-archive__stamp">{{ timeStamp(p.takenAt) }}</span>
+                </button>
+              </li>
+            </ol>
+          </nav>
 
           <!-- Footer — keyboard cheatsheet + archive caption +
                save-print CTA. The save button targets the focused
@@ -1396,6 +1539,12 @@ onBeforeUnmount(() => {
   grid-template-rows: auto auto auto auto auto;
   gap: 0.85rem;
   width: min(680px, 96vw);
+  /* Cap to the overlay's content area (overlay is fixed inset:0 with
+     padding 5rem 1.25rem 2rem). When the camera's rows exceed the
+     available height, scroll inside the camera body rather than
+     clipping content above/below the centred flex child. */
+  max-height: 100%;
+  overflow-y: auto;
   padding: 0.95rem 1rem 1.05rem;
   background:
     linear-gradient(180deg, color-mix(in oklab, white 12%, transparent), transparent 45%),
@@ -1754,6 +1903,14 @@ onBeforeUnmount(() => {
   cursor: progress;
   opacity: 0.85;
 }
+/* Daily-quota lockout — distinct from the busy/eject state. The cap
+   reads as drained (greyscale + dim) rather than mid-animation. */
+.camera-shutter.is-locked {
+  cursor: not-allowed;
+  opacity: 0.55;
+  filter: grayscale(0.7) brightness(0.85);
+}
+.camera-shutter.is-locked:active { transform: none; }
 .camera-shutter:focus-visible {
   outline: 2px solid var(--color-pop-yellow);
   outline-offset: 4px;
@@ -1797,6 +1954,14 @@ onBeforeUnmount(() => {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: color-mix(in oklab, var(--color-ink) 70%, transparent);
+}
+.camera-shutter__hint {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-ink) 45%, transparent);
+  margin-top: -0.2rem;
 }
 
 /* ============================================================
@@ -1926,6 +2091,14 @@ onBeforeUnmount(() => {
   display: block;
   opacity: 0;
   animation: photo-base-fade var(--develop-ms, 1500ms) ease-out forwards;
+}
+/* Placeholder for prints buried beyond the visible 5 — same cream-dim
+   under-fill as `.print-photo` so the polaroid border still reads as a
+   framed artifact. No image, no CMY ink layers, no decode cost. */
+.print-photo__placeholder {
+  position: absolute;
+  inset: 0;
+  background: var(--color-cream-dim);
 }
 .print-photo__grain {
   position: absolute;
@@ -2204,6 +2377,101 @@ onBeforeUnmount(() => {
 /* ============================================================
    Footer — archive caption + keyboard cheatsheet
    ============================================================ */
+/* ============================================================
+   Archive thumbnail strip — only renders once the persisted
+   stack overflows MAX_STACK (5). Horizontal scroller of small
+   square thumbnails; click riffles the stack to that print.
+   `loading="lazy"` on each img defers off-screen decoding so a
+   50-print archive doesn't pay the cost up front.
+   ============================================================ */
+.print-archive {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed color-mix(in oklab, var(--color-ink) 22%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.print-archive__count {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-ink) 65%, transparent);
+}
+.print-archive__strip {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.15rem 0.1rem 0.5rem 0.1rem;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--color-ink) 35%, transparent) transparent;
+}
+.print-archive__strip::-webkit-scrollbar { height: 6px; }
+.print-archive__strip::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--color-ink) 35%, transparent);
+  border-radius: 3px;
+}
+.print-archive__item {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+}
+.print-archive__thumb {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: var(--color-cream-dim);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 30%, transparent);
+  border-radius: 2px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 160ms var(--ease-pop), box-shadow 160ms var(--ease-pop);
+}
+.print-archive__thumb:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+.print-archive__thumb.is-current {
+  outline: 2px solid var(--color-pop-magenta);
+  outline-offset: 1px;
+}
+.print-archive__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.print-archive__tomb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      var(--color-cream-dim),
+      var(--color-cream-dim) 4px,
+      color-mix(in oklab, var(--color-cream-dim) 70%, var(--color-ink)) 4px,
+      color-mix(in oklab, var(--color-cream-dim) 70%, var(--color-ink)) 5px
+    );
+}
+.print-archive__stamp {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  letter-spacing: 0.04em;
+  padding: 0 2px;
+  background: color-mix(in oklab, var(--color-cream) 85%, transparent);
+  color: var(--color-ink);
+}
+
 .camera-footer {
   margin-top: 0.5rem;
   padding-top: 0.85rem;
