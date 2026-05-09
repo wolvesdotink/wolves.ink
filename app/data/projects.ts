@@ -168,7 +168,7 @@ export const projects: Project[] = [
       'Draw is what happens when your favorite whiteboard tool stops asking you to log in. It wraps Excalidraw in a native shell, files on disk, with the kind of thoughtful chrome you usually only get in a paid app.',
       'It exists because diagrams are notes, and notes belong to you. The cloud is great until it isn\'t. With Draw, your sketches outlive any company.',
     ],
-    status: { label: 'WIP', tone: 'wip' },
+    status: { label: 'Beta', tone: 'beta' },
     year: '2026',
     type: 'Desktop · Local-first',
     accent: 'pop-yellow',
