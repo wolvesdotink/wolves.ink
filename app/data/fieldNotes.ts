@@ -13,8 +13,10 @@ import type { ProjectAccent } from './projects'
  *   the workbench scribbles, the things you'd shout across the room before
  *   you forgot. It matches the voice and the riso/print aesthetic.
  *
- * To add a new note: prepend to the `fieldNotes` array. The first entry is
- * the "latest note" surfaced in the header pill.
+ * Order: source entries can be authored in any order — the exported
+ * `fieldNotes` array is sorted by `date` descending so the newest note is
+ * always first. The header pill, index TOC and prev/next navigation all
+ * follow that order.
  */
 
 export interface FieldNote {
@@ -45,8 +47,29 @@ export interface FieldNote {
 
 export const fieldNotes: FieldNote[] = [
   {
-    slug: 'code-is-cheap-design-isnt',
+    slug: 'wrong-room',
     number: '07',
+    date: '2026-05-10',
+    eyebrow: 'House rules',
+    title: "You're in the wrong room.",
+    deck: "If you're the smartest person in the room. Everyone quotes the line. Almost nobody lives by it.",
+    blurb:
+      "The honest read isn't a humblebrag — it's a job description. Most of the job is being uncomfortable in public, on purpose, for years.",
+    readTime: '3 min read',
+    accent: 'pop-magenta',
+    body: [
+      "The line is true. It's also one of the most worn-down quotes in circulation — passed around at conferences, on podcasts, in the back half of startup advice columns. The people who repeat it almost never mean it the way it reads. They want the reputation of someone who seeks out smarter rooms while remaining, in their current one, comfortably the smartest. It's a humility posture performed for an audience that already agrees you're clever.",
+      "The practice is uglier. Being the dumbest person in the room isn't a wisdom pose; it's a feeling. It's sitting through a conversation where you can almost follow the argument, occasionally not. It's asking a question the rest of the room answered three steps back. It's writing a take that gets gently corrected by someone who has done this for twenty years. Most people don't pursue the state because it sucks in real time and only pays off later.",
+      "But it does pay off, and the mechanism is friction, not osmosis. You don't get smarter by being near smart people. You get smarter by being out of your depth in front of them, and not flinching. Each instance is a small, specific bruise. Over enough years, the bruises become competence. Skip them and you stay where you are, even if the room is full of trophies.",
+      "There's a flip side worth naming. The quote assumes rooms run only one direction; they don't. Sometimes you are the smartest in the room, and the right move isn't to leave. It's to notice you've taken a different job. You're not learning anymore; you're holding the floor. You owe the room more clarity, not less. The wrong room isn't the one where you're the most experienced. It's the one where you're the most experienced and still refusing to lead.",
+    ],
+    pullQuote:
+      "You don't get smarter by being near smart people. You get smarter by being out of your depth in front of them, and not flinching.",
+    tags: ['craft', 'growth', 'studio'],
+  },
+  {
+    slug: 'code-is-cheap-design-isnt',
+    number: '06',
     date: '2026-05-09',
     eyebrow: 'Craft',
     title: 'Code is cheap. Design isn\'t.',
@@ -67,7 +90,7 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     slug: 'building-loud',
-    number: '01',
+    number: '05',
     date: '2026-04-22',
     eyebrow: 'House rules',
     title: 'Building loud.',
@@ -88,7 +111,7 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     slug: 'why-owlat-is-open',
-    number: '02',
+    number: '04',
     date: '2026-04-08',
     eyebrow: 'Owlat',
     title: 'Why marketing email needed an open-source tool.',
@@ -129,29 +152,8 @@ export const fieldNotes: FieldNote[] = [
     tags: ['draw', 'tauri', 'local-first'],
   },
   {
-    slug: 'three-thousand-cabins',
-    number: '04',
-    date: '2026-03-11',
-    eyebrow: 'Hinterland',
-    title: 'Thousands of cabins, one search box.',
-    deck: 'How a marketplace for the outdoors learned to ignore the things outdoorsy people don\'t care about.',
-    blurb:
-      'When you ask people what they want from a cabin search, they\'ll tell you. They\'re wrong. Six years of running Hinterland taught us which filters earn their keep, and which ones we deleted.',
-    readTime: '5 min read',
-    accent: 'pop-orange',
-    body: [
-      "The first version of Hinterland's search had 47 filters. We had filters for hot tub, sauna, fire pit, BBQ, parking, electricity, water, dog-friendly, child-friendly, wheelchair access, dishwasher (yes, in a cabin), pet deposit tier, and twelve flavors of view. We cut it to nine.",
-      "Here's what we learned. Most filter usage is signal noise. People clicking checkboxes to feel productive in a search session. The filters that actually correlate with bookings are: dates, party size, dogs, water access, off-grid, and price. That's it. The other forty are decorations.",
-      "We didn't delete them. They're metadata on the listing page, where they belong. They just don't drive search. Our hypothesis was that fewer levers means better matches, and the booking conversion went up nine points the week we shipped it.",
-      "The lesson is older than the marketplace: every filter is a tax on the user's attention. Only charge that tax when the answer changes the result.",
-    ],
-    pullQuote:
-      "Every filter is a tax on the user's attention. Only charge it when the answer changes the result.",
-    tags: ['hinterland', 'product', 'search'],
-  },
-  {
     slug: 'why-riso',
-    number: '05',
+    number: '02',
     date: '2026-02-28',
     eyebrow: 'Studio',
     title: 'Why the site looks like a riso print.',
@@ -172,7 +174,7 @@ export const fieldNotes: FieldNote[] = [
   },
   {
     slug: 'link-building-honestly',
-    number: '06',
+    number: '01',
     date: '2021-02-15',
     eyebrow: 'SEO',
     title: 'Link building, honestly.',
@@ -191,7 +193,7 @@ export const fieldNotes: FieldNote[] = [
       "A backlink, stripped of the marketing, is a small bet on your reputation made by someone else.",
     tags: ['seo', 'marketing', 'process'],
   },
-]
+].sort((a, b) => b.date.localeCompare(a.date))
 
 /** Convenience: the most recent note, used by the header pill. */
 export const latestFieldNote = fieldNotes[0]!

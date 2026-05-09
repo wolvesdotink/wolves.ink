@@ -159,10 +159,10 @@ useSchemaOrg([
               >
                 <span class="text-mono-eyebrow text-cream/55">Note</span>
                 <span
-                  class="text-display-md mt-1 text-5xl"
+                  class="text-display-md mt-1 flex items-start text-5xl tabular-nums leading-none"
                   :class="accentClasses(latest.accent).text"
                 >
-                  №{{ latest.number }}
+                  <span class="text-3xl leading-none mt-1 mr-0.5">№</span>{{ latest.number }}
                 </span>
               </div>
             </div>
