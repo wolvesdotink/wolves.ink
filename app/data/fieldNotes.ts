@@ -45,6 +45,27 @@ export interface FieldNote {
 
 export const fieldNotes: FieldNote[] = [
   {
+    slug: 'code-is-cheap-design-isnt',
+    number: '07',
+    date: '2026-05-09',
+    eyebrow: 'Craft',
+    title: 'Code is cheap. Design isn\'t.',
+    deck: 'When the marginal cost of writing software approaches zero, what separates good engineers from everyone else stops being syntax — and starts being judgement.',
+    blurb:
+      'LLMs have turned code from a bottleneck into a commodity. That means the hard part of engineering just got harder. It was never writing the code in the first place.',
+    readTime: '5 min read',
+    accent: 'pop-blue',
+    body: [
+      "Code is cheap. Not metaphorically cheap — literally cheap. A developer who used to spend three days on a data pipeline ships it in an afternoon. Give it two more years and the afternoon becomes a prompt. The marginal cost of a function is approaching zero, and anyone still treating syntax fluency as their competitive advantage is standing on melting ground.",
+      "This should feel liberating, and for a lot of things it is. Boilerplate is dissolving. The surface area a single engineer can maintain has expanded. But the discount comes with a hidden tax: when code stops being the bottleneck, the bottleneck becomes everything underneath it. The architecture. The abstractions. The call about what to build at all. These are design problems, and LLMs are considerably worse at them than they are at closing a bracket.",
+      "A good abstraction is a bet on what will change and what won't. It's the argument that these eight things are actually one thing, that this complexity deserves a seam, that this invariant needs a name. You can't prompt your way to that unless you already understand it — which means the model is doing the easy half and leaving the hard half on the table. Engineers who understand that distinction will compound. Everyone else will spend their careers debugging output they don't understand from a system they didn't design.",
+      "We've spent thirty years treating code as the hard part because it was the hard part — you had to earn the syntax before you could say anything. That barrier is nearly gone. What remains is the prior question: what are you actually trying to say? That's always been design. It was always the expensive part. It just wasn't the bottleneck.",
+    ],
+    pullQuote:
+      "When code stops being the bottleneck, the bottleneck becomes everything underneath it.",
+    tags: ['craft', 'engineering', 'design'],
+  },
+  {
     slug: 'building-loud',
     number: '01',
     date: '2026-04-22',

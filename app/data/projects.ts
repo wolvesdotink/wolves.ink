@@ -222,7 +222,9 @@ export const projects: Project[] = [
     year: '2026',
     type: 'Desktop · Photography',
     accent: 'pop-blue',
-    links: {},
+    links: {
+      github: { href: 'https://github.com/wolvesdotink/fuji', label: 'wolvesdotink/fuji' },
+    },
     tech: ['Tauri 2', 'Rust', 'Vue 3', 'Pinia', 'Tailwind 4', 'ONNX Runtime', 'CLIP', 'rayon'],
     details: [
       {
