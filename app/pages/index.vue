@@ -78,8 +78,15 @@ onMounted(() => {
       <!-- Halftone backplates — parallax orbs that subtly drift with the cursor -->
       <HalftoneOrbBackdrop />
 
-      <!-- Masthead — gigantic wordmark -->
-      <div class="relative mx-auto max-w-[1600px] px-6 py-24 md:px-12 md:py-36 lg:py-44">
+      <!-- Masthead — gigantic wordmark.
+           Mobile uses tighter side padding (px-4) so the larger
+           clamp(7rem, 27vw, ...) wordmark gets edge-to-edge breathing
+           room instead of clipping against px-6. Vertical padding is
+           pulled in vs. the desktop py-36 so the wordmark sits with
+           a bit less air on phones, but py-20/mt-16 still gives the
+           composition room to breathe (the original py-24/mt-24 was
+           too generous at the larger mobile font size). -->
+      <div class="relative mx-auto max-w-[1600px] px-4 py-20 md:px-12 md:py-36 lg:py-44">
         <HeroDisplay word="WOLVES" />
 
         <!-- Tickers under the wordmark.
@@ -87,7 +94,7 @@ onMounted(() => {
              title (parent's pt) matches the gap below it (this mt to the
              border-t divider). Combined with text-box-trim on .hero-wordmark,
              this gives the title visually equal padding top and bottom. -->
-        <div class="mt-24 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-cream/15 pt-5 text-mono-eyebrow text-cream/75 md:mt-36 lg:mt-44">
+        <div class="mt-16 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-cream/15 pt-5 text-mono-eyebrow text-cream/75 md:mt-36 lg:mt-44">
           <div class="flex items-center gap-3">
             <span class="h-1.5 w-1.5 rounded-full bg-pop-magenta pulse-dot" />
             <span>Live · 03 active projects</span>

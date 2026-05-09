@@ -141,6 +141,17 @@ onBeforeUnmount(stopWStripeLoop)
   text-box: trim-both cap alphabetic;
 }
 
+/* Bigger on phones — the default text-display-mega clamp floors at 5rem
+   (~80px), which sits small on phones. Raise the floor to 7rem and
+   steepen vw scaling so the wordmark commands the viewport. The 10.5rem
+   cap meets the desktop clamp's value at 768px (22vw of 768 ≈ 10.56rem)
+   so there's no visible jump at the md breakpoint. */
+@media (max-width: 767px) {
+  .hero-wordmark {
+    font-size: clamp(7rem, 27vw, 10.5rem);
+  }
+}
+
 /* ============================================================
    BASE LETTER
    Resting baseline + transitions. Per-letter resting looks live
@@ -576,10 +587,105 @@ onBeforeUnmount(stopWStripeLoop)
 }
 
 /* ============================================================
+   SCROLL PARALLAX — riso pull-apart
+   As the document scrolls past the hero, the wordmark behaves
+   like a sheet of paper being lifted off a misaligned press:
+
+     1. it sinks into the page slightly first (a beat of weight,
+        scaleY > 1, like the ink is biting harder),
+     2. then peels up — translating, shrinking, tilting,
+     3. and as it peels it splits into riso registration ghosts
+        (magenta + yellow + cyan drop-shadows that grow apart),
+     4. finally blurring and fading out.
+
+   Three keyframes give the motion a beat, an arc, and a tail
+   instead of a flat from→to slide. The chromatic split peaks
+   mid-scroll so the wordmark's "departure" is the visual climax,
+   not the "vanish."
+
+   Independent of the per-letter active transforms — those live on
+   .hero-letter spans, this lives on the parent .hero-wordmark, so
+   they multiply through the cascade without fighting each other.
+
+   Pure CSS via animation-timeline: scroll(). Safari (no support
+   as of 2026-05) gracefully falls back to no animation — the
+   entrance + hover motion already carries the wordmark.
+   ============================================================ */
+@keyframes hero-scroll-parallax {
+  /* 0% — at rest. Drop-shadows are stated as transparent
+     same-shape filters so they interpolate cleanly to the
+     coloured riso ghosts at 55%. */
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+    filter:
+      blur(0)
+      drop-shadow(0 0 0 rgba(255, 72, 105, 0))
+      drop-shadow(0 0 0 rgba(255, 233, 78, 0))
+      drop-shadow(0 0 0 rgba(94, 200, 229, 0));
+  }
+  /* 12% — beat of weight before the lift.
+     Subtle vertical squish + tiny downward translate, like the
+     press cycle sinks the sheet into the platen for one frame
+     before it gets pulled. Keeps the exit from feeling like a
+     flat slide. */
+  12% {
+    transform: translateY(2%) scale(1.02, 0.97) rotate(0deg);
+    opacity: 1;
+    filter:
+      blur(0)
+      drop-shadow(0 0 0 rgba(255, 72, 105, 0))
+      drop-shadow(0 0 0 rgba(255, 233, 78, 0))
+      drop-shadow(0 0 0 rgba(94, 200, 229, 0));
+  }
+  /* 55% — peak chromatic split.
+     The riso layers spread off the wordmark in three directions
+     (magenta down-right, yellow up-left, cyan down-left). Wordmark
+     itself is mid-lift — translated up, shrunk, slightly tilted. */
+  55% {
+    transform: translateY(-22%) scale(0.86) rotate(-1.2deg);
+    opacity: 0.72;
+    filter:
+      blur(1.2px)
+      drop-shadow(0.14em 0.14em 0 rgba(255, 72, 105, 0.85))
+      drop-shadow(-0.11em -0.11em 0 rgba(255, 233, 78, 0.7))
+      drop-shadow(0.10em -0.09em 0 rgba(94, 200, 229, 0.55));
+  }
+  /* 100% — peeled away. Riso ghosts fade their alpha back to 0
+     while spreading further; combined with opacity:0 on the base
+     it reads as the whole stack dissolving into the page. */
+  100% {
+    transform: translateY(-62%) scale(0.5) rotate(-3deg);
+    opacity: 0;
+    filter:
+      blur(7px)
+      drop-shadow(0.24em 0.24em 0 rgba(255, 72, 105, 0))
+      drop-shadow(-0.20em -0.20em 0 rgba(255, 233, 78, 0))
+      drop-shadow(0.18em -0.16em 0 rgba(94, 200, 229, 0));
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .hero-wordmark {
+    animation: hero-scroll-parallax linear both;
+    animation-timeline: scroll(root block);
+    /* 65vh of scroll runway — gives the riso split time to peak
+       (mid-range) before the wordmark fully departs. */
+    animation-range: 0 65vh;
+    /* Origin above the geometric centre so the shrink reads as a lift,
+       not a pinch toward the middle. */
+    transform-origin: 50% 35%;
+    /* Compositor-only animation; hint the browser we'll mutate these. */
+    will-change: transform, opacity, filter;
+  }
+}
+
+/* ============================================================
    Reduced motion — kill all the cycling, but keep one calm,
    distinctive pop per letter so the differentiation survives.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
+  .hero-wordmark,
   .hero-letter,
   .hero-letter.entering,
   .hero-letter.is-active {
