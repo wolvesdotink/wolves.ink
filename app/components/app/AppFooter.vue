@@ -55,20 +55,21 @@ const scrollToTop = () => {
         </svg>
       </span>
 
-      <!-- ── Issue stamp — rotated sticker, top right of wordmark ──────── -->
+      <!-- ── Neon paw — glowing magenta stamp where the badge used to live -->
       <div
-        class="absolute right-6 top-12 z-10 hidden md:block"
-        style="--tilt: 9deg"
+        class="absolute right-8 top-10 z-10 hidden md:block"
+        style="--tilt: -8deg"
+        aria-hidden="true"
       >
-        <div
-          class="sticker-jiggle sticker-shadow grid h-28 w-28 place-items-center rounded-full border-2 border-ink bg-pop-magenta text-ink"
-        >
-          <div class="text-center leading-none">
-            <div class="text-mono-eyebrow text-[0.55rem] opacity-80">howl</div>
-            <div class="text-display mt-1 text-3xl">№∞</div>
-            <div class="text-mono-eyebrow mt-1 text-[0.55rem] opacity-80">{{ issueLabel }}</div>
-          </div>
-        </div>
+        <span class="sticker-jiggle block text-pop-magenta">
+          <svg viewBox="0 0 28 28" width="104" height="104">
+            <ellipse cx="14" cy="20" rx="6.2" ry="5" fill="currentColor" />
+            <ellipse cx="6" cy="11.5" rx="2.4" ry="3" fill="currentColor" />
+            <ellipse cx="11" cy="6.5" rx="2.4" ry="3" fill="currentColor" />
+            <ellipse cx="17" cy="6.5" rx="2.4" ry="3" fill="currentColor" />
+            <ellipse cx="22" cy="11.5" rx="2.4" ry="3" fill="currentColor" />
+          </svg>
+        </span>
       </div>
 
       <!-- ── Eyebrow rule — "Out of the den" ───────────────────────────── -->
