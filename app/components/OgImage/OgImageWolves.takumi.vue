@@ -74,13 +74,13 @@ const muted = '#a89e88'
     <div
       :style="{
         position: 'absolute',
-        right: '-260px',
-        top: '-260px',
+        right: '-300px',
+        top: '-300px',
         width: '720px',
         height: '720px',
         borderRadius: '9999px',
         background: `radial-gradient(circle at 32% 32%, ${accentHex}, transparent 62%)`,
-        opacity: '0.42',
+        opacity: '0.32',
       }"
     />
 
@@ -117,19 +117,28 @@ const muted = '#a89e88'
       :style="{
         display: 'flex',
         flexDirection: 'column',
-        gap: '36px',
+        gap: '28px',
         zIndex: 1,
       }"
     >
       <div
         :style="{
           fontFamily: 'Anton, sans-serif',
-          fontSize: title.length > 28 ? '128px' : title.length > 12 ? '168px' : '212px',
+          fontSize:
+            title.length > 36
+              ? '96px'
+              : title.length > 24
+                ? '120px'
+                : title.length > 12
+                  ? '168px'
+                  : '212px',
           lineHeight: '0.86',
           letterSpacing: '-0.025em',
           color: cream,
           textTransform: 'uppercase',
           display: 'flex',
+          flexWrap: 'wrap',
+          maxWidth: '1032px',
         }"
       >
         {{ title }}
@@ -138,7 +147,7 @@ const muted = '#a89e88'
         :style="{
           fontFamily: 'Fraunces, Georgia, serif',
           fontStyle: 'italic',
-          fontSize: '36px',
+          fontSize: '32px',
           lineHeight: '1.18',
           color: '#d8cdb8',
           maxWidth: '880px',
