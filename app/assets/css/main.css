@@ -276,6 +276,58 @@
 }
 
 /* ==========================================================================
+   Footer paw — press / vanish / ghost-stamp residue
+   The footer paw is a one-time claim. On click the press animation
+   plays, the paw fades out, and a ghost stamp lingers in its place
+   for ~1.2s while the cursor trail (PawTrail.vue) takes over.
+   All three keyframes preserve `var(--tilt)` so the press inherits
+   the slight rotation the sticker carries while idle.
+   ========================================================================== */
+
+.paw-stamp-button {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+@keyframes paw-pressing {
+  0%   { transform: rotate(var(--tilt, -3deg)) scale(1); }
+  55%  { transform: rotate(var(--tilt, -3deg)) scale(0.92); }
+  100% { transform: rotate(var(--tilt, -3deg)) scale(1.04); }
+}
+.paw-pressing {
+  animation: paw-pressing 220ms var(--ease-pop) both;
+}
+
+@keyframes paw-vanishing {
+  0%   { opacity: 1; transform: rotate(var(--tilt, -3deg)) scale(1.04); }
+  100% { opacity: 0; transform: rotate(var(--tilt, -3deg)) scale(1.12); filter: blur(1.5px); }
+}
+.paw-vanishing {
+  animation: paw-vanishing 320ms var(--ease-pop) both;
+  pointer-events: none;
+}
+
+@keyframes paw-ghost-stamp {
+  0%   { opacity: 0; transform: rotate(var(--tilt, -3deg)) scale(0.96); }
+  18%  { opacity: 0.85; transform: rotate(var(--tilt, -3deg)) scale(1); }
+  60%  { opacity: 0.4; transform: rotate(var(--tilt, -3deg)) scale(1.02); }
+  100% { opacity: 0; transform: rotate(var(--tilt, -3deg)) scale(1.06); }
+}
+.paw-ghost-stamp {
+  animation: paw-ghost-stamp 1280ms var(--ease-pop) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Honor the press intent (the claim still persists) but skip the
+     scale/blur theatrics — PawTrail self-gates separately. */
+  .paw-pressing,
+  .paw-vanishing { animation: none; opacity: 0; }
+  .paw-ghost-stamp { animation: none; opacity: 0; }
+}
+
+/* ==========================================================================
    Reveal — fade up on scroll (used with motion-v alternative)
    ========================================================================== */
 

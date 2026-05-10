@@ -12,6 +12,60 @@ const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
+
+/**
+ * Paw stamp — the footer paw is a one-time, session-scoped unlock.
+ * Click it: press → fade → ghost stamp lingers ~1.2s → cursor trail
+ * takes over (rendered by `<PawTrail>` mounted in the default layout).
+ *
+ * Stage drives the local press/vanish animation. The persistent
+ * `claimed` flag (sessionStorage, via `usePawTrail`) is the source of
+ * truth on subsequent mounts — if the user navigated routes during the
+ * animation or returns from another page, the paw stays gone.
+ */
+const { claimed, claim } = usePawTrail()
+
+type PawStage = 'idle' | 'pressing' | 'vanishing' | 'stamped' | 'done'
+const pawStage = ref<PawStage>('idle')
+
+const showPaw = computed(() => {
+  if (pawStage.value === 'done') return false
+  // Already claimed in this session and no animation in progress on
+  // this mount → render nothing.
+  if (claimed.value && pawStage.value === 'idle') return false
+  return true
+})
+
+const showGhostStamp = computed(
+  () => pawStage.value === 'vanishing' || pawStage.value === 'stamped',
+)
+
+function onStamp(event: MouseEvent) {
+  if (pawStage.value !== 'idle' || claimed.value) return
+
+  const target = event.currentTarget as HTMLElement | null
+  const rect = target?.getBoundingClientRect()
+  const originX = rect ? rect.left + rect.width / 2 : event.clientX
+  const originY = rect ? rect.top + rect.height / 2 : event.clientY
+
+  pawStage.value = 'pressing'
+  // Press → release rebound completes around 220ms; that's also when
+  // we flip to vanishing and persist the claim. The cursor trail
+  // becomes active the moment `claim()` runs.
+  setTimeout(() => {
+    pawStage.value = 'vanishing'
+    claim(originX, originY)
+  }, 220)
+  // Vanish completes ~300ms later; ghost stamp continues fading.
+  setTimeout(() => {
+    pawStage.value = 'stamped'
+  }, 540)
+  // Total ghost lifetime ~1.2s — matches the trail print fade so the
+  // "stamp residue" and the first cursor prints share a tempo.
+  setTimeout(() => {
+    pawStage.value = 'done'
+  }, 1480)
+}
 </script>
 
 <template>
@@ -55,13 +109,36 @@ const scrollToTop = () => {
         </svg>
       </span>
 
-      <!-- ── Neon paw — glowing magenta stamp where the badge used to live -->
+      <!-- ── Neon paw — press once to claim it; the cursor trail takes over. -->
       <div
-        class="absolute right-8 top-10 z-10 hidden md:block"
+        class="paw-stamp-slot absolute right-8 top-10 z-10 hidden md:block"
         style="--tilt: -8deg"
-        aria-hidden="true"
       >
-        <span class="sticker-jiggle block text-pop-magenta">
+        <button
+          v-show="showPaw"
+          type="button"
+          class="paw-stamp-button block text-pop-magenta"
+          :class="{
+            'sticker-jiggle': pawStage === 'idle',
+            'paw-pressing': pawStage === 'pressing',
+            'paw-vanishing': pawStage === 'vanishing' || pawStage === 'stamped' || pawStage === 'done',
+          }"
+          aria-label="Stamp the paw — leave a trail"
+          @click="onStamp"
+        >
+          <svg viewBox="0 0 28 28" width="104" height="104" aria-hidden="true">
+            <ellipse cx="14" cy="20" rx="6.2" ry="5" fill="currentColor" />
+            <ellipse cx="6" cy="11.5" rx="2.4" ry="3" fill="currentColor" />
+            <ellipse cx="11" cy="6.5" rx="2.4" ry="3" fill="currentColor" />
+            <ellipse cx="17" cy="6.5" rx="2.4" ry="3" fill="currentColor" />
+            <ellipse cx="22" cy="11.5" rx="2.4" ry="3" fill="currentColor" />
+          </svg>
+        </button>
+        <span
+          v-if="showGhostStamp"
+          class="paw-ghost-stamp pointer-events-none absolute inset-0 block text-pop-magenta"
+          aria-hidden="true"
+        >
           <svg viewBox="0 0 28 28" width="104" height="104">
             <ellipse cx="14" cy="20" rx="6.2" ry="5" fill="currentColor" />
             <ellipse cx="6" cy="11.5" rx="2.4" ry="3" fill="currentColor" />

@@ -23,5 +23,15 @@
       the homepage isn't currently in view.
     -->
     <MiniRadio />
+    <!--
+      PawTrail is the cursor-following companion to the footer paw
+      (AppFooter.vue). Once the user presses the paw it sets a
+      session-scoped flag (`usePawTrail`) and this overlay starts
+      dropping fading paw prints under the cursor. Mounted at the
+      layout level so the trail survives route transitions within
+      the same tab session. Self-gates on `(pointer: fine)` and
+      `prefers-reduced-motion: reduce` — pairs with RisoCursor.
+    -->
+    <PawTrail />
   </div>
 </template>
