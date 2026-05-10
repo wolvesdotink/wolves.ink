@@ -99,9 +99,9 @@ export const projects: Project[] = [
     pullQuote:
       "Marketing email got captured by ten companies and a billion dark patterns. We rebuilt it as a tool — open, hostable, and yours.",
     cover: {
-      src: 'photo-1518349619113-03114f06ac3a',
-      alt: 'A lone monitor glow in a dark room, stacks of mail and a cup of coffee',
-      credit: 'Photo on Unsplash',
+      src: 'photo-1637793492728-0cb7af658e69',
+      alt: 'A grey owl perched on a branch in a dark forest, soft woodland light',
+      credit: 'Photo by Erik Karits on Unsplash',
       position: 'center center',
     },
     vibeWord: 'Send',

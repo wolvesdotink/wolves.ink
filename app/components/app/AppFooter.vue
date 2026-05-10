@@ -14,34 +14,38 @@ const scrollToTop = () => {
 }
 
 /**
- * Paw stamp — the footer paw is a one-time, session-scoped unlock.
- * Click it: press → fade → ghost stamp lingers ~1.2s → cursor trail
- * takes over (rendered by `<PawTrail>` mounted in the default layout).
+ * Paw stamp — the footer paw is a per-pageload reveal. Click it:
+ * press → fade → ghost stamp lingers ~1.2s → cursor trail takes
+ * over (rendered by `<PawTrail>` mounted in the default layout).
  *
- * Stage drives the local press/vanish animation. The persistent
- * `claimed` flag (sessionStorage, via `usePawTrail`) is the source of
- * truth on subsequent mounts — if the user navigated routes during the
- * animation or returns from another page, the paw stays gone.
+ * After the stamp animation the paw stays in the footer in a
+ * dormant state — clicking it again toggles the trail off (and on
+ * again) without re-running the entry animation.
+ *
+ * Reload of any page returns the paw to `idle` because `active` in
+ * `usePawTrail` is in-memory only.
  */
-const { claimed, claim } = usePawTrail()
+const { active, claim, setActive } = usePawTrail()
 
-type PawStage = 'idle' | 'pressing' | 'vanishing' | 'stamped' | 'done'
+type PawStage = 'idle' | 'pressing' | 'vanishing' | 'stamped' | 'dormant'
 const pawStage = ref<PawStage>('idle')
-
-const showPaw = computed(() => {
-  if (pawStage.value === 'done') return false
-  // Already claimed in this session and no animation in progress on
-  // this mount → render nothing.
-  if (claimed.value && pawStage.value === 'idle') return false
-  return true
-})
 
 const showGhostStamp = computed(
   () => pawStage.value === 'vanishing' || pawStage.value === 'stamped',
 )
 
+const pawAriaLabel = computed(() => {
+  if (pawStage.value !== 'dormant') return 'Stamp the paw — leave a trail'
+  return active.value ? 'Silence the paw trail' : 'Resume the paw trail'
+})
+
 function onStamp(event: MouseEvent) {
-  if (pawStage.value !== 'idle' || claimed.value) return
+  if (pawStage.value === 'dormant') {
+    setActive(!active.value)
+    return
+  }
+
+  if (pawStage.value !== 'idle') return
 
   const target = event.currentTarget as HTMLElement | null
   const rect = target?.getBoundingClientRect()
@@ -50,8 +54,7 @@ function onStamp(event: MouseEvent) {
 
   pawStage.value = 'pressing'
   // Press → release rebound completes around 220ms; that's also when
-  // we flip to vanishing and persist the claim. The cursor trail
-  // becomes active the moment `claim()` runs.
+  // we flip to vanishing and turn on the trail.
   setTimeout(() => {
     pawStage.value = 'vanishing'
     claim(originX, originY)
@@ -61,9 +64,11 @@ function onStamp(event: MouseEvent) {
     pawStage.value = 'stamped'
   }, 540)
   // Total ghost lifetime ~1.2s — matches the trail print fade so the
-  // "stamp residue" and the first cursor prints share a tempo.
+  // "stamp residue" and the first cursor prints share a tempo. After
+  // the residue fades, the paw settles into a dormant state so the
+  // user can re-click to silence the trail.
   setTimeout(() => {
-    pawStage.value = 'done'
+    pawStage.value = 'dormant'
   }, 1480)
 }
 </script>
@@ -115,15 +120,17 @@ function onStamp(event: MouseEvent) {
         style="--tilt: -8deg"
       >
         <button
-          v-show="showPaw"
           type="button"
           class="paw-stamp-button block text-pop-magenta"
           :class="{
             'sticker-jiggle': pawStage === 'idle',
             'paw-pressing': pawStage === 'pressing',
-            'paw-vanishing': pawStage === 'vanishing' || pawStage === 'stamped' || pawStage === 'done',
+            'paw-vanishing': pawStage === 'vanishing' || pawStage === 'stamped',
+            'paw-dormant-on': pawStage === 'dormant' && active,
+            'paw-dormant-off': pawStage === 'dormant' && !active,
           }"
-          aria-label="Stamp the paw — leave a trail"
+          :aria-label="pawAriaLabel"
+          :aria-pressed="pawStage === 'dormant' ? active : undefined"
           @click="onStamp"
         >
           <svg viewBox="0 0 28 28" width="104" height="104" aria-hidden="true">

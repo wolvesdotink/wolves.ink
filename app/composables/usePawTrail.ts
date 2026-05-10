@@ -1,36 +1,36 @@
 /**
- * usePawTrail — the footer paw is a one-time, session-scoped unlock. Once
- * the user presses it the paw vanishes (the AppFooter handles its own
- * stamp/vanish animation) and a subtle grey paw print starts following
- * the cursor for the rest of the session. Reload of any page within the
- * same tab session keeps the trail active; closing the tab resets it,
- * so each fresh visit gets the discovery moment back.
+ * usePawTrail — the footer paw is a per-pageload reveal. On a fresh
+ * page the footer renders the idle paw; clicking it runs the stamp
+ * animation and turns on a subtle grey paw print that follows the
+ * cursor. After the animation the paw stays in the footer in a
+ * dormant state — clicking it again toggles the trail off (and on
+ * again). Reloading any page resets everything to idle so the
+ * discovery moment returns each visit.
  *
  * Storage:
- *   - sessionStorage key `wolves:paw-claimed:v1`. The `:v1` suffix gates
- *     a future schema migration in the same shape `useFieldPrints` uses.
+ *   - None. State lives in module-level refs and is intentionally
+ *     in-memory only — a full page reload re-arms the idle paw.
+ *     SPA route navigation is preserved because module state
+ *     survives Nuxt route transitions.
  *
  * Singleton state:
- *   - `prints`, the cursor cadence trackers, and the cleanup-timer handle
- *     all live at module scope so that the AppFooter (which calls
- *     `claim()`) and the PawTrail overlay (which renders `prints` and
- *     owns `attach()`) share the same source of truth without prop
- *     drilling or a Pinia dependency.
- *   - `attach()` is idempotent — only the first call wires listeners.
- *     Layout HMR or accidental double-mount won't double-fire.
+ *   - `active`, `prints`, the cursor cadence trackers, and the
+ *     cleanup-timer handle all live at module scope so that the
+ *     AppFooter (which calls `claim()` and `setActive()`) and the
+ *     PawTrail overlay (which renders `prints` and owns `attach()`)
+ *     share the same source of truth without prop drilling or a
+ *     Pinia dependency.
+ *   - `attach()` is idempotent — only the first call wires
+ *     listeners. Layout HMR or accidental double-mount won't
+ *     double-fire.
  *
  * SSR:
- *   - `useSessionStorage` returns `false` server-side and hydrates on
- *     client mount; PawTrail self-gates on `claimed` so nothing renders
- *     server-side either way.
- *   - `attach()` is a no-op outside the browser and on coarse pointers
- *     / reduced-motion preferences (matching the gate that RisoCursor
- *     uses, so the two effects pair).
+ *   - `active` defaults to `false` on the server; PawTrail self-gates
+ *     on `active` so nothing renders server-side either way.
+ *   - `attach()` is a no-op outside the browser and on coarse
+ *     pointers / reduced-motion preferences (matching the gate that
+ *     RisoCursor uses, so the two effects pair).
  */
-
-import { useSessionStorage } from '@vueuse/core'
-
-const STORAGE_KEY = 'wolves:paw-claimed:v1'
 
 export interface TrailPrint {
   /** Monotonic id for v-for keying. */
@@ -55,7 +55,9 @@ const PERPENDICULAR_OFFSET_PX = 10
 const ROTATION_JITTER_DEG = 8
 
 // Module-level singletons — every call to `usePawTrail()` returns the
-// same `prints` ref so footer and overlay see the same array.
+// same `active` and `prints` refs so footer and overlay see the same
+// state. In-memory only: a page reload resets them to defaults.
+const active = ref(false)
 const prints = ref<TrailPrint[]>([])
 
 let lastDropX = 0
@@ -66,6 +68,12 @@ let attached = false
 let cleanupTimer: ReturnType<typeof setInterval> | null = null
 
 function dropPrintFromPointer(e: PointerEvent) {
+  // Trail toggled off — stay attached (cheap passive listener) but
+  // skip the work entirely. Re-enabling via setActive(true) re-primes
+  // the cadence tracker so the first print after a toggle still
+  // lands at a sensible distance.
+  if (!active.value) return
+
   if (!primed) {
     lastDropX = e.clientX
     lastDropY = e.clientY
@@ -114,18 +122,32 @@ function dropPrintFromPointer(e: PointerEvent) {
 }
 
 export function usePawTrail() {
-  const claimed = useSessionStorage<boolean>(STORAGE_KEY, false)
-
   /**
-   * Mark the paw claimed and seed the cadence tracker at the click
+   * Mark the trail active and seed the cadence tracker at the click
    * origin so the very next mouse move can drop a print without a
    * ~70px dead zone from the previous (unset) state.
    */
   function claim(originX: number, originY: number) {
-    claimed.value = true
+    active.value = true
     lastDropX = originX
     lastDropY = originY
     primed = true
+  }
+
+  /**
+   * Toggle the trail. `false` clears any prints currently on screen
+   * (instant visual confirmation of the off state). `true` un-primes
+   * the cadence tracker so the next pointermove re-seeds at the
+   * cursor's current position rather than wherever the user disabled.
+   */
+  function setActive(next: boolean) {
+    if (!next) {
+      prints.value = []
+    }
+    else {
+      primed = false
+    }
+    active.value = next
   }
 
   /**
@@ -165,5 +187,5 @@ export function usePawTrail() {
     }
   }
 
-  return { claimed, prints, claim, attach }
+  return { active, prints, claim, setActive, attach }
 }

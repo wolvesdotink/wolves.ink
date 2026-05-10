@@ -20,7 +20,7 @@
  *     decorative paper texture, not interactive content.
  */
 
-const { claimed, prints, attach } = usePawTrail()
+const { active, prints, attach } = usePawTrail()
 
 let detach: (() => void) | null = null
 
@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
 <template>
   <ClientOnly>
     <div
-      v-if="claimed"
+      v-if="active"
       class="paw-trail-root pointer-events-none fixed inset-0 z-[60]"
       aria-hidden="true"
     >

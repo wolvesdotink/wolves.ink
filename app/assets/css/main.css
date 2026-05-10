@@ -319,12 +319,49 @@
   animation: paw-ghost-stamp 1280ms var(--ease-pop) both;
 }
 
+/* Dormant — the post-stamp resting state for the footer paw. After
+   the press/vanish/ghost chain finishes the paw fades back in at a
+   muted opacity so the user can re-click to silence (or wake) the
+   cursor trail. Two variants so trail-on vs trail-off reads at a
+   glance: magenta lingering at ~40% vs cream-toned echo at ~22%.
+
+   Entering dormant from `paw-vanishing` (opacity:0 fill-mode:both)
+   smooths via the opacity transition; toggling between -on and -off
+   uses the same transition so the swap is calm. */
+.paw-dormant-on,
+.paw-dormant-off {
+  pointer-events: auto;
+  transform: rotate(var(--tilt, -3deg));
+  filter: none;
+  transition:
+    opacity 320ms var(--ease-pop),
+    color 320ms var(--ease-pop);
+}
+
+.paw-dormant-on {
+  opacity: 0.42;
+  /* color stays text-pop-magenta from the Vue class binding */
+}
+.paw-dormant-on:hover {
+  opacity: 0.7;
+}
+
+.paw-dormant-off {
+  opacity: 0.22;
+  color: rgb(241 233 216);
+}
+.paw-dormant-off:hover {
+  opacity: 0.45;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  /* Honor the press intent (the claim still persists) but skip the
+  /* Honor the press intent (the trail still toggles) but skip the
      scale/blur theatrics — PawTrail self-gates separately. */
   .paw-pressing,
   .paw-vanishing { animation: none; opacity: 0; }
   .paw-ghost-stamp { animation: none; opacity: 0; }
+  .paw-dormant-on,
+  .paw-dormant-off { transition: none; }
 }
 
 /* ==========================================================================
