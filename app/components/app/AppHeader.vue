@@ -63,9 +63,6 @@ const latestMeta = computed(() => formatDispatchDate(latest.date))
 
 <template>
   <header class="app-header sticky top-0 z-40">
-    <!-- Top tape rule — printer's cue at the very top edge -->
-    <div class="h-[3px] tape-stripes opacity-90" aria-hidden="true" />
-
     <div class="border-b border-cream/12 bg-ink/85 backdrop-blur-xl supports-[backdrop-filter]:bg-ink/72">
       <div
         class="mx-auto grid h-16 max-w-[1600px] items-center gap-4 px-4 md:gap-6 md:px-8"
