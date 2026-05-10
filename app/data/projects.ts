@@ -57,57 +57,8 @@ export interface Project {
  */
 export const projects: Project[] = [
   {
-    slug: 'hinterland',
-    index: '01',
-    name: 'hinterland.camp',
-    domain: 'hinterland.camp',
-    tagline: 'The great outdoors made bookable.',
-    blurb:
-      'A booking platform for sites, stays and cabins that earn the word "wild." Built for people who plan trips like they pack a backpack — light, deliberate, with the right tools.',
-    featured: true,
-    description: [
-      'Hinterland is a love letter to the outdoors with a checkout flow attached. It connects independent hosts of cabins, treehouses, fire-towers and pitch-your-tent meadows to the people who would rather sleep under stars than under chandeliers.',
-      'Hinterland was built to connect people with nature and make the close surroundings fun to explore. It keeps fees low, surfaces real photos in real weather, and treats availability like a serious calendar — not a marketing surface.',
-    ],
-    status: { label: 'Live', tone: 'live' },
-    year: '2020 →',
-    type: 'Marketplace',
-    accent: 'pop-orange',
-    links: {
-      live: { href: 'https://hinterland.camp', label: 'hinterland.camp' },
-    },
-    tech: ['Nuxt 4', 'Tailwind', 'Pinia', 'Java', 'Spring Boot', 'Postgres', 'Stripe', 'Mapbox'],
-    details: [
-      {
-        title: 'Catalogue at scale',
-        body: '3,000+ private camps and cabins across Germany, Denmark, Sweden, Italy and Austria. Filterable by what actually matters on the ground — water access, dogs welcome, vineyard locations, off-grid pitches.',
-      },
-      {
-        title: 'Road Trip Planner',
-        body: 'Drop in a route and get the most beautiful camps and cabins along the way. Pre-built itineraries for Italian road trips and Swedish camping expeditions live alongside your own.',
-      },
-      {
-        title: 'Instant book or request',
-        body: 'Hosts choose between instant-book and booking-request flows; reservations live under "My trips" for both sides of the marketplace, so the conversation has a calendar attached.',
-      },
-      {
-        title: 'Native apps for the trail',
-        body: 'iOS and Android companions, so the marketplace fits in a pocket once you\'re on the road and the laptop is back home.',
-      },
-    ],
-    pullQuote:
-      "Most travel apps want you online. We want you outside, and we want our app to get out of the way the moment you've booked.",
-    cover: {
-      src: 'photo-1496545672447-f699b503d270',
-      alt: 'A small canvas tent glowing warmly in a dark forest at dusk',
-      credit: 'Photo by Scott Goodwill on Unsplash',
-      position: 'center 60%',
-    },
-    vibeWord: 'Outside',
-  },
-  {
     slug: 'owlat',
-    index: '02',
+    index: '01',
     name: 'owlat.app',
     domain: 'owlat.app',
     tagline: 'Open-source email marketing, finally.',
@@ -157,7 +108,7 @@ export const projects: Project[] = [
   },
   {
     slug: 'draw',
-    index: '03',
+    index: '02',
     name: 'draw',
     domain: 'draw.wolves.ink',
     tagline: 'Excalidraw, local-first, yours.',
@@ -204,6 +155,57 @@ export const projects: Project[] = [
       position: 'center center',
     },
     vibeWord: 'Sketch',
+  },
+  {
+    slug: 'magpie',
+    index: '03',
+    name: 'magpie',
+    domain: 'magpie',
+    tagline: 'Dictation that keeps quiet about it.',
+    blurb:
+      'A small Tauri tray app that turns your voice into clean text without leaving your machine. Whisper for the listening, a tiny LLM for the polish, a global Fn-key for the cue.',
+    featured: true,
+    description: [
+      'Magpie listens. It lives in your menu bar, holds a Fn key, and turns whatever you said into text wherever the cursor happens to be. Whisper handles the transcription, a small local LLM cleans up the false starts and the missing commas, and the result lands in your clipboard before the same sentence would have finished typing.',
+      'It exists because dictation is too intimate to rent. The audio never leaves the laptop, the models live next to your apps, and the only thing on the network is your decision not to put one there. A magpie collects shiny things; this one collects sentences.',
+    ],
+    status: { label: 'Beta', tone: 'beta' },
+    year: '2026',
+    type: 'Desktop · Voice',
+    accent: 'pop-orange',
+    links: {
+      github: { href: 'https://github.com/wolvesdotink/magpie', label: 'wolvesdotink/magpie' },
+      download: { href: 'https://github.com/wolvesdotink/magpie/releases/latest/download/magpie.dmg', label: 'Download for macOS' },
+    },
+    tech: ['Tauri 2', 'Rust', 'Vue 3', 'Tailwind 4', 'Bun', 'whisper-rs', 'llama.cpp', 'CPAL'],
+    details: [
+      {
+        title: 'Hold a key, get a sentence',
+        body: 'Hold Fn anywhere on macOS — in a doc, a Slack thread, a terminal — and start talking. Release to transcribe. The result lands in your clipboard or directly under the cursor; the menu-bar icon glows while the model is listening so you always know who is awake.',
+      },
+      {
+        title: 'Whisper, on your machine',
+        body: 'Speech recognition runs locally via whisper-rs. Pick a model size at setup — small for instant turnaround, medium when accuracy matters more than seconds. The audio is decoded, transcribed and discarded; nothing is uploaded, nothing is logged.',
+      },
+      {
+        title: 'A small LLM, after the fact',
+        body: 'A llama.cpp pass turns the verbatim transcript into a real sentence — drops the false starts, inserts the punctuation, restores the brand names Whisper would have mangled. Small enough to ship in the bundle, fast enough to finish before the clipboard hits the screen.',
+      },
+      {
+        title: 'Tray, overlay, settings — out of the way',
+        body: 'A 320×480 popover for history and quick settings, a 160×44 overlay that floats while you talk, and a settings window for permissions and model picks. Open the one you need; the rest stay hidden until you call them.',
+      },
+    ],
+    pullQuote:
+      "Dictation is too intimate to rent. We kept the model on the laptop and the magpie in the menu bar.",
+    // Placeholder cover — swap for a magpie-specific shot when one lands.
+    cover: {
+      src: 'photo-1474511320723-9a56873867b5',
+      alt: 'A magpie at the edge of a forest in soft light',
+      credit: 'Photo on Unsplash',
+      position: 'center center',
+    },
+    vibeWord: 'Speak',
   },
   {
     slug: 'fuji',
@@ -255,6 +257,106 @@ export const projects: Project[] = [
       position: 'center center',
     },
     vibeWord: 'Cull',
+  },
+  {
+    slug: 'wolves-ink',
+    index: '05',
+    name: 'wolves.ink',
+    domain: 'wolves.ink',
+    tagline: 'The studio site, source open.',
+    blurb:
+      'The very page you\'re reading. A riso-print Nuxt site with every component, easter egg and fixated detail under MIT — clone it, fork it, file it under "we shipped the website too."',
+    featured: false,
+    description: [
+      'wolves.ink is the studio\'s own front door, and we open-sourced it for the same reason we open-sourced the tools that live behind it: closed code is a debt to the future. Every halftone orb, every wobble timing, every easter egg lives in the same repo, in plain Nuxt + Vue + Tailwind, with the messy commits to prove which idea came first.',
+      'It\'s also a teaching surface. The site is a working magazine — layered SSR with view transitions, a riso-themed accent system, lazy-hydrated playthings, OG image generation, and a collection of small interactions (the camera strap, the radio dial, the paw trail) wired so you can crack them open and steal the shape. Read the source the way you\'d read a fanzine: a spread at a time.',
+    ],
+    status: { label: 'Live', tone: 'live' },
+    year: '2026 →',
+    type: 'Studio Site · Open source',
+    accent: 'pop-magenta',
+    links: {
+      live: { href: 'https://wolves.ink', label: 'wolves.ink' },
+      github: { href: 'https://github.com/wolvesdotink/wolves.ink', label: 'wolvesdotink/wolves.ink' },
+    },
+    tech: ['Nuxt 4', 'Vue 3', 'Tailwind 4', 'Nuxt Image', 'Satori', 'Motion', 'TypeScript'],
+    details: [
+      {
+        title: 'A magazine that compiles',
+        body: 'Every page is a spread. Mastheads, pull quotes, marquee bands, sticker badges — each lives as a real component you can read, fork or rip out. The riso treatment is a CSS layer, not an image; the halftone is computed live, the grain is generated, the parallax orbs are pure DOM.',
+      },
+      {
+        title: 'Easter eggs as code samples',
+        body: 'The radio dial, the camera strap, the paw cursor — they\'re not decoration. They\'re small lessons in pointer events, lazy hydration and rAF discipline, written so the dev-tools-first reader gets the same magazine as the scroller.',
+      },
+      {
+        title: 'One accent system, end-to-end',
+        body: 'A single useAccentColor() composable feeds project cards, pull quotes, OG image generation, hero gradients and sticker tones. Pick one accent on a project and it fans out everywhere — including the share image. One source of truth, four vibes, zero drift.',
+      },
+      {
+        title: 'Open by default, on principle',
+        body: 'MIT license, no analytics tied to the studio, no sign-up walls, no funnel. Fork it, swap the wordmark, rename a couple of files and you\'ve got a magazine of your own. We\'d like that.',
+      },
+    ],
+    pullQuote:
+      "Closed code is a debt to the future. Even our own front door pays it forward.",
+    // Placeholder cover — swap for a wolves.ink-specific shot when one lands.
+    cover: {
+      src: 'photo-1474511320723-9a56873867b5',
+      alt: 'Wolves at the edge of moody side-light — placeholder studio shot',
+      credit: 'Photo on Unsplash',
+      position: 'center 30%',
+    },
+    vibeWord: 'Read',
+  },
+  {
+    slug: 'hinterland',
+    index: '06',
+    name: 'hinterland.camp',
+    domain: 'hinterland.camp',
+    tagline: 'The great outdoors made bookable.',
+    blurb:
+      'A booking platform for sites, stays and cabins that earn the word "wild." Built for people who plan trips like they pack a backpack — light, deliberate, with the right tools.',
+    featured: false,
+    description: [
+      'Hinterland is a love letter to the outdoors with a checkout flow attached. It connects independent hosts of cabins, treehouses, fire-towers and pitch-your-tent meadows to the people who would rather sleep under stars than under chandeliers.',
+      'Hinterland was built to connect people with nature and make the close surroundings fun to explore. It keeps fees low, surfaces real photos in real weather, and treats availability like a serious calendar — not a marketing surface.',
+    ],
+    status: { label: 'Live', tone: 'live' },
+    year: '2020 →',
+    type: 'Marketplace',
+    accent: 'pop-orange',
+    links: {
+      live: { href: 'https://hinterland.camp', label: 'hinterland.camp' },
+    },
+    tech: ['Nuxt 4', 'Tailwind', 'Pinia', 'Java', 'Spring Boot', 'Postgres', 'Stripe', 'Mapbox'],
+    details: [
+      {
+        title: 'Catalogue at scale',
+        body: '3,000+ private camps and cabins across Germany, Denmark, Sweden, Italy and Austria. Filterable by what actually matters on the ground — water access, dogs welcome, vineyard locations, off-grid pitches.',
+      },
+      {
+        title: 'Road Trip Planner',
+        body: 'Drop in a route and get the most beautiful camps and cabins along the way. Pre-built itineraries for Italian road trips and Swedish camping expeditions live alongside your own.',
+      },
+      {
+        title: 'Instant book or request',
+        body: 'Hosts choose between instant-book and booking-request flows; reservations live under "My trips" for both sides of the marketplace, so the conversation has a calendar attached.',
+      },
+      {
+        title: 'Native apps for the trail',
+        body: 'iOS and Android companions, so the marketplace fits in a pocket once you\'re on the road and the laptop is back home.',
+      },
+    ],
+    pullQuote:
+      "Most travel apps want you online. We want you outside, and we want our app to get out of the way the moment you've booked.",
+    cover: {
+      src: 'photo-1496545672447-f699b503d270',
+      alt: 'A small canvas tent glowing warmly in a dark forest at dusk',
+      credit: 'Photo by Scott Goodwill on Unsplash',
+      position: 'center 60%',
+    },
+    vibeWord: 'Outside',
   },
 ]
 
