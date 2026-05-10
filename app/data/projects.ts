@@ -198,12 +198,11 @@ export const projects: Project[] = [
     ],
     pullQuote:
       "Dictation is too intimate to rent. We kept the model on the laptop and the magpie in the menu bar.",
-    // Placeholder cover — swap for a magpie-specific shot when one lands.
     cover: {
-      src: 'photo-1474511320723-9a56873867b5',
-      alt: 'A magpie at the edge of a forest in soft light',
+      src: 'photo-1640610033950-a1351ebab311',
+      alt: 'A black-and-white magpie perched on a branch in soft green light',
       credit: 'Photo on Unsplash',
-      position: 'center center',
+      position: 'center 18%',
     },
     vibeWord: 'Speak',
   },
@@ -249,10 +248,9 @@ export const projects: Project[] = [
     ],
     pullQuote:
       "The half-hour between the last frame and the first edit deserves its own tool — small, local, fast.",
-    // Placeholder cover — swap for a fuji-specific shot when one lands.
     cover: {
-      src: 'photo-1474511320723-9a56873867b5',
-      alt: 'Moody side-light through dark trees',
+      src: 'photo-1777019051200-b8281581c426',
+      alt: 'A photographer\'s desk with film strips on a light table, lenses, and a monitor showing a culling grid of thumbnails',
       credit: 'Photo on Unsplash',
       position: 'center center',
     },
@@ -300,12 +298,11 @@ export const projects: Project[] = [
     ],
     pullQuote:
       "Closed code is a debt to the future. Even our own front door pays it forward.",
-    // Placeholder cover — swap for a wolves.ink-specific shot when one lands.
     cover: {
-      src: 'photo-1474511320723-9a56873867b5',
-      alt: 'Wolves at the edge of moody side-light — placeholder studio shot',
+      src: 'photo-1644942888834-97e142f5f9ee',
+      alt: 'A wolf in profile through warm autumn forest light',
       credit: 'Photo on Unsplash',
-      position: 'center 30%',
+      position: 'center center',
     },
     vibeWord: 'Read',
   },
