@@ -111,6 +111,15 @@ const accent = useAccentColor(() => props.project.accent)
           Visit live · {{ project.links.live.label }}
         </a>
         <a
+          v-if="project.links.download"
+          :href="project.links.download.href"
+          download
+          class="group inline-flex items-center gap-3 rounded-full bg-cream px-5 py-3 text-mono-eyebrow text-ink transition-colors duration-300 hover:bg-pop-orange"
+        >
+          <Icon name="lucide:download" class="text-base transition-transform group-hover:translate-y-0.5" />
+          {{ project.links.download.label }}
+        </a>
+        <a
           v-if="project.links.github"
           :href="project.links.github.href"
           target="_blank"

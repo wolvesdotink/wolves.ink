@@ -218,12 +218,13 @@ export const projects: Project[] = [
       'Fuji exists for the half-hour between the last frame and the first edit. The card is in your hand, the laptop is open, and the next step is supposed to be Lightroom — except Lightroom wants a catalog, a subscription, and an opinion about your folder structure. Fuji wants none of those things. It wants you to rate, compare, and move on.',
       'It started as a Saturday tool for triaging Fujifilm RAF files without booting the whole Adobe stack. It grew a small CLIP model so you can search "kid laughing in golden light" instead of scrolling. It stays small on purpose — your library is a folder on disk, your ratings live next to your photos, and the app gets out of the way the moment you have your set.',
     ],
-    status: { label: 'WIP', tone: 'wip' },
+    status: { label: 'Beta', tone: 'beta' },
     year: '2026',
     type: 'Desktop · Photography',
     accent: 'pop-blue',
     links: {
       github: { href: 'https://github.com/wolvesdotink/fuji', label: 'wolvesdotink/fuji' },
+      download: { href: 'https://github.com/wolvesdotink/fuji/releases/latest/download/fuji.dmg', label: 'Download for macOS' },
     },
     tech: ['Tauri 2', 'Rust', 'Vue 3', 'Pinia', 'Tailwind 4', 'ONNX Runtime', 'CLIP', 'rayon'],
     details: [
