@@ -47,6 +47,27 @@ export interface FieldNote {
 
 export const fieldNotes: FieldNote[] = [
   {
+    slug: 'pull-the-handle',
+    number: '08',
+    date: '2026-05-11',
+    eyebrow: 'AI',
+    title: 'Pull the handle.',
+    deck: 'AI writes the code now. The remaining job is to read it before you ship.',
+    blurb:
+      "AI is a slot machine, and the payouts are good. Getting code out and understanding what the code does are not the same thing, though, and only one of those survives contact with production.",
+    readTime: '3 min read',
+    accent: 'pop-orange',
+    body: [
+      "Every AI prompt is a pull of the handle. You get something back, fast, and most of the time it works. That's why the tool is genuinely useful, and it's also why it's worth paying attention to how we're using it. Slot machines aren't addictive because they pay out reliably. They're addictive because the payout lands often enough that you keep pulling without thinking. AI tools have a similar shape, except the payouts are higher and the cost of pulling is almost nothing. The danger isn't the tool itself. The danger is forgetting to look at what you just got back.",
+      "The tell is in what happens when the output is subtly wrong. A developer who understands the problem reads the generated code, spots the off-by-one error, fixes it and ships. A developer who doesn't reads the same code, can't evaluate it, ships it, and finds out later in production. Both pulled the handle. Only one of them was actually in control of the outcome. The difference isn't access to the tool. It's whether you understood the problem before you reached for it, and whether you read the answer before you shipped it.",
+      "Plausible output is the real risk. A blank answer is easy to spot. A confident, well-formatted answer that solves a slightly different problem takes much longer to catch. The model isn't doing anything wrong here. It's doing exactly what it was asked to do. The question is whether anyone is reading the result with the same care they used to write things from scratch. That habit is the thing worth keeping.",
+      "The people getting real leverage from AI all share one thing. They bring the understood problem to the tool, not the other way around. They know what right looks like before the output arrives. They read every line that comes back. They use the tool to compress the work, not to skip the thinking. The tool didn't make them better engineers. They made the tool useful.",
+    ],
+    pullQuote:
+      "The tool didn't make them better engineers. They made the tool useful.",
+    tags: ['ai', 'craft', 'process'],
+  },
+  {
     slug: 'wrong-room',
     number: '07',
     date: '2026-05-10',
