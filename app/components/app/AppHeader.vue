@@ -541,4 +541,11 @@ const latestMeta = computed(() => formatDispatchDate(latest.date))
 @media (max-width: 1100px) {
   .dispatch-pill { padding: 0 12px; }
 }
+
+/* Re-assert the mobile hide — Tailwind's `hidden` on the element loses
+   to the scoped `.dispatch-pill` rule above on specificity, same trap
+   as `.menu-trigger`. */
+@media (max-width: 767px) {
+  .dispatch-pill { display: none; }
+}
 </style>
