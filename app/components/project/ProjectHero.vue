@@ -8,6 +8,22 @@ const totalSpreads = computed(() => String(list.length).padStart(2, '0'))
 
 // Single source of truth for accent classes / gradients / sticker tones.
 const accent = useAccentColor(() => props.project.accent)
+
+// Non-webapp open-source projects (draw, magpie, fuji) show their latest
+// GitHub release tag instead of a placeholder "domain" string. The server
+// route returns null for webapps and projects without a github link, so the
+// `showVersion` check naturally falls back to the Domain sticker.
+const { data: release } = await useFetch(
+  () => `/api/release-version/${props.project.slug}`,
+  {
+    key: `release-${props.project.slug}`,
+    default: () => null,
+  },
+)
+
+const showVersion = computed(
+  () => Boolean(release.value?.tag) && !props.project.links.live,
+)
 </script>
 
 <template>
@@ -93,7 +109,10 @@ const accent = useAccentColor(() => props.project.accent)
         <StickerBadge tone="cream" :tilt="3" eyebrow="Year">
           {{ project.year }}
         </StickerBadge>
-        <StickerBadge tone="ink" :tilt="-2" eyebrow="Domain">
+        <StickerBadge v-if="showVersion" tone="ink" :tilt="-2" eyebrow="Latest">
+          {{ release!.tag }}
+        </StickerBadge>
+        <StickerBadge v-else tone="ink" :tilt="-2" eyebrow="Domain">
           {{ project.domain }}
         </StickerBadge>
       </div>
