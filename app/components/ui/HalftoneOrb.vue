@@ -38,7 +38,7 @@ const props = withDefaults(
 const root = ref<HTMLElement | null>(null)
 
 const { dx, dy } = useHalftoneParallax({
-  el: root,
+  el: root as Ref<HTMLElement | null>,
   range: props.range,
   influence: props.influence,
 })

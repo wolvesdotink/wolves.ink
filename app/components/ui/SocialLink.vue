@@ -50,7 +50,6 @@ const hoverClass = computed(() => {
     case 'magenta': return 'hover:text-pop-magenta'
     case 'yellow':  return 'hover:text-pop-yellow'
     case 'orange':  return 'hover:text-pop-orange'
-    case 'blue':    return 'hover:text-pop-blue'
     case 'cream':   return 'hover:text-cream'
     case 'ink':     return 'hover:text-ink'
   }

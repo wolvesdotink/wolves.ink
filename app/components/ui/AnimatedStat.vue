@@ -123,7 +123,7 @@ onMounted(() => {
     },
     { threshold: 0.5, rootMargin: '0px 0px -10% 0px' },
   )
-  observer.observe(root.value)
+  observer.observe(root.value as unknown as Element)
 
   onBeforeUnmount(() => observer.disconnect())
 })

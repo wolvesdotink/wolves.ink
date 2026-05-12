@@ -73,9 +73,9 @@ useSchemaOrg([
     },
     publisher: { '@id': '#identity' },
     isPartOf: { '@id': '#website' },
-    mainEntityOfPage: () => `/field-notes/${note.value!.slug}`,
-    keywords: () => (note.value!.tags ?? []).join(', '),
-    articleSection: () => note.value!.eyebrow,
+    mainEntityOfPage: `/field-notes/${note.value!.slug}` as never,
+    keywords: (note.value!.tags ?? []).join(', ') as never,
+    articleSection: note.value!.eyebrow as never,
     wordCount: () => (note.value!.body ?? []).reduce((sum, p) => sum + p.split(/\s+/).length, 0),
   }),
 ])

@@ -1,3 +1,4 @@
+import type { PluginOption } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -27,7 +28,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss() as PluginOption],
   },
 
   /**
@@ -185,10 +186,13 @@ export default defineNuxtConfig({
    */
   ogImage: {
     defaults: {
+      // nuxt-og-image v6 omits `component` from the typed `defaults`
+      // surface even though it's the documented way to pin the global
+      // template. Cast to bypass the stale type until the module fixes it.
       component: 'Wolves',
       width: 1200,
       height: 630,
-    },
+    } as never,
   },
 
   /**

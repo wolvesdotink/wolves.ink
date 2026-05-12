@@ -59,7 +59,7 @@ onMounted(() => {
     },
     { threshold: 0.4 },
   )
-  obs.observe(bigQuoteRoot.value)
+  obs.observe(bigQuoteRoot.value as unknown as Element)
   onBeforeUnmount(() => obs.disconnect())
 })
 </script>

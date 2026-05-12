@@ -5,16 +5,26 @@ interface ReleaseVersion {
   name: string | null
   publishedAt: string | null
   htmlUrl: string
+  downloadCount: number
 }
 
-interface GithubReleaseResponse {
+interface GithubAsset {
+  download_count: number
+}
+
+interface GithubRelease {
   tag_name: string
   name: string | null
   published_at: string | null
   html_url: string
+  draft: boolean
+  prerelease: boolean
+  assets: GithubAsset[]
 }
 
 const GITHUB_URL_RE = /^https?:\/\/github\.com\/([^/]+)\/([^/?#]+)/
+const PER_PAGE = 100
+const MAX_PAGES = 5
 
 export default defineCachedEventHandler(
   async (event): Promise<ReleaseVersion | null> => {
@@ -42,15 +52,30 @@ export default defineCachedEventHandler(
     if (token) headers.Authorization = `Bearer ${token}`
 
     try {
-      const data = await $fetch<GithubReleaseResponse>(
-        `https://api.github.com/repos/${owner}/${repo}/releases/latest`,
-        { headers },
+      const all: GithubRelease[] = []
+      for (let page = 1; page <= MAX_PAGES; page++) {
+        const batch = await $fetch<GithubRelease[]>(
+          `https://api.github.com/repos/${owner}/${repo}/releases`,
+          { headers, query: { per_page: PER_PAGE, page } },
+        )
+        all.push(...batch)
+        if (batch.length < PER_PAGE) break
+      }
+
+      const stable = all.find((r) => !r.draft && !r.prerelease)
+      if (!stable) return null
+
+      const downloadCount = all.reduce(
+        (sum, r) => sum + r.assets.reduce((s, a) => s + a.download_count, 0),
+        0,
       )
+
       return {
-        tag: data.tag_name,
-        name: data.name ?? null,
-        publishedAt: data.published_at ?? null,
-        htmlUrl: data.html_url,
+        tag: stable.tag_name,
+        name: stable.name ?? null,
+        publishedAt: stable.published_at ?? null,
+        htmlUrl: stable.html_url,
+        downloadCount,
       }
     } catch (err: unknown) {
       // 404 = no releases yet; rate-limit/network = transient. Both fall back

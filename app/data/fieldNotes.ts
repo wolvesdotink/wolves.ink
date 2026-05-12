@@ -45,7 +45,7 @@ export interface FieldNote {
   tags?: string[]
 }
 
-export const fieldNotes: FieldNote[] = [
+const entries: FieldNote[] = [
   {
     slug: 'pull-the-handle',
     number: '08',
@@ -214,7 +214,9 @@ export const fieldNotes: FieldNote[] = [
       "A backlink, stripped of the marketing, is a small bet on your reputation made by someone else.",
     tags: ['seo', 'marketing', 'process'],
   },
-].sort((a, b) => b.date.localeCompare(a.date))
+]
+
+export const fieldNotes: FieldNote[] = entries.sort((a, b) => b.date.localeCompare(a.date))
 
 /** Convenience: the most recent note, used by the header pill. */
 export const latestFieldNote = fieldNotes[0]!

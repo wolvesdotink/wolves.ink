@@ -14,7 +14,7 @@ const activeIndex = ref(0)
 const cardRefs = ref<HTMLElement[]>([])
 
 function setRef(el: Element | ComponentPublicInstance | null, idx: number) {
-  if (el) cardRefs.value[idx] = el as HTMLElement
+  if (el) cardRefs.value[idx] = el as never
 }
 
 onMounted(() => {
@@ -34,7 +34,7 @@ onMounted(() => {
     },
     { threshold: [0.4, 0.6, 0.8], rootMargin: '-10% 0px -10% 0px' },
   )
-  cardRefs.value.forEach((el) => el && observer.observe(el))
+  cardRefs.value.forEach((el) => el && observer.observe(el as unknown as Element))
   onBeforeUnmount(() => observer.disconnect())
 })
 

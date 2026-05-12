@@ -14,7 +14,6 @@
  */
 
 import type { SitemapUrlInput } from '#sitemap/types'
-import { defineSitemapEventHandler } from '#imports'
 import { projects } from '~/data/projects'
 import { fieldNotes } from '~/data/fieldNotes'
 

@@ -204,7 +204,7 @@ onMounted(() => {
       },
       { threshold: 0.05 },
     )
-    visibilityObs.observe(cabinetEl.value)
+    visibilityObs.observe(cabinetEl.value as unknown as Element)
   }
 })
 

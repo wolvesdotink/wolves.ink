@@ -24,6 +24,14 @@ const { data: release } = await useFetch(
 const showVersion = computed(
   () => Boolean(release.value?.tag) && !props.project.links.live,
 )
+
+const showDownloads = computed(
+  () => showVersion.value && (release.value?.downloadCount ?? 0) > 0,
+)
+
+const formattedDownloads = computed(() =>
+  (release.value?.downloadCount ?? 0).toLocaleString('en-US'),
+)
 </script>
 
 <template>
@@ -114,6 +122,9 @@ const showVersion = computed(
         </StickerBadge>
         <StickerBadge v-else tone="ink" :tilt="-2" eyebrow="Domain">
           {{ project.domain }}
+        </StickerBadge>
+        <StickerBadge v-if="showDownloads" tone="ink" :tilt="2" eyebrow="Downloads">
+          {{ formattedDownloads }}
         </StickerBadge>
       </div>
 

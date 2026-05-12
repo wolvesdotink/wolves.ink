@@ -77,7 +77,6 @@ export function useRadioPlayer() {
   const locked = computed(() => distanceTenths.value < 0.5)
   const transmission = computed(() => {
     const lines = site.transmissions
-    if (!lines || lines.length === 0) return ''
     return lines[todaysTenths.value % lines.length] ?? ''
   })
 

@@ -18,7 +18,7 @@ import type { ProjectAccent } from '~/data/projects'
  */
 
 /** Sticker / OG short-form tone names — used by <StickerBadge> and OgImage. */
-export type AccentTone = 'magenta' | 'yellow' | 'orange' | 'blue' | 'cream' | 'ink'
+export type AccentTone = 'magenta' | 'yellow' | 'orange' | 'cream' | 'ink'
 
 export interface AccentClassMap {
   /** `text-pop-magenta` — for headlines, drop caps, accent text. */
