@@ -91,7 +91,7 @@ export default defineCachedEventHandler(
     }
   },
   {
-    maxAge: 60 * 60,
+    maxAge: 5 * 60,
     swr: true,
     getKey: (event) => `release-version:${getRouterParam(event, 'slug')}`,
   },
