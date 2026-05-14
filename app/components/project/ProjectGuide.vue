@@ -113,7 +113,7 @@ function scrollTo(i: number) {
         :data-index="i"
         class="min-h-[78dvh] lg:min-h-[80dvh]"
       >
-        <ProjectCard :project="p" :active="i === activeIndex" :total="items.length" class="h-full" />
+        <ProjectCard :project="p" :active="i === activeIndex" :total="items.length" :priority="i === 0" class="h-full" />
       </div>
     </div>
   </section>

@@ -8,8 +8,15 @@ const props = withDefaults(
     active?: boolean
     /** Total number of cards in the rail (drives the "/ NN" counter). Defaults to 3. */
     total?: number
+    /**
+     * Eager-load the cover image as an LCP candidate. Pass `true` only
+     * for the first card in `ProjectGuide` — the rest sit below the
+     * fold and should stay lazy to keep the LCP-window byte budget
+     * small.
+     */
+    priority?: boolean
   }>(),
-  { total: 3 },
+  { total: 3, priority: false },
 )
 
 const totalLabel = computed(() => String(props.total).padStart(2, '0'))
@@ -41,9 +48,12 @@ function navigate(e: MouseEvent) {
         width="1200"
         height="700"
         quality="78"
-        sizes="100vw md:50vw"
+        sizes="100vw lg:66vw"
+        densities="x1 x2"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.06]"
         :style="{ objectPosition: project.cover.position }"
+        :loading="priority ? 'eager' : 'lazy'"
+        :fetchpriority="priority ? 'high' : 'auto'"
       />
       <!-- Tint -->
       <div

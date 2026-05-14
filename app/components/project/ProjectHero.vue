@@ -44,6 +44,14 @@ const formattedDownloads = computed(() =>
         the same `loading="eager"` class — pairs with the Unsplash
         preconnect in `app.vue` so the socket is already warm when the
         request goes out.
+
+        `sizes="100vw"` matches the full-bleed `absolute inset-0`
+        layout — `@nuxt/image` emits a srcset and the browser picks the
+        nearest width. `densities="x1 x2"` caps the over-fetch at 2x;
+        3x phones receive the 2x render, which is visually identical
+        under the magenta multiply blend + halftone overlay below.
+        `quality="80"` shaves ~10-15% off the AVIF/WebP bytes with no
+        perceptible loss in this composition.
       -->
       <NuxtImg
         :src="project.cover.src"
@@ -51,7 +59,9 @@ const formattedDownloads = computed(() =>
         provider="unsplash"
         width="2200"
         height="1400"
-        quality="85"
+        sizes="100vw"
+        densities="x1 x2"
+        quality="80"
         class="absolute inset-0 h-full w-full object-cover"
         :style="{ objectPosition: project.cover.position }"
         loading="eager"

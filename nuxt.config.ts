@@ -4,14 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV !== 'production' },
 
   modules: [
     '@nuxt/fonts',
     '@nuxt/image',
     '@nuxt/icon',
     '@vueuse/nuxt',
-    'motion-v/nuxt',
     // Bundles: nuxt-site-config, robots, sitemap, og-image, schema-org,
     // link-checker, seo-utils. One install, every meta tag handled.
     '@nuxtjs/seo',
@@ -109,7 +108,15 @@ export default defineNuxtConfig({
    */
   fonts: {
     families: [
-      { name: 'Anton', provider: 'google', weights: [400] },
+      // Anton renders every `text-display*` headline — the LCP element on
+      // the homepage, both index pages, and every field-note detail.
+      // `preload: true` emits a `<link rel="preload" as="font">` tag in
+      // <head> so the font fetch starts in parallel with the document
+      // rather than waiting for CSS parse. On `/projects/[slug]` the LCP
+      // is the hero image; browsers schedule the preloaded font alongside
+      // the `fetchpriority="high"` image, so the H1 lands without
+      // serialised blocking.
+      { name: 'Anton', provider: 'google', weights: [400], preload: true },
       { name: 'Fraunces', provider: 'google', weights: [400], styles: ['italic', 'normal'] },
       { name: 'Geist', provider: 'google', weights: [400, 600] },
       { name: 'Geist Mono', provider: 'google', weights: [400, 500] },
@@ -125,7 +132,11 @@ export default defineNuxtConfig({
   },
 
   icon: {
-    serverBundle: { collections: ['mdi', 'simple-icons', 'lucide'] },
+    // Only `mdi:*` and `lucide:*` icons are referenced in the codebase
+    // (verified via grep). `simple-icons` was carrying ~4.6MB of glyphs
+    // for nothing — dropped from the server bundle and the devDependency
+    // tree.
+    serverBundle: { collections: ['mdi', 'lucide'] },
   },
 
   /**
@@ -208,47 +219,126 @@ export default defineNuxtConfig({
 
   /**
    * Route rules — every page on this site is content-static (pulled from
-   * `data/projects.ts`, `data/field-notes.ts`, etc.), so SSR is paying a
+   * `data/projects.ts`, `data/field-notes.ts`, etc.), so SSR would pay a
    * server-render cost on every request for HTML that never changes
-   * between deploys. Switching to `prerender: true` emits the routes as
-   * static HTML at build time and serves them from the edge / CDN, which
-   * cuts TTFB by 200-600ms and feeds straight into LCP.
+   * between deploys. `prerender: true` emits the routes as static HTML at
+   * build time; the matching `Cache-Control` keeps revisits cheap without
+   * serving stale UI past the next deploy.
+   *
+   * Header strategy:
+   *   - `/_nuxt/**` and `/_fonts/**` are content-addressed (hash in the
+   *     filename), so they can be cached for a year with `immutable`.
+   *     Browsers skip the conditional revalidation entirely.
+   *   - Prerendered HTML uses `max-age=0, must-revalidate` so each
+   *     navigation sends a conditional GET and gets a `304` for unchanged
+   *     HTML. New deploys are visible immediately.
+   *   - OG image responses and sitemap get a longer max-age with SWR so
+   *     bots and social-card unfurlers don't hammer the renderer.
    *
    * The OG image and sitemap endpoints intentionally stay dynamic — they
-   * have their own caching layers and rendering them at build would
+   * have their own internal caching and rendering them at build would
    * either bloat the artifact or break date-based content (the homepage
    * `Issue MM/YYYY` stamp).
    */
   routeRules: {
-    '/': { prerender: true },
-    '/projects': { prerender: true },
-    '/projects/**': { prerender: true },
-    '/field-notes': { prerender: true },
-    '/field-notes/**': { prerender: true },
+    // Hashed bundles: cache forever, skip revalidation.
+    '/_nuxt/**': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    },
+    '/_fonts/**': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+    },
+    // Prerendered HTML: revalidate every navigation, send `304` when
+    // unchanged. Keeps users on the latest deploy with near-zero revisit
+    // cost.
+    '/': {
+      prerender: true,
+      headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' },
+    },
+    '/projects': {
+      prerender: true,
+      headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' },
+    },
+    '/projects/**': {
+      prerender: true,
+      headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' },
+    },
+    '/field-notes': {
+      prerender: true,
+      headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' },
+    },
+    '/field-notes/**': {
+      prerender: true,
+      headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' },
+    },
+    // OG image renderer — has its own internal cache; the HTTP layer
+    // keeps social-card unfurlers from re-requesting on every share.
+    '/__og-image__/**': {
+      headers: {
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+      },
+    },
+    '/sitemap.xml': {
+      headers: {
+        'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+      },
+    },
+    '/robots.txt': {
+      headers: { 'Cache-Control': 'public, max-age=86400' },
+    },
   },
 
-  /**
-   * Dev-only payload cache override.
-   *
-   * Nuxt's default Nitro `cache` mount uses the unstorage fs driver, which
-   * maps cache keys directly to filesystem paths. That breaks for routes
-   * where a collection page and a detail page share a base path:
-   *
-   *   /field-notes          -> .nuxt/cache/nuxt/payload/field-notes  (file)
-   *   /field-notes/<slug>   -> .nuxt/cache/nuxt/payload/field-notes/<slug>
-   *
-   * The file and the directory cannot coexist; whichever writes first wins
-   * and the other throws ENOTDIR. Same shape applies to /projects.
-   *
-   * Swapping just the `cache` mount to `memory` in dev removes the fs and
-   * therefore the collision. Production (`nuxt build` / `nuxt generate`)
-   * writes payloads to `.output/public/<route>/_payload.json` via a
-   * different path and is unaffected.
-   */
   nitro: {
+    /**
+     * Dev-only payload cache override.
+     *
+     * Nuxt's default Nitro `cache` mount uses the unstorage fs driver,
+     * which maps cache keys directly to filesystem paths. That breaks for
+     * routes where a collection page and a detail page share a base path:
+     *
+     *   /field-notes          -> .nuxt/cache/nuxt/payload/field-notes  (file)
+     *   /field-notes/<slug>   -> .nuxt/cache/nuxt/payload/field-notes/<slug>
+     *
+     * The file and the directory cannot coexist; whichever writes first
+     * wins and the other throws ENOTDIR. Same shape applies to /projects.
+     *
+     * Swapping just the `cache` mount to `memory` in dev removes the fs
+     * and therefore the collision. Production (`nuxt build`) writes
+     * payloads to `.output/public/<route>/_payload.json` via a different
+     * path and is unaffected.
+     */
     devStorage: {
       cache: { driver: 'memory' },
     },
+
+    /**
+     * Prerender — `routeRules['/projects/**']: { prerender: true }` is a
+     * matcher, not an enumerator. Without `crawlLinks: true`, Nitro never
+     * discovers the concrete `/projects/<slug>` URLs and they fall
+     * through to cold SSR at request time (verified: pre-fix builds
+     * emitted exactly 3 index.html files in .output/public).
+     *
+     * The seed `routes` guarantees the four entry pages even if a
+     * `<NuxtLink>` is broken; `crawlLinks` then walks every `<a>`/<link>
+     * from those pages and prerenders the slug pages too. `failOnError`
+     * stays false so a transient 4xx in one route doesn't poison the
+     * whole build.
+     */
+    prerender: {
+      crawlLinks: true,
+      routes: ['/', '/projects', '/field-notes', '/impressum'],
+      failOnError: false,
+    },
+
+    /**
+     * Precompress static assets at build time. Emits `.br` and `.gz`
+     * siblings under `.output/public`; Traefik 2.x/3.x in front of the
+     * Coolify deployment serves them automatically when the client's
+     * `Accept-Encoding` matches. Build-time brotli runs at level 11
+     * (versus the on-the-fly default of 4), so the wire payload is
+     * meaningfully smaller and there's no per-request CPU cost.
+     */
+    compressPublicAssets: { brotli: true, gzip: true },
   },
 
   experimental: {
