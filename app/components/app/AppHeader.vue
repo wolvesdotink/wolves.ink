@@ -110,7 +110,7 @@ const latestMeta = computed(() => formatDispatchDate(latest.date))
         ════════════════════════════════════════════════════ -->
         <NuxtLink
           to="/field-notes"
-          class="dispatch-pill group hidden md:inline-grid"
+          class="dispatch-pill group hidden xl:inline-grid"
           aria-label="Open field notes"
         >
           <span class="dispatch-pane dispatch-pane--front">
@@ -535,17 +535,11 @@ const latestMeta = computed(() => formatDispatchDate(latest.date))
   .drawer-leave-active { transition: opacity 200ms ease; }
 }
 
-/* ──────────────────────────────────────────────────────────────────────
-   Slim breakpoint nudges — keep the dispatch readable below 1100px.
-   ────────────────────────────────────────────────────────────────────── */
-@media (max-width: 1100px) {
-  .dispatch-pill { padding: 0 12px; }
-}
-
-/* Re-assert the mobile hide — Tailwind's `hidden` on the element loses
+/* Re-assert the hide below xl — Tailwind's `hidden` on the element loses
    to the scoped `.dispatch-pill` rule above on specificity, same trap
-   as `.menu-trigger`. */
-@media (max-width: 767px) {
+   as `.menu-trigger`. Hidden below 1280px so the right nav doesn't have
+   to compete with the pill before "Field Notes" wraps onto two lines. */
+@media (max-width: 1279.98px) {
   .dispatch-pill { display: none; }
 }
 </style>
