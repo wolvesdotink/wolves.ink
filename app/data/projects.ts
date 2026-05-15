@@ -355,6 +355,56 @@ export const projects: Project[] = [
     },
     vibeWord: 'Outside',
   },
+  {
+    slug: 'streamer-games',
+    index: '07',
+    name: 'streamer-games',
+    domain: 'games.wolves.ink',
+    tagline: 'Chat games for the people on the other side of the stream.',
+    blurb:
+      'A small Nuxt app for streamers and their chat. Pick a game, share the channel, and the people watching play along — tic-tac-toe, capital quizzes, country hunts, all the daft stuff that turns a stream into a room.',
+    featured: false,
+    description: [
+      'streamer-games is the studio\'s answer to the chat box wanting more to do. The streamer types a channel name on the home page, picks a game from the grid, and the next thing in chat — !join, an answer, a guess — is part of the round. tmi.js handles the listening, Pinia keeps the scoreboard, and each game lives in its own folder under app/games/ so adding a new one is a copy and two files.',
+      'It exists because the best moments on a stream aren\'t the ones the streamer planned — they\'re the ones the chat invented. We wanted a tool that takes a few hundred strangers and turns them into a team for the ten minutes it takes to find every European capital. MIT, hostable, and small enough to read in a sitting.',
+    ],
+    status: { label: 'Live', tone: 'live' },
+    year: '2026 →',
+    type: 'Twitch · Open source',
+    accent: 'pop-magenta',
+    links: {
+      live: { href: 'https://games.wolves.ink', label: 'games.wolves.ink' },
+      github: { href: 'https://github.com/wolvesdotink/streamer-games', label: 'wolvesdotink/streamer-games' },
+    },
+    tech: ['Nuxt 4', 'Vue 3', 'Tailwind 4', 'Pinia', 'tmi.js', 'TypeScript'],
+    details: [
+      {
+        title: 'A folder is a game',
+        body: 'Each game is a folder under app/games/ with two files: a config.ts for the slug, name and player cap, and a Game.vue for the UI and chat handler. Drop the folder in, the homepage grid and the /games/<slug> route pick it up via import.meta.glob — no registry edits, no router to wire.',
+      },
+      {
+        title: 'A roster on the house',
+        body: 'The !join command is handled globally, so chatters appear in the scoreboard sidebar the moment they raise their hand. Every new game gets the same roster for free, and awarding points is a one-liner: session.awardPoints(user, n).',
+      },
+      {
+        title: 'A dozen games to start',
+        body: 'Tic-tac-toe, flag and capital quizzes, country hunter, city spotter, population guess, bollard spotter, pole ID, script spotter, IATA codes, DDD Brasil — twelve in total, plus an example-game wired so the first new contribution is a copy away.',
+      },
+      {
+        title: 'Type your channel, start playing',
+        body: 'No login, no OAuth dance, no Twitch app to register. Type the channel name, pick the game, hand the URL to chat. The connection is shared across the app via a single useTwitchChat composable so every game listens to the same room without four sockets fighting over it.',
+      },
+    ],
+    pullQuote:
+      "The best moments on a stream are the ones the chat invented. We wrote a tool that helps them invent more.",
+    cover: {
+      src: 'photo-1636070759654-5c93bbca2862',
+      alt: 'A room filled with retro arcade machines under deep neon light',
+      credit: 'Photo on Unsplash',
+      position: 'center center',
+    },
+    vibeWord: 'Play',
+  },
 ]
 
 /** A separate hero image for the giant-letter cut-out on the home page. */

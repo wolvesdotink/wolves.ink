@@ -47,6 +47,27 @@ export interface FieldNote {
 
 const entries: FieldNote[] = [
   {
+    slug: 'the-bug-flood',
+    number: '09',
+    date: '2026-05-15',
+    eyebrow: 'Security',
+    title: 'The bug flood.',
+    deck: 'AI found 423 security bugs in Firefox last month. The disclosure timelines that defended the internet for thirty years didn\'t survive it.',
+    blurb:
+      'In April 2026, one AI model found 271 security bugs in Firefox in a single pass — including race conditions and XSLT bugs that had survived twenty years of human review. The numbers don\'t describe a future threat. They describe this month.',
+    readTime: '4 min read',
+    accent: 'pop-blue',
+    body: [
+      "Something changed in software security in the last six months, and the numbers say it better than any argument. In April 2026, Mozilla fixed 423 security bugs in Firefox — up from roughly twenty per month a year earlier. Of those, 271 were found by a single AI model in one pass. Sandbox escapes, JIT flaws, race conditions, bugs sitting in XSLT processors for twenty years. Not discovered over a career. Discovered between lunch and dinner.",
+      "Databases are the same story. AI-assisted tooling recently found two critical flaws in PostgreSQL and MariaDB that had been in the codebase since 2005. Both earned near-CVSS-9 severity scores. One was reachable with a single authenticated function call. The code had survived two decades of human review and fuzz testing because nobody was looking with the right eyes, and now those eyes are cheap, fast, and never get tired.",
+      "The real casualty isn't the bugs. It's the rituals we built around them. Coordinated disclosure has been the web's polite agreement for decades: find something, tell the vendor privately, give them ninety days to fix it before going public. That agreement assumed the discoverer was rare. It assumed nobody else would notice. AI models are now scanning the same public commit history simultaneously, which means the ninety-day window is fiction. Two researchers filed the same Linux kernel vulnerability within nine hours of each other, each working with AI tools. There is no embargo long enough to outlast that.",
+      "The good news, such as it is: AI finds bugs faster and patches them faster too. Architectural hardening — changes that eliminate entire exploit classes rather than individual instances — pays off disproportionately when the discovery rate goes up. The bad news: every project that hasn't run its codebase through AI tooling is sitting on a backlog it doesn't know about. Not a hypothetical one. A real one, probably counted in dozens, possibly in hundreds. Daniel Stenberg, creator of curl, puts it plainly: any project that hasn't scanned with AI-powered tooling will likely find a huge number of flaws. The clock has already started.",
+    ],
+    pullQuote:
+      "There is no embargo long enough to outlast AI scanning the same commit history simultaneously.",
+    tags: ['ai', 'security', 'engineering'],
+  },
+  {
     slug: 'pull-the-handle',
     number: '08',
     date: '2026-05-11',
