@@ -97,7 +97,7 @@ onMounted(() => {
         <div class="mt-16 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-cream/15 pt-5 text-mono-eyebrow text-cream/75 md:mt-36 lg:mt-44">
           <div class="flex items-center gap-3">
             <span class="h-1.5 w-1.5 rounded-full bg-pop-magenta pulse-dot" />
-            <span>Live · 05 active projects</span>
+            <span>Live · 06 active projects</span>
           </div>
           <div class="hidden items-center gap-2 md:flex">
             <span class="opacity-50">Set in</span>
@@ -155,9 +155,9 @@ onMounted(() => {
         <!-- A row of small numbers — magazine-style stats with count-up + riso slam -->
         <StatRow
           :items="[
-            { value: 5, tone: 'yellow', label: 'Active projects' },
+            { value: 6, tone: 'yellow', label: 'Active projects' },
             { display: '∞', tone: 'magenta', label: 'Late-night sketches' },
-            { value: 5, pad: 1, tone: 'orange', label: 'Open-source repos' },
+            { value: 6, pad: 1, tone: 'orange', label: 'Open-source repos' },
             { value: 1, pad: 1, tone: 'cream', label: 'Manifesto' },
           ]"
         />
