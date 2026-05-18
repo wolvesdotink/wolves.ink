@@ -47,6 +47,27 @@ export interface FieldNote {
 
 const entries: FieldNote[] = [
   {
+    slug: 'empty-room-test',
+    number: '10',
+    date: '2026-05-18',
+    eyebrow: 'House rules',
+    title: 'The empty room test.',
+    deck: 'Imagine you already have the thing and nobody ever finds out. Do you still want it? If you hesitate, the wanting wasn\'t yours — it belonged to the audience.',
+    blurb:
+      'Status is real and useful. Most ambitions are braided strands of private wanting and public signal, and the two feel identical from the inside. The empty room is where you find out which strand was actually load-bearing.',
+    readTime: '3 min read',
+    accent: 'pop-yellow',
+    body: [
+      "Here's a test worth running on your own ambitions, and it's never not embarrassing. Pick a goal — the job, the title, the apartment, the follower count, the thing you've been telling yourself you want for a year. Now imagine you already have it, and nobody ever finds out. Ever. The achievement is real and entirely private. Do you still want it? If you hesitate, you've learned something. The desire wasn't aimed at the thing. It was aimed at the audience that would see you having it, and the audience just left the room.",
+      "This isn't a moral failing. Humans are social animals; we're built to read each other for status, and most of what we call motivation is some braid of internal pull and external signal. The signal half is doing useful work — it pushes us through dips, it makes effort visible to people who can help, it gives the work shape. The trouble is that the two strands feel identical from the inside. You can spend a decade chasing something and never notice that the part you were actually chasing was the photograph at the end. The failure isn't having a social motive. It's mistaking it for a private one.",
+      "It shows up everywhere once you start looking. The job you'd take in a heartbeat with the title and pass on without it. The book you've been meaning to read versus the book you've been meaning to be seen reading. The trip you'd love if you could post about it, and find a chore if you couldn't. The startup you keep mentioning at parties but never quite work on between them. Some of these are still worth doing with the signal stripped out. You'd want to know that before you spend the next five years on them.",
+      "The honest version of any ambition has both strands in it. You want the work and the recognition; the craft and the credit. Pretending otherwise is its own kind of dishonesty. The job isn't to purge the signal half — it's to know which one is load-bearing. When the room goes dark, which one would you still walk toward? Most regrets from people deep into a career run some version of the same answer: they chased the visible version of a thing they didn't really want, and got it. The empty room would have saved them a decade.",
+    ],
+    pullQuote:
+      "When the room goes dark, which one would you still walk toward?",
+    tags: ['craft', 'growth', 'process'],
+  },
+  {
     slug: 'the-bug-flood',
     number: '09',
     date: '2026-05-15',
