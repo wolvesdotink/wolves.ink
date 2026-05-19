@@ -45,13 +45,15 @@ const formattedDownloads = computed(() =>
         preconnect in `app.vue` so the socket is already warm when the
         request goes out.
 
-        `sizes="100vw"` matches the full-bleed `absolute inset-0`
-        layout — `@nuxt/image` emits a srcset and the browser picks the
-        nearest width. `densities="x1 x2"` caps the over-fetch at 2x;
-        3x phones receive the 2x render, which is visually identical
-        under the magenta multiply blend + halftone overlay below.
-        `quality="80"` shaves ~10-15% off the AVIF/WebP bytes with no
-        perceptible loss in this composition.
+        The hero is always full-bleed, so a density-based srcset is
+        the right shape: one width (2200), two DPR options (1x, 2x).
+        We deliberately do NOT pass a single-value `sizes="100vw"` —
+        @nuxt/image only emits real width descriptors when `sizes`
+        has multiple breakpoints to interpolate, so a lone "100vw"
+        produces a `1w, 2w` srcset and the browser ends up loading a
+        2×2-pixel hero. `quality="80"` shaves ~10-15% off the AVIF /
+        WebP bytes with no perceptible loss under the multiply +
+        halftone overlay below.
       -->
       <NuxtImg
         :src="project.cover.src"
@@ -59,7 +61,6 @@ const formattedDownloads = computed(() =>
         provider="unsplash"
         width="2200"
         height="1400"
-        sizes="100vw"
         densities="x1 x2"
         quality="80"
         class="absolute inset-0 h-full w-full object-cover"

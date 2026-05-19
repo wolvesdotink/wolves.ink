@@ -405,6 +405,56 @@ export const projects: Project[] = [
     },
     vibeWord: 'Play',
   },
+  {
+    slug: 'watermarker',
+    index: '08',
+    name: 'watermarker',
+    domain: 'watermarker',
+    tagline: 'Stamp a folder of photos in one pass.',
+    blurb:
+      'A small macOS tool that batch-watermarks a folder of photos with a PNG or SVG mark. Live preview, EXIF-aware, signed and self-updating — point at a folder, pick a mark, move on.',
+    featured: false,
+    description: [
+      'Watermarker is the app you reach for the third time you find yourself dragging photos one by one into Photoshop just to put a logo in the corner. Point at a folder, pick a watermark, set size, opacity and position — every photo inside is composited and dropped into an output folder, with the original subfolder shape preserved so same-named files in different shoots can\'t overwrite each other.',
+      'It\'s small on purpose. A Rust image pipeline (image + resvg + tiny-skia) does the compositing; SVG marks are rasterized fresh at the output resolution so a single icon file stays crisp on a 24MP photo; EXIF orientation is read and re-applied so portrait phone photos land right-side up. The frontend is vanilla HTML/CSS/JS with native macOS Liquid Glass vibrancy — no framework, no chrome, just the controls you\'d reach for.',
+    ],
+    status: { label: 'Live', tone: 'live' },
+    year: '2026 →',
+    type: 'Desktop · Photography',
+    accent: 'pop-yellow',
+    links: {
+      github: { href: 'https://github.com/wolvesdotink/watermarker', label: 'wolvesdotink/watermarker' },
+      download: { href: 'https://github.com/wolvesdotink/watermarker/releases/latest/download/Watermarker.dmg', label: 'Download for macOS' },
+    },
+    tech: ['Tauri 2', 'Rust', 'image', 'resvg', 'tiny-skia', 'Vanilla HTML/CSS/JS'],
+    details: [
+      {
+        title: 'A folder in, a folder out',
+        body: 'Point Watermarker at a photos folder, a watermark file and an output folder. Every photo inside is composited and written to the output with the original subfolder shape mirrored over — same-named files in different shoots can\'t overwrite each other, and the input folder stays untouched.',
+      },
+      {
+        title: 'Live preview, real numbers',
+        body: 'Size, opacity, margin and position update a live preview as you drag the sliders. The numbers above each slider are the same numbers the pipeline will use on every photo — what you see at full quality is what every file in the folder gets.',
+      },
+      {
+        title: 'SVG that stays crisp',
+        body: 'PNG marks are scaled the way you\'d expect; SVG marks are rasterized fresh at the output resolution via resvg + tiny-skia, so a single 24×24 logo file holds its edges on a 24MP photo. EXIF orientation is read and re-applied so portrait phone photos land right-side up without manual rotation.',
+      },
+      {
+        title: 'Signed, notarized, self-updating',
+        body: 'Builds are signed and notarized by Apple, then bundled with Tauri\'s minisign updater so the app checks for new versions on launch — stable by default, beta channel a toggle away in Settings. The DMG opens without scary warnings on a clean Mac.',
+      },
+    ],
+    pullQuote:
+      "Watermarking shouldn't require a subscription. Point at a folder, pick a mark, get on with the day.",
+    cover: {
+      src: 'photo-1774891937497-96df6a794bd9',
+      alt: 'A wooden wax seal stamp resting on a worn wooden table',
+      credit: 'Photo by Diana Light on Unsplash',
+      position: 'center center',
+    },
+    vibeWord: 'Stamp',
+  },
 ]
 
 /** A separate hero image for the giant-letter cut-out on the home page. */
