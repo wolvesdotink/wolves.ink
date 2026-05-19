@@ -47,21 +47,42 @@ export interface FieldNote {
 
 const entries: FieldNote[] = [
   {
+    slug: 'the-comparison-engine',
+    number: '11',
+    date: '2026-05-19',
+    eyebrow: 'House rules',
+    title: 'The comparison engine.',
+    deck: 'Status is real and comparison is data. But the mind that spends all day re-pricing itself has none left for the things that needed an unoccupied head to grow.',
+    blurb:
+      "The bill for constant comparison isn't paid in time. It's paid in the interior life that needed an unoccupied head, and never got it. The audience won't tell you when the rot started; they never see that part.",
+    readTime: '3 min read',
+    accent: 'pop-magenta',
+    body: [
+      "\"You obsess over your identity in relation to others, while your soul rots inside of you.\" The line is unkind, and it lands because it's almost always true. The mind that wakes up doing comparisons (am I where she is, did he get there first, what did they think of the post) is busy in a way that looks productive and isn't. Status is real and comparison is data; nobody is arguing for stoic indifference. But the mechanism is sticky, and the hours given to ranking are hours taken from somewhere else, and the somewhere else is the part of you that actually compounds.",
+      "The bill is a quiet one. You don't lose anything obvious. The career keeps moving. The friendships look intact. What thins out is internal. It's the part that should be reading, thinking, building, noticing, getting weird about a problem for its own sake. That work needs an unoccupied head. The comparison engine never goes idle. The bandwidth is finite, and over enough years you stop being a person with an interior and start being a position in a leaderboard you never agreed to enter.",
+      "The texture changes too. The book becomes a book to be seen reading. The conversation becomes performance. The work becomes legible-to-others first and good second. None of this is conscious. That's the trouble. You don't decide to optimize for legibility; you just notice one day that the things you'd do if nobody were watching have quietly fallen off the list. The question of what you'd think about if no one ever saw it gets harder to answer the longer you've avoided asking it.",
+      "The fix isn't to stop caring what people think. That's a pose, and it's incoherent on top of being one. We are social animals, and \"I don't care\" usually means \"I care and I'm furious about it.\" The fix is smaller and harder. Keep a part of the day, the week, the work, that doesn't get fed to the audience. A practice with no spectators. A notebook nobody reads. A problem you're working on because it interests you and for no other reason. That space is what the soul, for lack of a better word, runs on. Lose it and you keep moving, busier even, but the inside hollows out on a schedule nobody warns you about, and the audience won't tell you either. They never see that part.",
+    ],
+    pullQuote:
+      "You stop being a person with an interior and start being a position in a leaderboard you never agreed to enter.",
+    tags: ['craft', 'growth', 'process'],
+  },
+  {
     slug: 'empty-room-test',
     number: '10',
     date: '2026-05-18',
     eyebrow: 'House rules',
     title: 'The empty room test.',
-    deck: 'Imagine you already have the thing and nobody ever finds out. Do you still want it? If you hesitate, the wanting wasn\'t yours — it belonged to the audience.',
+    deck: 'Imagine you already have the thing and nobody ever finds out. Do you still want it? If you hesitate, the wanting wasn\'t yours; it belonged to the audience.',
     blurb:
       'Status is real and useful. Most ambitions are braided strands of private wanting and public signal, and the two feel identical from the inside. The empty room is where you find out which strand was actually load-bearing.',
     readTime: '3 min read',
     accent: 'pop-yellow',
     body: [
-      "Here's a test worth running on your own ambitions, and it's never not embarrassing. Pick a goal — the job, the title, the apartment, the follower count, the thing you've been telling yourself you want for a year. Now imagine you already have it, and nobody ever finds out. Ever. The achievement is real and entirely private. Do you still want it? If you hesitate, you've learned something. The desire wasn't aimed at the thing. It was aimed at the audience that would see you having it, and the audience just left the room.",
-      "This isn't a moral failing. Humans are social animals; we're built to read each other for status, and most of what we call motivation is some braid of internal pull and external signal. The signal half is doing useful work — it pushes us through dips, it makes effort visible to people who can help, it gives the work shape. The trouble is that the two strands feel identical from the inside. You can spend a decade chasing something and never notice that the part you were actually chasing was the photograph at the end. The failure isn't having a social motive. It's mistaking it for a private one.",
+      "Here's a test worth running on your own ambitions, and it's never not embarrassing. Pick a goal: the job, the title, the apartment, the follower count, the thing you've been telling yourself you want for a year. Now imagine you already have it, and nobody ever finds out. Ever. The achievement is real and entirely private. Do you still want it? If you hesitate, you've learned something. The desire wasn't aimed at the thing. It was aimed at the audience that would see you having it, and the audience just left the room.",
+      "This isn't a moral failing. Humans are social animals; we're built to read each other for status, and most of what we call motivation is some braid of internal pull and external signal. The signal half is doing useful work. It pushes us through dips, it makes effort visible to people who can help, it gives the work shape. The trouble is that the two strands feel identical from the inside. You can spend a decade chasing something and never notice that the part you were actually chasing was the photograph at the end. The failure isn't having a social motive. It's mistaking it for a private one.",
       "It shows up everywhere once you start looking. The job you'd take in a heartbeat with the title and pass on without it. The book you've been meaning to read versus the book you've been meaning to be seen reading. The trip you'd love if you could post about it, and find a chore if you couldn't. The startup you keep mentioning at parties but never quite work on between them. Some of these are still worth doing with the signal stripped out. You'd want to know that before you spend the next five years on them.",
-      "The honest version of any ambition has both strands in it. You want the work and the recognition; the craft and the credit. Pretending otherwise is its own kind of dishonesty. The job isn't to purge the signal half — it's to know which one is load-bearing. When the room goes dark, which one would you still walk toward? Most regrets from people deep into a career run some version of the same answer: they chased the visible version of a thing they didn't really want, and got it. The empty room would have saved them a decade.",
+      "The honest version of any ambition has both strands in it. You want the work and the recognition; the craft and the credit. Pretending otherwise is its own kind of dishonesty. The job isn't to purge the signal half. It's to know which one is load-bearing. When the room goes dark, which one would you still walk toward? Most regrets from people deep into a career run some version of the same answer: they chased the visible version of a thing they didn't really want, and got it. The empty room would have saved them a decade.",
     ],
     pullQuote:
       "When the room goes dark, which one would you still walk toward?",
@@ -75,14 +96,14 @@ const entries: FieldNote[] = [
     title: 'The bug flood.',
     deck: 'AI found 423 security bugs in Firefox last month. The disclosure timelines that defended the internet for thirty years didn\'t survive it.',
     blurb:
-      'In April 2026, one AI model found 271 security bugs in Firefox in a single pass — including race conditions and XSLT bugs that had survived twenty years of human review. The numbers don\'t describe a future threat. They describe this month.',
+      'In April 2026, one AI model found 271 security bugs in Firefox in a single pass, including race conditions and XSLT bugs that had survived twenty years of human review. The numbers don\'t describe a future threat. They describe this month.',
     readTime: '4 min read',
     accent: 'pop-blue',
     body: [
-      "Something changed in software security in the last six months, and the numbers say it better than any argument. In April 2026, Mozilla fixed 423 security bugs in Firefox — up from roughly twenty per month a year earlier. Of those, 271 were found by a single AI model in one pass. Sandbox escapes, JIT flaws, race conditions, bugs sitting in XSLT processors for twenty years. Not discovered over a career. Discovered between lunch and dinner.",
+      "Something changed in software security in the last six months, and the numbers say it better than any argument. In April 2026, Mozilla fixed 423 security bugs in Firefox, up from roughly twenty per month a year earlier. Of those, 271 were found by a single AI model in one pass. Sandbox escapes, JIT flaws, race conditions, bugs sitting in XSLT processors for twenty years. Not discovered over a career. Discovered between lunch and dinner.",
       "Databases are the same story. AI-assisted tooling recently found two critical flaws in PostgreSQL and MariaDB that had been in the codebase since 2005. Both earned near-CVSS-9 severity scores. One was reachable with a single authenticated function call. The code had survived two decades of human review and fuzz testing because nobody was looking with the right eyes, and now those eyes are cheap, fast, and never get tired.",
       "The real casualty isn't the bugs. It's the rituals we built around them. Coordinated disclosure has been the web's polite agreement for decades: find something, tell the vendor privately, give them ninety days to fix it before going public. That agreement assumed the discoverer was rare. It assumed nobody else would notice. AI models are now scanning the same public commit history simultaneously, which means the ninety-day window is fiction. Two researchers filed the same Linux kernel vulnerability within nine hours of each other, each working with AI tools. There is no embargo long enough to outlast that.",
-      "The good news, such as it is: AI finds bugs faster and patches them faster too. Architectural hardening — changes that eliminate entire exploit classes rather than individual instances — pays off disproportionately when the discovery rate goes up. The bad news: every project that hasn't run its codebase through AI tooling is sitting on a backlog it doesn't know about. Not a hypothetical one. A real one, probably counted in dozens, possibly in hundreds. Daniel Stenberg, creator of curl, puts it plainly: any project that hasn't scanned with AI-powered tooling will likely find a huge number of flaws. The clock has already started.",
+      "The good news, such as it is: AI finds bugs faster and patches them faster too. Architectural hardening (changes that eliminate entire exploit classes rather than individual instances) pays off disproportionately when the discovery rate goes up. The bad news: every project that hasn't run its codebase through AI tooling is sitting on a backlog it doesn't know about. Not a hypothetical one. A real one, probably counted in dozens, possibly in hundreds. Daniel Stenberg, creator of curl, puts it plainly: any project that hasn't scanned with AI-powered tooling will likely find a huge number of flaws. The clock has already started.",
     ],
     pullQuote:
       "There is no embargo long enough to outlast AI scanning the same commit history simultaneously.",
@@ -117,11 +138,11 @@ const entries: FieldNote[] = [
     title: "You're in the wrong room.",
     deck: "If you're the smartest person in the room. Everyone quotes the line. Almost nobody lives by it.",
     blurb:
-      "The honest read isn't a humblebrag — it's a job description. Most of the job is being uncomfortable in public, on purpose, for years.",
+      "The honest read isn't a humblebrag. It's a job description. Most of the job is being uncomfortable in public, on purpose, for years.",
     readTime: '3 min read',
     accent: 'pop-magenta',
     body: [
-      "The line is true. It's also one of the most worn-down quotes in circulation — passed around at conferences, on podcasts, in the back half of startup advice columns. The people who repeat it almost never mean it the way it reads. They want the reputation of someone who seeks out smarter rooms while remaining, in their current one, comfortably the smartest. It's a humility posture performed for an audience that already agrees you're clever.",
+      "The line is true. It's also one of the most worn-down quotes in circulation, passed around at conferences, on podcasts, in the back half of startup advice columns. The people who repeat it almost never mean it the way it reads. They want the reputation of someone who seeks out smarter rooms while remaining, in their current one, comfortably the smartest. It's a humility posture performed for an audience that already agrees you're clever.",
       "The practice is uglier. Being the dumbest person in the room isn't a wisdom pose; it's a feeling. It's sitting through a conversation where you can almost follow the argument, occasionally not. It's asking a question the rest of the room answered three steps back. It's writing a take that gets gently corrected by someone who has done this for twenty years. Most people don't pursue the state because it sucks in real time and only pays off later.",
       "But it does pay off, and the mechanism is friction, not osmosis. You don't get smarter by being near smart people. You get smarter by being out of your depth in front of them, and not flinching. Each instance is a small, specific bruise. Over enough years, the bruises become competence. Skip them and you stay where you are, even if the room is full of trophies.",
       "There's a flip side worth naming. The quote assumes rooms run only one direction; they don't. Sometimes you are the smartest in the room, and the right move isn't to leave. It's to notice you've taken a different job. You're not learning anymore; you're holding the floor. You owe the room more clarity, not less. The wrong room isn't the one where you're the most experienced. It's the one where you're the most experienced and still refusing to lead.",
