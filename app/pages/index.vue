@@ -358,11 +358,26 @@ onMounted(() => {
     />
 
     <!-- ======================================================================
+         BROADCAST — pack TV (easter egg, sibling to RadioDial / Polaroid)
+
+         The third physical-object easter egg on the homepage: a small
+         portable CRT with a sleeve of draggable cartridges. The whole
+         interaction (pull a cart out of its pack, drop it in the slot,
+         eject) lives inside the component. Lazy-hydrated by visibility
+         so the pointer-event wiring stays off the LCP path.
+    ====================================================================== -->
+    <section class="relative overflow-hidden border-t border-cream/10">
+      <div class="mx-auto max-w-[1600px] px-4 py-20 md:px-8 md:py-28">
+        <LazyPortableTv hydrate-on-visible />
+      </div>
+    </section>
+
+    <!-- ======================================================================
          OUTRO — call to follow
     ====================================================================== -->
     <section class="mx-auto grid max-w-[1600px] gap-12 px-4 py-24 md:grid-cols-2 md:px-8 md:py-32">
       <div>
-        <span class="text-mono-eyebrow text-cream/60">Lookout V — Stay close</span>
+        <span class="text-mono-eyebrow text-cream/60">Lookout VI — Stay close</span>
         <h2 class="text-display-xl mt-4 text-cream leading-[0.85]">
           Follow the pack.
         </h2>

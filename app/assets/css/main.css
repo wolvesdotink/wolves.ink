@@ -80,6 +80,11 @@
     font-feature-settings: "ss01", "ss02", "cv11", "kern";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Reserve space for the vertical scrollbar at all times so transient
+       height changes (e.g. animations that briefly extend a section's
+       paintable area) can't show/hide the scrollbar and shift the
+       centered page content sideways. */
+    scrollbar-gutter: stable;
   }
 
   body {

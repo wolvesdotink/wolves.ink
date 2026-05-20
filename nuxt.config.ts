@@ -173,16 +173,18 @@ export default defineNuxtConfig({
   /**
    * Runtime config — values bound from `NUXT_*` env vars at runtime.
    *
-   * `ogImageSecret` populates from `NUXT_OG_IMAGE_SECRET` automatically
-   * (Nuxt camelCases the env-var suffix). `@nuxtjs/og-image` reads it
-   * via runtimeConfig to sign image URLs cryptographically. Strict
-   * mode is intentionally NOT enabled — signing is available but
-   * unsigned URLs still render so previews don't break while paths are
-   * being audited.
+   * `ogImage.secret` populates from `NUXT_OG_IMAGE_SECRET` automatically
+   * (Nuxt walks the runtimeConfig tree and matches camelCased env-var
+   * suffixes). nuxt-og-image reads `runtimeConfig.ogImage.secret` (and
+   * mirrors it into its own `security.secret`), so the key must live
+   * here — a flat `ogImageSecret` would never be picked up by the
+   * module and the runtime signature check would have no secret to
+   * verify against.
    */
   runtimeConfig: {
-    // Bound automatically from NUXT_OG_IMAGE_SECRET at runtime.
-    ogImageSecret: '',
+    ogImage: {
+      secret: '',
+    },
   },
 
   /**
@@ -194,6 +196,17 @@ export default defineNuxtConfig({
    * Renderer is derived from the component filename suffix
    * (`.takumi.vue` ⇒ Takumi, the v6-recommended Rust/WASM renderer).
    * The legacy `defaults.renderer` key was removed in v6.
+   *
+   * `security.strict` makes prerender emit signed URLs (`,s_<hash>`
+   * suffix) and the runtime endpoint reject unsigned requests. Without
+   * `strict`, simply having `NUXT_OG_IMAGE_SECRET` set is enough to
+   * enable runtime signature enforcement — but prerender keeps emitting
+   * unsigned static paths, so any request that falls through to the
+   * dynamic endpoint (anything the proxy doesn't intercept from
+   * `.output/public/_og/`) is 403'd. Turning strict on makes both ends
+   * agree: every URL we emit is signed, every URL the server accepts
+   * is signed. Requires the same `NUXT_OG_IMAGE_SECRET` value at build
+   * and runtime — a value drift invalidates every prerendered URL.
    */
   ogImage: {
     defaults: {
@@ -204,6 +217,9 @@ export default defineNuxtConfig({
       width: 1200,
       height: 630,
     } as never,
+    security: {
+      strict: true,
+    },
   },
 
   /**
@@ -273,7 +289,9 @@ export default defineNuxtConfig({
     },
     // OG image renderer — has its own internal cache; the HTTP layer
     // keeps social-card unfurlers from re-requesting on every share.
-    '/__og-image__/**': {
+    // Path is `/_og/**` (the module's actual mount); the older docs
+    // showed `/__og-image__/**`, which never matches anything in v6.
+    '/_og/**': {
       headers: {
         'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
       },
