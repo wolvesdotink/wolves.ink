@@ -542,39 +542,6 @@
 }
 
 /* ==========================================================================
-   "Turn the page" scroll cue — line draws down + arrow pulses
-   ========================================================================== */
-
-@keyframes turn-page-line {
-  0%   { transform: scaleY(0); transform-origin: 0 0; }
-  100% { transform: scaleY(1); transform-origin: 0 0; }
-}
-
-@keyframes turn-page-arrow {
-  0%, 100% { transform: translateY(0); opacity: 0.85; }
-  50%      { transform: translateY(6px); opacity: 1; }
-}
-
-.turn-page__line {
-  display: block;
-  width: 1px;
-  height: 48px;
-  background: var(--color-cream);
-  opacity: 0.35;
-  animation: turn-page-line 1.4s var(--ease-pop) both,
-             turn-page-line 2.6s var(--ease-pop) infinite alternate;
-}
-.turn-page__arrow {
-  display: inline-block;
-  animation: turn-page-arrow 2s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .turn-page__line,
-  .turn-page__arrow { animation: none; }
-}
-
-/* ==========================================================================
    Sticker peel — corner lifts, shadow deepens on hover
    ========================================================================== */
 

@@ -734,8 +734,16 @@ const stripOffsetPx = computed(() => -(tenths.value - MIN_TENTHS) * PX_PER_TICK)
   min-height: 180px;
 }
 .speaker-cone {
+  /* Centered, height-driven square so the cone stays round regardless of
+     the speaker's aspect ratio. `inset: 12%` would stretch into an ellipse
+     whenever the speaker box isn't square (which it isn't, at most widths). */
   position: absolute;
-  inset: 12%;
+  top: 50%;
+  left: 50%;
+  height: 76%;
+  max-width: 76%;
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background:
     radial-gradient(circle at 38% 32%, color-mix(in oklab, var(--color-paper) 90%, transparent), transparent 55%),
@@ -791,16 +799,13 @@ const stripOffsetPx = computed(() => -(tenths.value - MIN_TENTHS) * PX_PER_TICK)
   animation: speaker-pulse 1.1s ease-in-out infinite;
 }
 @keyframes speaker-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  /* Compose the centering transform into each keyframe — bare `scale()`
+     here would clobber the cone's `translate(-50%, -50%)` centering. */
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-50%, -50%) scale(1.02); }
 }
 
-/* ── Mobile / tablet-narrow overrides ──────────────────────────────────
-   This block sits AFTER the speaker base rules on purpose: when both
-   rule-sets target the same selector (`.radio-speaker`, `.speaker-cone`)
-   with the same specificity, source order decides — and the base
-   `.speaker-cone { inset: 12% }` would otherwise clobber our centering
-   `top: 50%; left: 50%` here. Keep this block last, after the base. */
+/* ── Mobile / tablet-narrow overrides ────────────────────────────────── */
 @media (max-width: 880px) {
   .radio-body {
     /* Stack speaker on top of dial, hide knob — it's decorative.
@@ -821,28 +826,6 @@ const stripOffsetPx = computed(() => -(tenths.value - MIN_TENTHS) * PX_PER_TICK)
     height: 96px;
     max-width: 100%;
   }
-  .speaker-cone {
-    /* Override `inset: 12%` (which would stretch the cone into a
-       wide ellipse on a wide-but-short speaker). Explicit circular
-       sizing centered inside the speaker mimics a real horizontal-
-       format radio with a single round speaker port in the grille. */
-    inset: auto;
-    top: 50%;
-    left: 50%;
-    width: 72px;
-    height: 72px;
-    transform: translate(-50%, -50%);
-  }
-  .radio-speaker.is-playing .speaker-cone {
-    /* The desktop pulse keyframe uses `transform: scale(...)` which
-       would clobber the centering transform above. Compose both in
-       a mobile-specific keyframe so the cone stays centered while pulsing. */
-    animation: speaker-pulse-mobile 1.1s ease-in-out infinite;
-  }
-}
-@keyframes speaker-pulse-mobile {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50%      { transform: translate(-50%, -50%) scale(1.02); }
 }
 
 /* ============================================================

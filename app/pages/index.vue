@@ -99,14 +99,6 @@ onMounted(() => {
             <span class="h-1.5 w-1.5 rounded-full bg-pop-magenta pulse-dot" />
             <span>Live · 06 active projects</span>
           </div>
-          <div class="hidden items-center gap-2 md:flex">
-            <span class="opacity-50">Set in</span>
-            <span class="text-cream">Anton</span>
-            <span class="opacity-50">+</span>
-            <span class="text-editorial text-cream">Fraunces</span>
-            <span class="opacity-50">+</span>
-            <span class="text-cream">Geist</span>
-          </div>
           <div class="flex items-center gap-2">
             <span class="opacity-50">Today's frequency</span>
             <span class="text-cream">{{ frequencyLabel }}</span>
@@ -161,13 +153,6 @@ onMounted(() => {
             { value: 1, pad: 1, tone: 'cream', label: 'Manifesto' },
           ]"
         />
-
-        <!-- Scroll cue — animated draw-down + pulsing arrow -->
-        <div class="mt-20 flex flex-col items-center gap-3 text-cream/50">
-          <span class="text-mono-eyebrow">Walk on</span>
-          <span class="turn-page__line" aria-hidden="true" />
-          <span class="turn-page__arrow text-cream/60" aria-hidden="true">▾</span>
-        </div>
       </div>
     </section>
 
