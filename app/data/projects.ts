@@ -455,6 +455,55 @@ export const projects: Project[] = [
     },
     vibeWord: 'Stamp',
   },
+  {
+    slug: 'strapi-plugin-translate',
+    index: '09',
+    name: 'strapi-plugin-translate',
+    domain: 'strapi-plugin-translate',
+    tagline: 'One click, every locale.',
+    blurb:
+      'A Strapi v5 plugin that walks a content-type schema, sends every translatable string through an LLM via OpenRouter, and writes the result into the target locale of the same document. Voice, glossary and a translation-memory cache included.',
+    featured: false,
+    description: [
+      'strapi-plugin-translate is the button the editor wishes was already there — open an entry in Strapi, hit "Translate to…", pick one locale or twelve, and watch the progress bar fill as every string, rich-text block and nested component lands in the target locale of the same document. Markdown stays Markdown. HTML stays HTML. The brand names you told it to leave alone stay exactly that.',
+      'It started as a tool for hinterland.camp — a marketplace that lives across five languages and grows by the week — and stayed small on purpose. The schema walker handles components, dynamic zones, repeatables, Strapi blocks (the rich-text JSON) and CKEditor HTML. Stale relations get preflight-checked so you never burn tokens on a deleted reference. A per-(source, target, voice, glossary) memory cache means re-running the same translation costs nothing the second time around.',
+    ],
+    status: { label: 'Beta', tone: 'beta' },
+    year: '2026 →',
+    type: 'Strapi Plugin · Open source',
+    accent: 'pop-blue',
+    links: {
+      github: { href: 'https://github.com/wolvesdotink/strapi-plugin-translate', label: 'wolvesdotink/strapi-plugin-translate' },
+    },
+    tech: ['Strapi v5', 'OpenRouter', 'Claude Sonnet 4.6', 'JSON Schema', 'Node.js', '@strapi/plugin-i18n'],
+    details: [
+      {
+        title: 'One button, every locale',
+        body: 'A Document Action lives in the Edit View next to Publish — pick one target locale or every locale at once. Jobs run server-side with a live progress bar in the UI and a Cancel button that actually aborts the in-flight requests; nothing is so important it can\'t be stopped halfway.',
+      },
+      {
+        title: 'Schema-aware walker',
+        body: 'The plugin reads the content-type schema and follows it into components, dynamic zones, repeatables, Strapi blocks and CKEditor HTML. A pluginOptions directive on each attribute decides whether to translate, copy, skip, delete or regenerate — uid fields default to regenerate so a translated slug can\'t silently break routing.',
+      },
+      {
+        title: 'Format-aware prompts',
+        body: 'Strings are grouped by format (plain / HTML / Strapi-blocks) and the LLM is told, per group, exactly which structure to preserve. Each request uses JSON Schema structured outputs so a 47-string batch returns a 47-string array — same length, same order, no parsing roulette. Three retries with backoff handle transient blips; refusals and truncation fail fast.',
+      },
+      {
+        title: 'Voice, glossary, memory',
+        body: 'A Settings page lets editors set the tone, list preserve-exactly terms (brand names, places) and write per-locale glossaries that bake straight into the system prompt. A translation-memory cache keyed on (source, target, voice, glossary) means the same string is only ever translated once — change the glossary and just the relevant entries invalidate.',
+      },
+    ],
+    pullQuote:
+      "An editor shouldn't have to know what an LLM is to translate a page. Hit the button, watch the bar, ship the locale.",
+    cover: {
+      src: 'photo-1555564883-acd71fa27745',
+      alt: 'Handwritten note reading "danke, thanks, grazie, merci" — the same word in four languages',
+      credit: 'Photo by sunday Choi on Unsplash',
+      position: 'center center',
+    },
+    vibeWord: 'Translate',
+  },
 ]
 
 /** A separate hero image for the giant-letter cut-out on the home page. */
