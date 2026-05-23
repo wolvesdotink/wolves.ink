@@ -475,7 +475,7 @@ export const projects: Project[] = [
     links: {
       github: { href: 'https://github.com/wolvesdotink/strapi-plugin-translate', label: 'wolvesdotink/strapi-plugin-translate' },
     },
-    tech: ['Strapi v5', 'OpenRouter', 'Claude Sonnet 4.6', 'JSON Schema', 'Node.js', '@strapi/plugin-i18n'],
+    tech: ['Strapi v5', 'OpenRouter', 'JSON Schema', 'Node.js', '@strapi/plugin-i18n'],
     details: [
       {
         title: 'One button, every locale',
