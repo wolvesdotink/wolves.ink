@@ -46,6 +46,19 @@ export interface FieldNote {
    * reader wants the gist before the read.
    */
   takeaways?: string[]
+  /**
+   * Inspirations — set when a note is sparked by or responds to other
+   * people's writing. Rendered as a credit line in the colophon, each
+   * linking back to the original. Omit for fully self-contained pieces.
+   */
+  sources?: Array<{
+    /** Title of the original article. */
+    title: string
+    /** Who wrote it. */
+    author: string
+    /** Canonical link to the original. */
+    url: string
+  }>
   /** Pull quote for the detail spread — set in serif italic. */
   pullQuote?: string
   /** Tags — printed as small pills at the foot of the detail spread. */
@@ -59,27 +72,34 @@ const entries: FieldNote[] = [
     date: '2026-05-29',
     eyebrow: 'AI',
     title: 'The orchestration tax.',
-    deck: 'Starting an agent is a keystroke. Closing the loop on one is the whole job. Addy Osmani on why your attention is the single serial thread that cannot be cloned, no matter how many agents you spawn.',
+    deck: 'We spent a month running the workbench loud, a dozen agents going at once, and the dashboard looked incredible. Almost none of it shipped. Here is what that taught us about the one resource on the bench that refuses to parallelize.',
     blurb:
-      'Running twenty agents feels like twenty agents of work. It is not. Every bit of judgement that steers them and merges what comes back routes through one serial processor, which is you. The orchestration tax is the price of forgetting that.',
+      'Starting an agent costs nothing now, so we started a lot of them. The work piled up faster than we could read it, and the bottleneck turned out to be the same as it always was: one human holding all the judgement. Notes on building around the serial thread instead of pretending it scales.',
     readTime: '4 min read',
     accent: 'pop-orange',
     takeaways: [
-      'Scale the fleet to your review rate, not to what the UI lets you spawn. For most people that number is a low single digit.',
-      'Keep two piles. Delegate the isolated tasks to background agents that only need you at the final gate. Hold the lock on the judgement-heavy work and run it one at a time.',
-      'Batch your reviews into one sitting. Checking an agent cold, hours apart, pays the context-switch cost every single time.',
-      'Spend your attention only on what the machine cannot check itself. Let the agents prove the boring 80% with passing tests and screenshots.',
-      'Protect your best hours for thinking. Orchestrating is the overhead around the work, not the work.',
+      'Scale the fleet to the rate you can actually review, not to the number the UI will let you launch. Ours sits at three or four.',
+      'Keep two piles. Isolated work goes to background agents that only need us at the final gate. Anything that turns on judgement stays single file.',
+      'Batch the reviews. Coming back to an agent cold, hours later, costs the full context reload every single time.',
+      'Spend attention only on what the machine cannot check itself. Make the agent prove the boring 80% with passing tests and screenshots.',
+      'Guard the quiet hours for thinking. Orchestrating is the overhead around the work, not the work.',
     ],
     body: [
-      "Addy Osmani has been circling a phrase for months, and on a Google I/O panel someone finally put a name to it: the orchestration tax. Starting an AI agent costs almost nothing now. It is a keystroke, a sentence, a prompt fired off while three others are already running. The trap is assuming that more agents in flight means more of you to go around. It does not. Your cognitive bandwidth refuses to parallelize. Every piece of judgement that actually steers the work and reconciles what comes back still routes through one serial processor, and that processor is you.",
-      "The asymmetry is the part people forget to price in. Opening an agent is cheap. Closing the loop on one is not. Someone has to read what came back, decide whether it is correct, and merge it against whatever the other agents touched in the meantime. There is exactly one someone for that job. Osmani reaches for Python's Global Interpreter Lock to make it concrete. You can spawn as many threads as you like, but only one runs at a time because they all have to acquire the lock first. You are the lock. The agents run in parallel right up until their work needs real understanding of the architecture or a merge conflict resolved, and then it queues behind the one resource that cannot be cloned.",
-      "Amdahl's Law sharpens it further. The speedup from parallelizing is capped by the fraction of the work that stays serial, no matter how many cores you add. In agent development that serial fraction is the judgement. Spawning eight agents does nothing to speed up the time it takes you to think. It just makes the queue feeding your attention much deeper. This is the old performance lesson that keeps surprising people: optimizing the part that was never the bottleneck does not raise throughput. It only grows the pile of unfinished work stacked in front of the real constraint, which is the review step.",
-      "The cost shows up as exhaustion, and the cause is specific. Running a serial processor flat out with no slack is tiring by design. Each time you return to an agent you left, you pay a context switch: flush the brain, reload a cold context, never quite reload it perfectly. CPUs do this in microseconds and architects still work hard to avoid it. You do it in minutes. Grinding harder does not remove the structural limit. It resurfaces instead as shallow reviews, or as cognitive surrender, the quiet moment where you accept the agent's code because forming your own opinion costs attention you no longer have. The tax gets paid either way. The only choice left is whether you pay it on purpose or let it hollow out your understanding of your own system.",
-      "The real fix is architectural, not a matter of discipline. Treat your attention as the scarce serial resource it is and design around it the way you would design around any bottleneck in production. Use backpressure and scale the number of parallel agents to the rate you can actually review them. Sort the work into two piles and keep them apart. Isolated tasks go to background agents that only need you at the final gate. Judgement-heavy work, the weird bug or the architecture call, stays single threaded, because running several of those at once just thrashes the lock and everything comes out worse. Batch the reviews into one sitting. Spend the lock only on what the machine cannot verify on its own. Spawning agents was never the skill. The skill is building the system around the one resource that cannot be parallelized, which is your attention.",
+      "For a stretch this spring we ran the workbench loud: a dozen, sometimes twenty agents going at once, each chewing on its own branch. It felt like the most productive month of our lives. The board was full, every tile moving, something always finishing. Then we looked at what had actually landed on main, and it was a fraction of the motion. The gap between the two had a shape, and once we saw it we could not unsee it. Starting an agent costs a sentence. Finishing one costs all of our attention, and there is only one of us holding it at a time.",
+      "That gap is an asymmetry we kept failing to price in. Opening an agent is a keystroke. Closing the loop on one means reading what came back, deciding whether it is right, and reconciling it against whatever the other agents changed underneath it. Every one of those steps routes through a single head. For a while we thought of the agents as the system and ourselves as the operator standing outside it. The truer picture is that we are a component inside the system, and the slowest one. Anyone who has written concurrent code already has the intuition. Python lets you spawn all the threads you want and still runs only one at a time, because they all queue for a single lock. On our bench that lock is human judgement, and we hold the only copy.",
+      "Amdahl's Law put a number on the disappointment. However much of the pipeline you parallelize, the slice that stays serial caps the whole thing. For us the serial slice is the thinking: understanding the architecture, catching the answer that is subtly wrong, resolving the merge. Adding agents did not speed that up by a second. It just made the queue in front of it longer. We had optimised the one stage that was never the constraint, and the unread work stacked up exactly where we had no way to add capacity.",
+      "It also explained why we were so tired. Running a single processor flat out with no slack feels precisely like that. Every time we jumped back to an agent we had left, we paid to reload a context that had gone cold, and we never reloaded it perfectly. Five agents was not one workload done five times. It was five cold restarts plus a low background hum of worry about which one we should be checking. Pushing harder bought us no extra capacity. It bought shallower reviews, and eventually a quiet sort of surrender where we started waving code through because forming a real opinion cost attention we had already spent. The tax comes due either way. The only decision left is whether we pay it on purpose or let it erode our grip on our own codebase.",
+      "So we stopped treating it as a willpower problem and started treating it as an architecture problem, because that is what it is. Attention is the scarce serial resource, and we design around it now the way we would design around any bottleneck in production. We use backpressure and keep the number of live agents close to the rate we can genuinely review, which for us is three or four rather than twenty. We sort work into two piles and refuse to mix them. Isolated tasks go to background agents that only need us at the final gate. The judgement-heavy work, the strange bug or the shape of a new module, stays single file, because running several of those at once only thrashes the lock and everything comes out worse. We batch the reviews into one sitting instead of grazing on them all day. We spend the lock only on what the machine cannot verify on its own and let the agents prove the rest with tests and screenshots. Spawning agents turned out to be the easy part, and the easy part was never the job. The job is building the system around the one resource we cannot clone, which is our own attention, and giving it the same respect we give anything else we run in production.",
     ],
     pullQuote:
-      'Running multiple agents does not mean there is more of you.',
+      'The board was full and moving. What reached main was a fraction of the motion.',
+    sources: [
+      {
+        title: 'The Orchestration Tax',
+        author: 'Addy Osmani',
+        url: 'https://x.com/addyosmani/status/2059844244907696186',
+      },
+    ],
     tags: ['ai', 'process', 'engineering'],
   },
   {

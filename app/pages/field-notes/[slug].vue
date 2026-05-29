@@ -251,11 +251,14 @@ useSchemaOrg([
          TAGS + colophon
     ══════════════════════════════════════════════════════════════════ -->
     <section
-      v-if="note.tags?.length"
+      v-if="note.tags?.length || note.sources?.length"
       class="border-t border-cream/10 bg-ink-soft"
     >
       <div class="mx-auto max-w-[1200px] px-4 py-12 md:px-8 md:py-16">
-        <div class="flex flex-wrap items-center gap-3">
+        <div
+          v-if="note.tags?.length"
+          class="flex flex-wrap items-center gap-3"
+        >
           <span class="text-mono-eyebrow text-cream/55">Tagged</span>
           <ul class="flex flex-wrap gap-2">
             <li
@@ -264,6 +267,33 @@ useSchemaOrg([
               class="rounded-full border border-cream/25 px-4 py-1.5 text-mono-meta text-cream/80 transition-colors hover:border-cream hover:bg-cream hover:text-ink"
             >
               {{ t }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Inspirations — link back to the originals -->
+        <div
+          v-if="note.sources?.length"
+          class="flex flex-wrap items-baseline gap-x-3 gap-y-2"
+          :class="note.tags?.length ? 'mt-8' : ''"
+        >
+          <span class="text-mono-eyebrow text-cream/55">
+            {{ note.sources.length > 1 ? 'Inspired by' : 'Inspiration' }}
+          </span>
+          <ul class="flex flex-col gap-1.5">
+            <li
+              v-for="(src, i) in note.sources"
+              :key="i"
+              class="text-editorial text-cream/75"
+            >
+              <a
+                :href="src.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline decoration-cream/30 underline-offset-4 transition-colors hover:decoration-cream"
+                :class="accent.text"
+              >&ldquo;{{ src.title }}&rdquo;</a>
+              by {{ src.author }}
             </li>
           </ul>
         </div>
