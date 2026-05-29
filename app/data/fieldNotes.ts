@@ -39,6 +39,13 @@ export interface FieldNote {
   accent: ProjectAccent
   /** Long-form body paragraphs. If omitted, the slug page still renders the lead. */
   body?: string[]
+  /**
+   * Key takeaways — short, scannable points distilled from the note.
+   * Rendered as a highlighted slab near the top of the detail spread,
+   * above the long-form body. Use for article-style notes where the
+   * reader wants the gist before the read.
+   */
+  takeaways?: string[]
   /** Pull quote for the detail spread — set in serif italic. */
   pullQuote?: string
   /** Tags — printed as small pills at the foot of the detail spread. */
@@ -46,6 +53,35 @@ export interface FieldNote {
 }
 
 const entries: FieldNote[] = [
+  {
+    slug: 'the-orchestration-tax',
+    number: '12',
+    date: '2026-05-29',
+    eyebrow: 'AI',
+    title: 'The orchestration tax.',
+    deck: 'Starting an agent is a keystroke. Closing the loop on one is the whole job. Addy Osmani on why your attention is the single serial thread that cannot be cloned, no matter how many agents you spawn.',
+    blurb:
+      'Running twenty agents feels like twenty agents of work. It is not. Every bit of judgement that steers them and merges what comes back routes through one serial processor, which is you. The orchestration tax is the price of forgetting that.',
+    readTime: '4 min read',
+    accent: 'pop-orange',
+    takeaways: [
+      'Scale the fleet to your review rate, not to what the UI lets you spawn. For most people that number is a low single digit.',
+      'Keep two piles. Delegate the isolated tasks to background agents that only need you at the final gate. Hold the lock on the judgement-heavy work and run it one at a time.',
+      'Batch your reviews into one sitting. Checking an agent cold, hours apart, pays the context-switch cost every single time.',
+      'Spend your attention only on what the machine cannot check itself. Let the agents prove the boring 80% with passing tests and screenshots.',
+      'Protect your best hours for thinking. Orchestrating is the overhead around the work, not the work.',
+    ],
+    body: [
+      "Addy Osmani has been circling a phrase for months, and on a Google I/O panel someone finally put a name to it: the orchestration tax. Starting an AI agent costs almost nothing now. It is a keystroke, a sentence, a prompt fired off while three others are already running. The trap is assuming that more agents in flight means more of you to go around. It does not. Your cognitive bandwidth refuses to parallelize. Every piece of judgement that actually steers the work and reconciles what comes back still routes through one serial processor, and that processor is you.",
+      "The asymmetry is the part people forget to price in. Opening an agent is cheap. Closing the loop on one is not. Someone has to read what came back, decide whether it is correct, and merge it against whatever the other agents touched in the meantime. There is exactly one someone for that job. Osmani reaches for Python's Global Interpreter Lock to make it concrete. You can spawn as many threads as you like, but only one runs at a time because they all have to acquire the lock first. You are the lock. The agents run in parallel right up until their work needs real understanding of the architecture or a merge conflict resolved, and then it queues behind the one resource that cannot be cloned.",
+      "Amdahl's Law sharpens it further. The speedup from parallelizing is capped by the fraction of the work that stays serial, no matter how many cores you add. In agent development that serial fraction is the judgement. Spawning eight agents does nothing to speed up the time it takes you to think. It just makes the queue feeding your attention much deeper. This is the old performance lesson that keeps surprising people: optimizing the part that was never the bottleneck does not raise throughput. It only grows the pile of unfinished work stacked in front of the real constraint, which is the review step.",
+      "The cost shows up as exhaustion, and the cause is specific. Running a serial processor flat out with no slack is tiring by design. Each time you return to an agent you left, you pay a context switch: flush the brain, reload a cold context, never quite reload it perfectly. CPUs do this in microseconds and architects still work hard to avoid it. You do it in minutes. Grinding harder does not remove the structural limit. It resurfaces instead as shallow reviews, or as cognitive surrender, the quiet moment where you accept the agent's code because forming your own opinion costs attention you no longer have. The tax gets paid either way. The only choice left is whether you pay it on purpose or let it hollow out your understanding of your own system.",
+      "The real fix is architectural, not a matter of discipline. Treat your attention as the scarce serial resource it is and design around it the way you would design around any bottleneck in production. Use backpressure and scale the number of parallel agents to the rate you can actually review them. Sort the work into two piles and keep them apart. Isolated tasks go to background agents that only need you at the final gate. Judgement-heavy work, the weird bug or the architecture call, stays single threaded, because running several of those at once just thrashes the lock and everything comes out worse. Batch the reviews into one sitting. Spend the lock only on what the machine cannot verify on its own. Spawning agents was never the skill. The skill is building the system around the one resource that cannot be parallelized, which is your attention.",
+    ],
+    pullQuote:
+      'Running multiple agents does not mean there is more of you.',
+    tags: ['ai', 'process', 'engineering'],
+  },
   {
     slug: 'the-comparison-engine',
     number: '11',

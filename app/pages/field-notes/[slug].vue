@@ -178,6 +178,34 @@ useSchemaOrg([
     ══════════════════════════════════════════════════════════════════ -->
     <section class="relative">
       <div class="mx-auto max-w-[820px] px-4 py-20 md:px-8 md:py-28">
+        <!-- Key takeaways — scannable gist above the read -->
+        <aside
+          v-if="note.takeaways?.length"
+          class="relative mb-16 border-2 border-cream/15 bg-ink-soft p-7 md:p-9"
+        >
+          <div
+            class="absolute inset-y-0 left-0 w-1.5"
+            :class="accent.bg"
+          />
+          <span
+            class="text-mono-eyebrow block"
+            :class="accent.text"
+          >Key takeaways</span>
+          <ul class="mt-6 space-y-4">
+            <li
+              v-for="(point, i) in note.takeaways"
+              :key="i"
+              class="flex gap-4 text-pretty leading-relaxed text-cream/85"
+            >
+              <span
+                class="text-display flex-none text-xl tabular-nums leading-tight"
+                :class="accent.text"
+              >{{ String(i + 1).padStart(2, '0') }}</span>
+              <span>{{ point }}</span>
+            </li>
+          </ul>
+        </aside>
+
         <div
           v-if="note.body && note.body.length"
           class="space-y-7 text-pretty leading-relaxed text-lg text-cream/85"
