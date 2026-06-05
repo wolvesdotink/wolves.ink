@@ -732,6 +732,10 @@ function onWindowKeydown(e: KeyboardEvent) {
 
   switch (e.key) {
     case 'Escape':
+      // Another overlay (e.g. the held plate on the homepage) may have
+      // already claimed this Esc in its capture-phase handler — one
+      // keypress should close one thing, not every stacked overlay.
+      if (e.defaultPrevented) break
       e.preventDefault()
       retract()
       break

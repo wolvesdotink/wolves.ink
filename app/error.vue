@@ -4,9 +4,10 @@ import type { NuxtError } from '#app'
 /**
  * Global error page — Nuxt renders this for both 404s and uncaught
  * runtime errors. Riso-print aesthetic with a small game embedded:
- * "Howl Hunt" — the 404 narrative ("a spread that doesn't exist") is
- * extended into "a wolf wandered off — track the stray to find your
- * way home." Five catches and the "Take me to the cover" CTA blooms.
+ * "Howl Hunt" — the 404 narrative is told in trail language ("this
+ * trail goes cold — a wolf wandered off with the scent; track the
+ * stray to find your way home"). Five catches and the "Take me to
+ * the den" CTA blooms.
  *
  * The game is a delightful diversion — never a barrier. The three
  * navigation links remain visible and clickable from the moment the
@@ -24,13 +25,13 @@ const code = computed(() => props.error?.statusCode ?? 500)
 
 const heading = computed(() =>
   is404.value
-    ? 'This spread doesn\'t exist.'
-    : 'The press jammed.',
+    ? 'This trail goes cold.'
+    : 'A tree fell across the trail.',
 )
 const subhead = computed(() =>
   is404.value
-    ? 'You followed a link to an issue that was never printed — looks like a wolf wandered off with it. Track the stray to find your way home.'
-    : 'An unexpected error stopped the run. Try again, or head back to the cover.',
+    ? 'You followed a path that fades out in the underbrush — looks like a wolf wandered off with the scent. Track the stray to find your way home.'
+    : 'Something gave way out here. Try again, or follow the trail back to the den.',
 )
 
 useSeoMeta({
@@ -468,7 +469,7 @@ onBeforeUnmount(() => {
         <p class="text-editorial mt-10 max-w-[58ch] text-balance text-2xl text-cream/85 md:mt-12 md:text-3xl">
           <template v-if="!won">{{ subhead }}</template>
           <template v-else>
-            The wolf led you home. The cover is open — and the workbench you came looking for is one click away.
+            The wolf led you home. The den is open — and the workbench you came looking for is one trail away.
           </template>
         </p>
 
@@ -671,7 +672,7 @@ onBeforeUnmount(() => {
           >
             <span class="text-mono-eyebrow opacity-65">Take me to</span>
             <span class="exit-link__title">
-              The cover
+              The den
               <span class="exit-link__arrow" aria-hidden="true">→</span>
             </span>
           </button>

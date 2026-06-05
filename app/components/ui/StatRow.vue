@@ -25,6 +25,11 @@ withDefaults(
   }>(),
   { topRule: true },
 )
+
+// Interactive stats (see AnimatedStatProps.interactive) bubble their
+// activation up with the item index, so the page owning the items
+// array can route the click without per-item callbacks.
+const emit = defineEmits<{ activate: [index: number] }>()
 </script>
 
 <template>
@@ -40,6 +45,14 @@ withDefaults(
       :tone="s.tone"
       :pad="s.pad"
       :duration="s.duration"
+      :interactive="s.interactive"
+      :aria-label="s.ariaLabel"
+      :riso-label="s.risoLabel"
+      :symbol="s.symbol"
+      :agitation="s.agitation"
+      :jam="s.jam"
+      :slam="s.slam"
+      @activate="emit('activate', i)"
     >
       {{ s.label }}
     </AnimatedStat>

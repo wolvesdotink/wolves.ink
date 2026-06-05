@@ -17,20 +17,29 @@
  * inline SVG with CSS keyframe animations.
  */
 
-type Tone = 'magenta' | 'yellow' | 'orange' | 'cream'
+type Tone = 'magenta' | 'yellow' | 'cream' | 'green'
 
 interface Cartridge {
-  id: 'walk' | 'moon' | 'howl' | 'paw'
+  id: 'walk' | 'moon' | 'melon' | 'paw'
   label: string
   title: string
   tone: Tone
 }
 
+/**
+ * SEEDS — the third cart in the sleeve: green rind body, red label
+ * window, ink-black seeds. A watermelon in cartridge form, which is to
+ * say the Palestinian flag palette in cartridge form. The symbol
+ * exists because hiding was once necessary: when the flag was banned
+ * in the occupied territories (1980–1993), artists painted the fruit
+ * that carried the same four colors. Slot it in and the CRT broadcasts
+ * the slice (see the melon scene below).
+ */
 const cartridges: Cartridge[] = [
-  { id: 'walk', label: 'WALK ON',   title: 'The pack, on the move', tone: 'magenta' },
-  { id: 'moon', label: 'MOONRISE',  title: 'Late ship',             tone: 'yellow'  },
-  { id: 'howl', label: 'HOWL FM',   title: 'Pack frequency',        tone: 'orange'  },
-  { id: 'paw',  label: 'PAW STAMP', title: 'Receipt printer',       tone: 'cream'   },
+  { id: 'walk',  label: 'WALK ON',   title: 'The pack, on the move', tone: 'magenta' },
+  { id: 'moon',  label: 'MOONRISE',  title: 'Late ship',             tone: 'yellow'  },
+  { id: 'melon', label: 'SEEDS',     title: 'Free Palestine',        tone: 'green'   },
+  { id: 'paw',   label: 'PAW STAMP', title: 'Receipt printer',       tone: 'cream'   },
 ]
 
 // Which cart (if any) is currently inserted in the TV.
@@ -49,11 +58,13 @@ const isOn = ref(true)
 let hideTimer: number | undefined
 let ejectTimer1: number | undefined
 let ejectTimer2: number | undefined
+let swapTimer: number | undefined
 function clearTimers() {
   if (hideTimer)   window.clearTimeout(hideTimer)
   if (ejectTimer1) window.clearTimeout(ejectTimer1)
   if (ejectTimer2) window.clearTimeout(ejectTimer2)
-  hideTimer = ejectTimer1 = ejectTimer2 = undefined
+  if (swapTimer)   window.clearTimeout(swapTimer)
+  hideTimer = ejectTimer1 = ejectTimer2 = swapTimer = undefined
 }
 
 // Active drag, if any. dx/dy are the cart's translate offsets in pixels
@@ -97,8 +108,8 @@ function toneTrim(t: Tone) {
   switch (t) {
     case 'magenta': return 'cart--magenta'
     case 'yellow':  return 'cart--yellow'
-    case 'orange':  return 'cart--orange'
     case 'cream':   return 'cart--cream'
+    case 'green':   return 'cart--green'
   }
 }
 
@@ -124,6 +135,9 @@ function onPointerDown(ev: PointerEvent, id: Cartridge['id']) {
 
 function onPointerMove(ev: PointerEvent) {
   if (!drag.id) return
+  // Multi-touch guard — a second finger on another cart must not
+  // steer (or end) the first finger's drag.
+  if (ev.pointerId !== drag.pointerId) return
   drag.dx = ev.clientX - drag.startX
   drag.dy = ev.clientY - drag.startY
   if (!drag.moved
@@ -137,6 +151,7 @@ function onPointerMove(ev: PointerEvent) {
 
 function onPointerUp(ev: PointerEvent) {
   if (!drag.id) return
+  if (ev.pointerId !== drag.pointerId) return
   const id = drag.id
   const wasOverSlot = drag.hot
   const wasMoved = drag.moved
@@ -173,7 +188,8 @@ function onPointerUp(ev: PointerEvent) {
   // Otherwise: the cart snaps back to home automatically via CSS transition.
 }
 
-function onPointerCancel() {
+function onPointerCancel(ev: PointerEvent) {
+  if (drag.id && ev.pointerId !== drag.pointerId) return
   drag.id = null
   drag.dx = 0
   drag.dy = 0
@@ -260,9 +276,18 @@ function commitInsert(id: Cartridge['id']) {
   // (The sink transform itself lives in `cartTransform()`; the timer
   // here just flips the flag at the moment the slide-in settles.)
   hideTimer = window.setTimeout(() => {
-    if (insertedId.value === id) insertedHidden.value = true
+    if (insertedId.value !== id) return
+    // The sinking cart is about to leave the tab order AND the
+    // accessibility tree (tabindex -1 + aria-hidden). If the user
+    // keyboard-inserted it, focus would be stranded on a hidden
+    // element — hand it to the slot, whose label is already
+    // `Eject ${label}`: the natural next action.
+    if (cartRefs.value[id] && document.activeElement === cartRefs.value[id]) {
+      slotEl.value?.focus()
+    }
+    insertedHidden.value = true
   }, 380)
-  window.setTimeout(() => { isSwapping.value = false }, 320)
+  swapTimer = window.setTimeout(() => { isSwapping.value = false }, 320)
 }
 
 function ejectCart() {
@@ -304,15 +329,27 @@ function togglePower() {
 
 // Recompute parked translate on resize so the cart stays "in" the slot
 // even if the layout reflows (font load, viewport change).
+//
+// Measured from the cart's CELL (its untransformed parent), not the
+// cart itself: mid-transition the cart's own rect reports wherever the
+// 420ms tween currently has it, which made the old re-park (delete +
+// insertCart on nextTick) compute garbage AND replay insert side
+// effects (CRT static, un-hide flash) on every resize. The cart fills
+// its cell, so cell center == home center, always.
 let ro: ResizeObserver | null = null
 onMounted(() => {
   if (typeof ResizeObserver === 'undefined' || !stageEl.value) return
   ro = new ResizeObserver(() => {
-    if (!insertedId.value) return
     const id = insertedId.value
-    delete parked[id]
-    // re-park via insert path on next tick
-    nextTick(() => insertCart(id))
+    if (!id || !slotEl.value) return
+    const cell = cartRefs.value[id]?.parentElement
+    if (!cell) return
+    const cellRect = cell.getBoundingClientRect()
+    const slotRect = slotEl.value.getBoundingClientRect()
+    parked[id] = {
+      dx: (slotRect.left + slotRect.width / 2) - (cellRect.left + cellRect.width / 2),
+      dy: (slotRect.top + slotRect.height / 2) - (cellRect.top + cellRect.height / 2),
+    }
   })
   ro.observe(stageEl.value)
 })
@@ -337,11 +374,13 @@ onBeforeUnmount(() => {
         <span class="portable-tv__rod portable-tv__rod--r" />
       </span>
 
-      <!-- Brand strip -->
+      <!-- Brand strip. The model number winks while SEEDS broadcasts:
+           a watermelon is ~92% water. Same-width swap in a fixed
+           strip — nobody's layout moves for a joke. -->
       <div class="portable-tv__brand">
         <span class="portable-tv__mark" aria-hidden="true">◑</span>
         <span class="portable-tv__brand-text">PACK TV</span>
-        <span class="portable-tv__model">CRT-09</span>
+        <span class="portable-tv__model">{{ insertedId === 'melon' ? 'CRT-92' : 'CRT-09' }}</span>
       </div>
 
       <!-- Screen -->
@@ -420,27 +459,51 @@ onBeforeUnmount(() => {
               <rect x="0" y="110" width="200" height="40" fill="url(#tv-horizon)" opacity="0.7" />
             </svg>
 
-            <!-- HOWL FM -->
+            <!-- SEEDS — the broadcast. A riso-printed
+                 watermelon slice on cream paper: green rind, cream
+                 margin, red flesh slightly off-register (a second pass
+                 through the press), ink seeds drifting upward like
+                 broadcast snow in reverse. -->
             <svg
-              v-else-if="active.id === 'howl'"
+              v-else-if="active.id === 'melon'"
               viewBox="0 0 200 150"
               preserveAspectRatio="xMidYMid slice"
-              class="portable-tv__svg portable-tv__svg--orange"
+              class="portable-tv__svg portable-tv__svg--melon"
             >
-              <g class="howl-moon" opacity="0.5">
-                <circle cx="160" cy="40" r="20" fill="currentColor" />
-                <circle cx="167" cy="36" r="18" fill="#0d0c0a" />
+              <defs>
+                <pattern id="tv-melon-halftone" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+                  <circle cx="3" cy="3" r="0.9" fill="#0d0c0a" />
+                </pattern>
+              </defs>
+              <!-- cream paper field, printed -->
+              <rect x="0" y="0" width="200" height="150" fill="var(--color-cream)" opacity="0.92" />
+              <rect x="0" y="0" width="200" height="150" fill="url(#tv-melon-halftone)" opacity="0.14" />
+              <!-- caption — set in the transmission vocabulary -->
+              <text x="100" y="22" text-anchor="middle" class="melon-caption" fill="#0d0c0a">SOME SIGNALS CAN'T BE JAMMED</text>
+              <!-- the slice: rind / margin / flesh, point up -->
+              <g class="melon-slice">
+                <path d="M100 36 L36 110 Q100 144 164 110 Z" fill="var(--color-pop-green)" />
+                <path d="M100 46 L46 107 Q100 136 154 107 Z" fill="var(--color-cream)" />
+                <!-- off-register ghost pass of the flesh -->
+                <path d="M102 53 L56 103 Q100 128 144 102 Z" fill="var(--color-pop-magenta)" opacity="0.35" />
+                <path d="M100 54 L54 104 Q100 129 146 104 Z" fill="var(--color-pop-red)" />
+                <!-- seeds in the flesh -->
+                <g fill="#0d0c0a">
+                  <ellipse cx="86" cy="88" rx="2" ry="3.1" transform="rotate(-14 86 88)" />
+                  <ellipse cx="113" cy="80" rx="2" ry="3.1" transform="rotate(10 113 80)" />
+                  <ellipse cx="100" cy="100" rx="2" ry="3.1" transform="rotate(4 100 100)" />
+                  <ellipse cx="124" cy="98" rx="2" ry="3.1" transform="rotate(-8 124 98)" />
+                  <ellipse cx="76" cy="74" rx="2" ry="3.1" transform="rotate(18 76 74)" />
+                </g>
               </g>
-              <g class="howl-bars">
-                <rect class="bar bar-1" x="22"  y="60" width="14" height="40" fill="currentColor" />
-                <rect class="bar bar-2" x="44"  y="40" width="14" height="60" fill="currentColor" />
-                <rect class="bar bar-3" x="66"  y="20" width="14" height="80" fill="currentColor" />
-                <rect class="bar bar-4" x="88"  y="46" width="14" height="54" fill="currentColor" />
-                <rect class="bar bar-5" x="110" y="32" width="14" height="68" fill="currentColor" />
-                <rect class="bar bar-6" x="132" y="56" width="14" height="44" fill="currentColor" />
-                <rect class="bar bar-7" x="154" y="70" width="14" height="30" fill="currentColor" />
+              <!-- seeds drifting up out of the slice -->
+              <g class="melon-drift" fill="#0d0c0a">
+                <ellipse cx="92" cy="66" rx="1.8" ry="2.8" transform="rotate(-10 92 66)" />
+                <ellipse cx="108" cy="58" rx="1.8" ry="2.8" transform="rotate(12 108 58)" />
+                <ellipse cx="120" cy="70" rx="1.8" ry="2.8" transform="rotate(-6 120 70)" />
               </g>
-              <text x="100" y="130" text-anchor="middle" class="howl-text" fill="currentColor">A · OOO · O</text>
+              <!-- credit — homage, not a dated claim -->
+              <text x="100" y="143" text-anchor="middle" class="melon-credit" fill="#0d0c0a">after S. Mansour</text>
             </svg>
 
             <!-- PAW STAMP -->
@@ -496,6 +559,10 @@ onBeforeUnmount(() => {
         <!-- Power-off shutdown line -->
         <span v-if="!isOn" class="portable-tv__off-dot" aria-hidden="true" />
       </button>
+
+      <!-- Screen-reader narration for channel changes — visual users
+           get the chyron; AT users get the same line at insert time. -->
+      <span class="sr-only" aria-live="polite">{{ isOn && active ? `${channelLabel} — ${active.title}` : '' }}</span>
 
       <!-- Deck — grille + knobs + LED -->
       <div class="portable-tv__deck">
@@ -592,6 +659,8 @@ onBeforeUnmount(() => {
           >
             <span class="cart__spool cart__spool--l" aria-hidden="true" />
             <span class="cart__spool cart__spool--r" aria-hidden="true" />
+            <!-- SEEDS only: red label window with three ink seeds -->
+            <span v-if="c.id === 'melon'" class="cart__window" aria-hidden="true" />
             <span class="cart__strip">
               <span class="cart__index">{{ String(i + 1).padStart(2, '0') }}</span>
               <span class="cart__name">{{ c.label }}</span>
@@ -815,8 +884,14 @@ onBeforeUnmount(() => {
 }
 .portable-tv__svg--magenta { color: var(--color-pop-magenta); }
 .portable-tv__svg--yellow  { color: var(--color-pop-yellow);  }
-.portable-tv__svg--orange  { color: var(--color-pop-orange);  }
 .portable-tv__svg--cream   { color: var(--color-cream);       }
+/* The SEEDS broadcast glows in its own inks (green/red), not the
+   house magenta/yellow phosphor. */
+.portable-tv__svg--melon {
+  filter:
+    drop-shadow(0 0 6px rgba(0, 169, 92, 0.3))
+    drop-shadow(0 0 14px rgba(241, 80, 96, 0.18));
+}
 
 /* Empty-state prompt while no cartridge is inserted */
 .portable-tv__empty {
@@ -967,6 +1042,13 @@ onBeforeUnmount(() => {
     0 0 0 1px var(--color-ink),
     0 0 8px color-mix(in oklab, var(--color-pop-magenta) 70%, transparent);
   animation: tv-led-pulse 1.8s ease-in-out infinite;
+}
+/* The LED re-inks green while the contraband broadcasts. */
+.portable-tv[data-cart="melon"] .portable-tv__led.is-on {
+  background: var(--color-pop-green);
+  box-shadow:
+    0 0 0 1px var(--color-ink),
+    0 0 8px color-mix(in oklab, var(--color-pop-green) 70%, transparent);
 }
 @keyframes tv-led-pulse {
   0%, 100% { opacity: 1; }
@@ -1130,7 +1212,9 @@ onBeforeUnmount(() => {
 }
 .portable-tv-package__cell {
   position: relative;
-  aspect-ratio: 4 / 5;
+  /* Landscape carts — flatter than the old 4/5 portrait cells. The
+     whole sleeve shrinks with the cells, so the holder follows. */
+  aspect-ratio: 4 / 3;
   display: grid;
   place-items: stretch;
 }
@@ -1251,14 +1335,36 @@ onBeforeUnmount(() => {
 
 .cart--magenta { background-color: var(--color-pop-magenta); color: var(--color-ink); }
 .cart--yellow  { background-color: var(--color-pop-yellow);  color: var(--color-ink); }
-.cart--orange  { background-color: var(--color-pop-orange);  color: var(--color-ink); }
 .cart--cream   { background-color: var(--color-cream);       color: var(--color-ink); }
+.cart--green   { background-color: var(--color-pop-green);   color: var(--color-ink); }
 
-/* Two ink spool wheels in the cart's upper face */
+/* SEEDS only — red label window between the spools: flesh and three
+   ink seeds. Sized against the cart width so it stays clear of the
+   single-line label strip on the landscape cart. */
+.cart__window {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 19%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: var(--color-pop-red);
+  background-image:
+    radial-gradient(circle at 36% 38%, var(--color-ink) 9%, transparent 11%),
+    radial-gradient(circle at 64% 34%, var(--color-ink) 9%, transparent 11%),
+    radial-gradient(circle at 50% 66%, var(--color-ink) 9%, transparent 11%);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in oklab, var(--color-ink) 85%, transparent),
+    inset 0 0 0 3.5px var(--color-cream);
+}
+
+/* Two ink spool wheels in the cart's upper face — sized for the
+   landscape cart so they clear the label strip. */
 .cart__spool {
   position: absolute;
-  top: 22%;
-  width: 26%;
+  top: 15%;
+  width: 20%;
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--color-ink);
@@ -1272,18 +1378,20 @@ onBeforeUnmount(() => {
   background: currentColor;
   opacity: 0.18;
 }
-.cart__spool--l { left: 14%; }
-.cart__spool--r { right: 14%; }
+.cart__spool--l { left: 12%; }
+.cart__spool--r { right: 12%; }
 
-/* Bottom label strip */
+/* Bottom label strip — index and name on one line; the stacked layout
+   ate too much of the half-height cart. */
 .cart__strip {
   position: relative;
   width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
-  padding: 0.35rem 0.4rem 0.4rem;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.4rem 0.32rem;
   background: var(--color-cream);
   border-top: 2.5px solid var(--color-ink);
   /* Halftone strip overlay so the label feels printed */
@@ -1343,22 +1451,27 @@ onBeforeUnmount(() => {
 @keyframes tv-moonrise { 0% { transform: translateY(60px); } 50% { transform: translateY(-20px); } 100% { transform: translateY(60px); } }
 @keyframes tv-twinkle  { 0% { opacity: 0.4; } 100% { opacity: 1; } }
 
-:deep(.portable-tv__svg--orange .bar) { transform-origin: center bottom; animation: tv-bar 0.7s ease-in-out infinite alternate; }
-:deep(.portable-tv__svg--orange .bar-1) { animation-duration: 0.62s; }
-:deep(.portable-tv__svg--orange .bar-2) { animation-duration: 0.78s; }
-:deep(.portable-tv__svg--orange .bar-3) { animation-duration: 0.54s; }
-:deep(.portable-tv__svg--orange .bar-4) { animation-duration: 0.86s; }
-:deep(.portable-tv__svg--orange .bar-5) { animation-duration: 0.66s; }
-:deep(.portable-tv__svg--orange .bar-6) { animation-duration: 0.74s; }
-:deep(.portable-tv__svg--orange .bar-7) { animation-duration: 0.58s; }
-:deep(.portable-tv__svg--orange .howl-text) {
-  font-family: var(--font-display);
-  font-size: 10px;
-  letter-spacing: 0.4em;
-  opacity: 0.7;
-  animation: tv-twinkle 2.4s ease-in-out infinite alternate;
+/* SEEDS — drift upward out of the slice, broadcast snow in reverse */
+:deep(.portable-tv__svg--melon .melon-drift) {
+  animation: tv-melon-drift 5.5s linear infinite;
 }
-@keyframes tv-bar { 0% { transform: scaleY(0.45); } 100% { transform: scaleY(1); } }
+@keyframes tv-melon-drift {
+  0%   { transform: translateY(0);     opacity: 0; }
+  12%  { opacity: 0.9; }
+  82%  { opacity: 0.9; }
+  100% { transform: translateY(-58px); opacity: 0; }
+}
+:deep(.portable-tv__svg--melon .melon-caption) {
+  font-family: var(--font-mono);
+  font-size: 6.5px;
+  letter-spacing: 0.18em;
+}
+:deep(.portable-tv__svg--melon .melon-credit) {
+  font-family: var(--font-mono);
+  font-size: 6px;
+  letter-spacing: 0.14em;
+  opacity: 0.65;
+}
 
 :deep(.portable-tv__svg--cream .paw) {
   opacity: 0;
@@ -1389,9 +1502,8 @@ onBeforeUnmount(() => {
   :deep(.walker),
   :deep(.moon-riser),
   :deep(.stars),
-  :deep(.howl-text),
-  :deep(.bar),
-  :deep(.paw) {
+  :deep(.paw),
+  :deep(.melon-drift) {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -1399,5 +1511,8 @@ onBeforeUnmount(() => {
   .portable-tv__led.is-on { animation: none; }
   .portable-tv.is-swapping .portable-tv__static { animation: none; opacity: 0.3; }
   .portable-tv__empty-mark { animation: none; }
+  /* Power-off keeps its meaning (screen goes dark) without the 600ms
+     CRT-collapse motion. */
+  .portable-tv__off-dot { animation: none; opacity: 0; }
 }
 </style>

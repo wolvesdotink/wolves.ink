@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { site } from '~/data/site'
+import type { StatItem } from '~/components/ui/StatRow.vue'
 
 // The homepage is the "opening trail" — its <title> doesn't get the
 // auto-suffix because the studio name is already baked into the hero
@@ -62,6 +63,386 @@ onMounted(() => {
   obs.observe(bigQuoteRoot.value as unknown as Element)
   onBeforeUnmount(() => obs.disconnect())
 })
+
+/* ======================================================================
+   SIX PINS (pride egg) — the wordmark ritual lives in HeroDisplay;
+   this page carries two of the completion tells: the masthead ticker
+   re-reads in place (same flex line, same line-height — pure text
+   swap) and the pack-call marquee answers itself in its own meter.
+   ====================================================================== */
+const { prideOn } = usePridePins()
+
+// Both strings are exactly 25 characters in the mono face — equal
+// width by construction, so the flex row can never wrap differently
+// between states (the zero-height-change invariant, enforced by
+// typography).
+const tickerLine = computed(() =>
+  prideOn.value ? "Live · marching since '70" : 'Live · 06 active projects',
+)
+
+const packCallMarquee = computed(() =>
+  prideOn.value
+    ? { text: site.packCallPride, separator: '✶' }
+    : { text: site.packCall, separator: '◑' },
+)
+
+/* ======================================================================
+   COUNTING TO A BILLION (eat-the-rich egg)
+
+   The ∞ stat — the magenta odd-one-out — is poke-able. Click it three
+   times and it flips into numeric mode and tries to count to infinity:
+   compact magnitudes whip through the tabular-nums span, accelerating,
+   until the counter JAMS at exactly 1B. The count-up component, built
+   to celebrate small honest numbers, physically fails at a billion.
+   A billion does not fit. The jam resolves with the house slam: the
+   display lands on 0, the label swaps to "Billionaires needed"
+   (19 characters → 19 characters; the line doesn't even breathe), and
+   the marquee below hot-swaps to the rich variant. Re-clicking resets
+   the stat cell instantly — but the marquee stays swapped for the
+   visit (module state — see useRichFired). Discovered politics don't
+   un-discover.
+
+   Width-stable by construction: tabular-nums + default compact
+   notation caps the string at four characters ('1.2K', '123M', '1B',
+   'ERR'). Hydration-safe: SSR renders the untouched ∞; every mutation
+   here is post-click.
+   ====================================================================== */
+type RichStage = 'idle' | 'rolling' | 'jammed' | 'zero'
+const richStage = ref<RichStage>('idle')
+const richClicks = ref(0)
+const richDisplay = ref('∞')
+/** Module-level: the marquee swap survives route navigation. */
+const richFired = useRichFired()
+const statLive = ref('')
+let richRaf = 0
+let strobeTimer: number | undefined
+let settledAt = 0
+
+// Default compact rounding — do NOT add maximumFractionDigits: it
+// overrides compact's 2-significant-digit behavior and emits 6-char
+// strings like '123.5M' mid-roll.
+const compactFmt = typeof Intl !== 'undefined'
+  ? new Intl.NumberFormat('en', { notation: 'compact' })
+  : null
+
+function onStatActivate(index: number) {
+  if (index !== 1) return
+  if (richStage.value === 'rolling' || richStage.value === 'jammed') return
+
+  if (richStage.value === 'zero') {
+    // Brief cooldown so a hammer-click (especially on the instant
+    // reduced-motion path) can't blow past the payoff before it
+    // registers.
+    if (performance.now() - settledAt < 900) return
+    // Reset the cell — instant, no replay of the roll. The marquee
+    // stays; only the counter forgets.
+    richStage.value = 'idle'
+    richClicks.value = 0
+    richDisplay.value = '∞'
+    statLive.value = 'Counter reset.'
+    return
+  }
+
+  // Hammering the infinity symbol to make it grow is itself the joke
+  // about accumulation. Three pokes and it tries.
+  richClicks.value++
+  if (richClicks.value >= 3) startBillionRoll()
+}
+
+function startBillionRoll() {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reduced) {
+    // Mirror AnimatedStat's instant path: no roll, no strobe, no slam —
+    // a direct cut to the conclusion.
+    settleZero()
+    return
+  }
+
+  richStage.value = 'rolling'
+  statLive.value = 'Counting.'
+  const startT = performance.now()
+  const DURATION = 2400
+  const tick = (now: number) => {
+    if (richStage.value !== 'rolling') return
+    const t = Math.min(1, (now - startT) / DURATION)
+    // Exponential sweep 1 → 1e9 — the magnitudes whip past like a
+    // meter pegging, accelerating instead of easing out.
+    const v = Math.pow(10, t * 9)
+    richDisplay.value = compactFmt ? compactFmt.format(Math.round(v)) : String(Math.round(v))
+    if (t < 1) richRaf = requestAnimationFrame(tick)
+    else jamAtBillion()
+  }
+  richRaf = requestAnimationFrame(tick)
+}
+
+function jamAtBillion() {
+  richStage.value = 'jammed'
+  statLive.value = 'Jammed at one billion.'
+  richDisplay.value = '1B'
+  // Swaps every 350ms ≈ 2.9 content swaps ≈ 1.4 flash cycles/sec —
+  // under the WCAG 2.3.1 3-flashes/sec ceiling (a flash is a PAIR of
+  // opposing changes; don't shorten this interval trusting the swap
+  // count as headroom). The harsher misregistration treatment is CSS
+  // (.is-jamming) keyed to this stage.
+  let flips = 0
+  strobeTimer = window.setInterval(() => {
+    flips++
+    richDisplay.value = flips % 2 ? 'ERR' : '1B'
+    if (flips >= 5) {
+      window.clearInterval(strobeTimer)
+      strobeTimer = undefined
+      settleZero()
+    }
+  }, 350)
+}
+
+function settleZero() {
+  richStage.value = 'zero'
+  richDisplay.value = '0'
+  richFired.value = true
+  settledAt = performance.now()
+  statLive.value = 'Zero billionaires needed. Wolves share the kill.'
+}
+
+onBeforeUnmount(() => {
+  cancelAnimationFrame(richRaf)
+  if (strobeTimer) window.clearInterval(strobeTimer)
+})
+
+/**
+ * The stat items, lifted from the old template literal into a computed
+ * so the ∞ cell can be driven by the egg. The other three stats pass
+ * through byte-identical to the original literal — SSR markup of the
+ * resting state never changes.
+ */
+const statItems = computed<StatItem[]>(() => [
+  { value: 6, tone: 'yellow', label: 'Active projects' },
+  {
+    display: richDisplay.value,
+    tone: 'magenta',
+    label: richStage.value === 'zero' ? 'Billionaires needed' : 'Late-night sketches',
+    interactive: true,
+    symbol: richStage.value === 'idle',
+    agitation: richStage.value === 'idle' ? Math.min(richClicks.value, 2) : 0,
+    jam: richStage.value === 'jammed',
+    slam: richStage.value === 'zero',
+    ariaLabel: 'Late-night sketches counter',
+    risoLabel: 'count it',
+  },
+  { value: 6, pad: 1, tone: 'orange', label: 'Open-source repos' },
+  { value: 1, pad: 1, tone: 'cream', label: 'Manifesto' },
+])
+
+/** First marquee — the house slogan, or the house slogan turned on capital. */
+const manifestoMarquee = computed(() =>
+  richFired.value
+    ? { text: site.quotes.marqueeRich, tone: 'magenta-on-ink' as const, separator: 'ψ' }
+    : { text: site.quotes.marquee, tone: 'yellow-on-ink' as const, separator: '✺' },
+)
+
+/* ======================================================================
+   HELD, NOT SAID (not-all-men egg)
+
+   Press-and-hold the big-quote block for 1200ms. The gesture teaches
+   itself: from the first beat of pressure the quote's ink starts to
+   bleed (CSS reads --hold, written here each frame), so even an
+   accidental tap shows the page yielding and invites a longer press.
+   Release early and the ink settles back. At full hold the quote
+   presses into the page once, then a quiet plate develops over the
+   section — absolute inset-0 inside the section's existing
+   overflow-hidden box. Esc or a click lifts it off. No badge, no
+   persistence — the statement is not displayed, it is held, and it is
+   there every time you press.
+
+   The plate is deliberately UNBRANDED: no eyebrow, no signature, no
+   house framing. Purely the statement.
+
+   The hold DURATION gates intent and survives reduced-motion; only
+   the bleed theatrics are gated (see main.css — a static outline
+   appears at half-hold instead).
+   ====================================================================== */
+const HOLD_MS = 1200
+const plateOpen = ref(false)
+const isCommitting = ref(false)
+/** Crossing flag (reduced-motion progress feedback) — set in the raf. */
+const isHalfHold = ref(false)
+/** Enables a one-shot transition so a released hold settles, not pops. */
+const isSettling = ref(false)
+const plateEl = ref<HTMLElement | null>(null)
+const holdWrapEl = ref<HTMLElement | null>(null)
+const plateTriggerEl = ref<HTMLElement | null>(null)
+const plateAnnounced = ref(false)
+const plateLive = ref('')
+let holdRaf = 0
+/** One hold timeline across modalities — pointer and keyboard never stack. */
+let holding = false
+let holdPointerId: number | null = null
+let holdStartX = 0
+let holdStartY = 0
+let keyHolding = false
+let commitTimer: ReturnType<typeof setTimeout> | undefined
+
+/**
+ * --hold is written imperatively: driving a CSS variable through Vue
+ * reactivity would re-render/diff the whole page component at 60fps
+ * for the duration of the hold. The only reactive state is threshold
+ * crossings (half-hold, completion).
+ */
+function setHoldVar(p: number) {
+  holdWrapEl.value?.style.setProperty('--hold', String(p))
+}
+
+function beginHold() {
+  if (plateOpen.value || isCommitting.value || holding) return
+  holding = true
+  isSettling.value = false
+  const startT = performance.now()
+  cancelAnimationFrame(holdRaf)
+  const step = (now: number) => {
+    const p = Math.min(1, (now - startT) / HOLD_MS)
+    setHoldVar(p)
+    if (p >= 0.5 && !isHalfHold.value) isHalfHold.value = true
+    if (p >= 1) {
+      completeHold()
+      return
+    }
+    holdRaf = requestAnimationFrame(step)
+  }
+  holdRaf = requestAnimationFrame(step)
+}
+
+function cancelHold() {
+  holdPointerId = null
+  keyHolding = false
+  if (!holding) return
+  holding = false
+  cancelAnimationFrame(holdRaf)
+  // The ink settles back instead of popping: .is-settling enables a
+  // transition on the bleed channels for this single write; it's
+  // dropped on the next beginHold so per-frame raf writes stay
+  // transition-free.
+  isSettling.value = true
+  setHoldVar(0)
+  isHalfHold.value = false
+}
+
+function completeHold() {
+  holding = false
+  holdPointerId = null
+  keyHolding = false
+  cancelAnimationFrame(holdRaf)
+  setHoldVar(0)
+  isHalfHold.value = false
+  // One deep letterpress beat (scale 0.99 via .is-committing), then
+  // the plate develops.
+  isCommitting.value = true
+  commitTimer = setTimeout(() => {
+    isCommitting.value = false
+    plateOpen.value = true
+    if (!plateAnnounced.value) {
+      plateAnnounced.value = true
+      // One combined announcement — the deflection never reaches a
+      // screen reader without its correction.
+      plateLive.value = 'Not all men — but always men.'
+    }
+    nextTick(() => plateEl.value?.focus({ preventScroll: true }))
+  }, 240)
+}
+
+function onQuotePointerDown(e: PointerEvent) {
+  if (plateOpen.value || holding) return
+  if (e.button !== undefined && e.button !== 0) return
+  holdPointerId = e.pointerId
+  holdStartX = e.clientX
+  holdStartY = e.clientY
+  beginHold()
+}
+
+function onQuotePointerMove(e: PointerEvent) {
+  if (holdPointerId === null || e.pointerId !== holdPointerId) return
+  // Drift past ~12px is scroll intent, not a hold. We never
+  // preventDefault the touch, so scrolling itself stays native.
+  const dx = e.clientX - holdStartX
+  const dy = e.clientY - holdStartY
+  if (dx * dx + dy * dy > 144) cancelHold()
+}
+
+function onQuotePointerEnd() {
+  if (holdPointerId !== null) cancelHold()
+}
+
+function onQuoteContextMenu(e: Event) {
+  // iOS long-press fires the callout mid-hold; suppress only while a
+  // hold is actually armed so normal right-clicks elsewhere survive.
+  if (holdPointerId !== null) e.preventDefault()
+}
+
+/**
+ * Keyboard/AT doorway — a dedicated control instead of role="button"
+ * on the quote wrapper. ARIA button is "children presentational": a
+ * labelled wrapper would erase the quote itself from the accessibility
+ * tree, and SR activation (a single synthesized click) can never
+ * satisfy a 1200ms hold anyway. So: sighted keyboard users hold
+ * Enter/Space on this control; AT activation arrives as a click with
+ * detail === 0 and is honored as a completed hold.
+ */
+function onTriggerKeydown(e: KeyboardEvent) {
+  if (e.key !== 'Enter' && e.key !== ' ') return
+  e.preventDefault()
+  if (e.repeat || holding || plateOpen.value) return
+  keyHolding = true
+  beginHold()
+}
+
+function onTriggerKeyup(e: KeyboardEvent) {
+  if (e.key !== 'Enter' && e.key !== ' ') return
+  // preventDefault so Space's default keyup activation can't fire a
+  // synthesized click — clicks are reserved for AT activation below.
+  e.preventDefault()
+  if (keyHolding) cancelHold()
+}
+
+function onTriggerClick(e: MouseEvent) {
+  if (e.detail !== 0) return // real pointer clicks land on the quote
+  if (plateOpen.value || holding || isCommitting.value) return
+  completeHold()
+}
+
+function closePlate(e?: MouseEvent) {
+  if (!plateOpen.value) return
+  // A drag-select ending on the plate (or the first tap of a double-
+  // tap selection) arrives as a click — deliberate selects shouldn't
+  // dismiss the statement.
+  if (e) {
+    const sel = window.getSelection()
+    if ((sel && !sel.isCollapsed) || e.detail > 1) return
+  }
+  plateOpen.value = false
+  nextTick(() => plateTriggerEl.value?.focus({ preventScroll: true }))
+}
+
+function onPlateWindowKeydown(e: KeyboardEvent) {
+  if (!plateOpen.value || e.key !== 'Escape' || e.defaultPrevented) return
+  e.preventDefault()
+  closePlate()
+}
+
+onMounted(() => {
+  // Capture phase: window keydown listeners fire in registration
+  // order, and this page mounts after HeroDisplay but before the
+  // lazily-hydrated FieldPolaroid — bubble-phase ordering would make
+  // the defaultPrevented handshake meaningless. Capture runs first,
+  // period: the plate claims Esc, the polaroid (which now checks
+  // defaultPrevented) and the pride pins (which defer their check a
+  // task) both respect it.
+  window.addEventListener('keydown', onPlateWindowKeydown, { capture: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onPlateWindowKeydown, { capture: true })
+  cancelAnimationFrame(holdRaf)
+  if (commitTimer) clearTimeout(commitTimer)
+})
 </script>
 
 <template>
@@ -97,7 +478,9 @@ onMounted(() => {
         <div class="mt-16 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-cream/15 pt-5 text-mono-eyebrow text-cream/75 md:mt-36 lg:mt-44">
           <div class="flex items-center gap-3">
             <span class="h-1.5 w-1.5 rounded-full bg-pop-magenta pulse-dot" />
-            <span>Live · 06 active projects</span>
+            <!-- Re-reads in place while all six wordmark pins are in —
+                 same flex line, same line-height, pure text swap. -->
+            <span>{{ tickerLine }}</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="opacity-50">Today's frequency</span>
@@ -144,15 +527,13 @@ onMounted(() => {
           </aside>
         </div>
 
-        <!-- A row of small numbers — magazine-style stats with count-up + riso slam -->
-        <StatRow
-          :items="[
-            { value: 6, tone: 'yellow', label: 'Active projects' },
-            { display: '∞', tone: 'magenta', label: 'Late-night sketches' },
-            { value: 6, pad: 1, tone: 'orange', label: 'Open-source repos' },
-            { value: 1, pad: 1, tone: 'cream', label: 'Manifesto' },
-          ]"
-        />
+        <!-- A row of small numbers — magazine-style stats with count-up
+             + riso slam. Items live in a computed now: the ∞ stat is
+             poke-able (see COUNTING TO A BILLION in the script). -->
+        <StatRow :items="statItems" @activate="onStatActivate" />
+        <!-- Narrative beats of the billion counter, for screen readers
+             only — the key moments, never the per-frame values. -->
+        <span class="sr-only" aria-live="polite">{{ statLive }}</span>
       </div>
     </section>
 
@@ -163,12 +544,22 @@ onMounted(() => {
          its (small) hydration cost out of the LCP window. Animation is
          pure CSS so the marquee scrolls fine pre-hydration.
     ====================================================================== -->
+    <!-- Props are computeds over the billion-counter egg: once it has
+         fired, the band re-renders inside the same fixed-height track
+         (text swap + tone swap, outlined stencil type stays). The ψ
+         separator is a quiet fork laid between the repetitions —
+         unexplained, like everything else in the margins here.
+         :key forces a fresh client mount if the egg fires while the
+         band is still below the viewport un-hydrated — hydrating rich
+         vnodes against yellow-slogan SSR DOM would patch the text but
+         never the tone classes. -->
     <LazyMarqueeQuote
+      :key="manifestoMarquee.tone"
       hydrate-on-visible
-      :text="site.quotes.marquee"
-      tone="yellow-on-ink"
+      :text="manifestoMarquee.text"
+      :tone="manifestoMarquee.tone"
       :outline="true"
-      separator="✺"
+      :separator="manifestoMarquee.separator"
       size-class="text-display-xl"
     />
 
@@ -301,13 +692,35 @@ onMounted(() => {
 
     <!-- ======================================================================
          BIG QUOTE BLOCK
+
+         Also hosts HELD, NOT SAID (see script): press-and-hold the
+         quote and a quiet plate develops over the section. The section
+         was already relative + overflow-hidden, so the plate (absolute
+         inset-0) can only cover it, never extend it.
     ====================================================================== -->
     <section
       ref="bigQuoteRoot"
       class="relative overflow-hidden border-b border-cream/10 py-20 md:py-32"
+      :class="{ 'held-plate-open': plateOpen }"
     >
       <div class="mx-auto max-w-[1600px] px-4 md:px-8">
-        <div class="grid grid-cols-12 gap-6">
+        <!-- Pointer hold surface. Deliberately NOT a button: ARIA
+             button is children-presentational and would erase the
+             quote from the accessibility tree. Keyboard/AT get the
+             dedicated .plate-key-trigger control below instead. -->
+        <div
+          ref="holdWrapEl"
+          class="house-quote-hold grid grid-cols-12 gap-6"
+          :class="{ 'is-committing': isCommitting, 'is-half': isHalfHold, 'is-settling': isSettling }"
+          data-riso-target
+          data-riso-label="Hold the press"
+          @pointerdown="onQuotePointerDown"
+          @pointermove="onQuotePointerMove"
+          @pointerup="onQuotePointerEnd"
+          @pointercancel="onQuotePointerEnd"
+          @pointerleave="onQuotePointerEnd"
+          @contextmenu="onQuoteContextMenu"
+        >
           <div class="col-span-12 lg:col-span-2">
             <span
               class="big-quote-mark text-display-mega leading-[0.78] text-[clamp(4rem,8vw,9rem)]"
@@ -315,7 +728,7 @@ onMounted(() => {
             >&ldquo;</span>
           </div>
           <div class="col-span-12 lg:col-span-9">
-            <p class="text-display-lg text-cream text-balance leading-[0.92]">
+            <p class="house-quote-ink text-display-lg text-cream text-balance leading-[0.92]">
               {{ site.quotes.bigBlock.pre }}
               <span class="text-pop-magenta italic font-serif">{{ site.quotes.bigBlock.highlightA }}</span><br>
               {{ site.quotes.bigBlock.mid }}
@@ -325,6 +738,87 @@ onMounted(() => {
           </div>
         </div>
       </div>
+
+      <!-- Keyboard / screen-reader doorway to the held statement.
+           Absolutely positioned (zero flow impact), visually hidden
+           until focused, then shows as a small mono chip. Keyboard
+           users press-and-hold Enter/Space; AT activation (a single
+           synthesized click) is honored as a completed hold. -->
+      <button
+        ref="plateTriggerEl"
+        type="button"
+        class="plate-key-trigger"
+        @keydown="onTriggerKeydown"
+        @keyup="onTriggerKeyup"
+        @click="onTriggerClick"
+        @blur="cancelHold"
+      >Press and hold — there is one more line</button>
+
+      <!-- THE PLATE. This is the one place the site goes quiet: ink on
+           cream only, no fluorescents, no stickers, no jiggle, and —
+           deliberately — no wolf branding. The single magenta full
+           stop is the entire color budget. Click or Esc lifts it off;
+           nothing persists. -->
+      <Transition name="plate">
+        <div
+          v-if="plateOpen"
+          ref="plateEl"
+          class="held-plate absolute inset-0 z-10 overflow-hidden"
+          tabindex="-1"
+          @click="closePlate"
+        >
+          <!-- crop marks — the footer's print-shop registration corners -->
+          <span class="pointer-events-none absolute left-4 top-4 text-ink/30 md:left-8 md:top-8" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M0 11 H8 M11 0 V8" stroke="currentColor" stroke-width="1.2" />
+              <circle cx="11" cy="11" r="1.5" fill="currentColor" />
+            </svg>
+          </span>
+          <span class="pointer-events-none absolute right-4 top-4 text-ink/30 md:right-8 md:top-8" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M22 11 H14 M11 0 V8" stroke="currentColor" stroke-width="1.2" />
+              <circle cx="11" cy="11" r="1.5" fill="currentColor" />
+            </svg>
+          </span>
+          <span class="pointer-events-none absolute bottom-4 left-4 text-ink/30 md:bottom-8 md:left-8" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M0 11 H8 M11 22 V14" stroke="currentColor" stroke-width="1.2" />
+              <circle cx="11" cy="11" r="1.5" fill="currentColor" />
+            </svg>
+          </span>
+          <span class="pointer-events-none absolute bottom-4 right-4 text-ink/30 md:bottom-8 md:right-8" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M22 11 H14 M11 22 V14" stroke="currentColor" stroke-width="1.2" />
+              <circle cx="11" cy="11" r="1.5" fill="currentColor" />
+            </svg>
+          </span>
+
+          <!-- The statement, nothing else. Lines stagger by opacity
+               only — both the deflection and its correction are in the
+               DOM from the first frame and share the same beat; the
+               deflection never stands alone. -->
+          <div class="flex h-full w-full flex-col items-center justify-center gap-3 px-6 text-center md:gap-5">
+            <!-- Muted lines use color-alpha (text-ink/N), not opacity
+                 utilities — the stagger animation owns `opacity`. -->
+            <p class="plate-line plate-deboss text-display-md md:text-display-lg leading-[0.9]" style="--line: 0">
+              {{ site.quotes.notAllMen.deflection }}
+            </p>
+            <p class="plate-line text-editorial text-2xl md:text-4xl" style="--line: 0">
+              <span class="plate-rule">{{ site.quotes.notAllMen.correction }}<span class="text-pop-magenta">.</span></span>
+            </p>
+            <p class="plate-line text-editorial hidden text-lg text-ink/80 sm:block md:text-xl" style="--line: 1">
+              {{ site.quotes.notAllMen.aside }}
+            </p>
+            <p class="plate-line text-editorial text-base text-ink/80 md:text-lg" style="--line: 2">
+              {{ site.quotes.notAllMen.beat }}
+            </p>
+            <p class="plate-line text-mono-meta mt-2 text-ink/75" style="--line: 3">
+              {{ site.quotes.notAllMen.closing }}
+            </p>
+          </div>
+        </div>
+      </Transition>
+      <span class="sr-only" aria-live="polite">{{ plateLive }}</span>
     </section>
 
     <!-- ======================================================================
@@ -333,11 +827,17 @@ onMounted(() => {
          Far below the fold — same lazy-hydration treatment as the first
          marquee. CSS-only animation, so it visually streams from SSR.
     ====================================================================== -->
+    <!-- Pride pass: while all six pins are in, the pack call answers
+         itself in its own meter. Same band, same height. :key for the
+         same pre-hydration prop-swap reason as the first marquee —
+         the pins live at the very top of the page, so this band is
+         routinely un-hydrated when the sixth pin lands. -->
     <LazyMarqueeQuote
+      :key="packCallMarquee.separator"
       hydrate-on-visible
-      text="Stay curious · Ship anyway · Howl twice"
+      :text="packCallMarquee.text"
       tone="magenta-on-ink"
-      separator="◑"
+      :separator="packCallMarquee.separator"
       size-class="text-display-lg"
       reverse
     />

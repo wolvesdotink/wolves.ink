@@ -46,6 +46,14 @@ export interface TrailPrint {
   rotation: number
   /** `performance.now()` at creation; the sweep timer evicts at +PRINT_LIFETIME_MS. */
   bornAt: number
+  /**
+   * Optional per-print ink override. Unset prints render the default
+   * warm-grey cream; while the six-pins pride egg is complete, prints
+   * cycle the six flag stripes (see PRIDE_TRAIL in usePridePins) — a
+   * rainbow gait. The color is fixed at stamp time so an in-flight
+   * print never re-inks mid-fade when pride toggles.
+   */
+  color?: string
 }
 
 const POOL_SIZE = 16
@@ -104,12 +112,20 @@ function dropPrintFromPointer(e: PointerEvent) {
   const jitter = (Math.random() * 2 - 1) * ROTATION_JITTER_DEG
 
   const id = ++nextId
+
+  // Rainbow gait — while all six pins are in (pride egg), each step
+  // takes the next flag stripe. Reads the shared module refs from
+  // usePridePins; outside pride mode the color stays unset and the
+  // print renders its default cream.
+  const { prideOn } = usePridePins()
+
   const print: TrailPrint = {
     id,
     x: e.clientX + perpX * PERPENDICULAR_OFFSET_PX * sign,
     y: e.clientY + perpY * PERPENDICULAR_OFFSET_PX * sign,
     rotation: motionAngleDeg + jitter,
     bornAt: performance.now(),
+    color: prideOn.value ? PRIDE_TRAIL[id % PRIDE_TRAIL.length] : undefined,
   }
 
   // Cap the pool at POOL_SIZE — drop the oldest when full so we never

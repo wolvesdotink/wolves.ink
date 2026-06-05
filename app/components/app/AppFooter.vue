@@ -2,6 +2,16 @@
 import { site } from '~/data/site'
 
 const year = computed(() => new Date().getFullYear())
+
+// Six-pins egg — while the wordmark wears all six pins, the colophon
+// re-labels the issue. The quietest ambient tell of the takeover. The
+// swap replaces the LABEL WORD, not the stamp: 'Pride Issue' (11ch) ≤
+// 'Last revised' (12ch) in the mono face, so the line can never wrap
+// where the base didn't — the baseline grid genuinely never moves.
+const { prideOn } = usePridePins()
+
+const issueWord = computed(() => (prideOn.value ? 'Pride Issue' : 'Last revised'))
+
 const issueLabel = computed(() => {
   const d = new Date()
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`
@@ -268,7 +278,7 @@ function onStamp(event: MouseEvent) {
 
         <p class="text-mono-meta text-cream/55 md:justify-self-end">
           <NuxtLink to="/impressum" class="transition-colors hover:text-cream">Impressum</NuxtLink>
-          · Last revised — {{ issueLabel }}
+          · {{ issueWord }} — {{ issueLabel }}
         </p>
       </div>
     </div>

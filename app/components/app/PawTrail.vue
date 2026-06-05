@@ -49,6 +49,10 @@ onBeforeUnmount(() => {
           '--paw-x': `${p.x}px`,
           '--paw-y': `${p.y}px`,
           '--paw-r': `${p.rotation}deg`,
+          // Per-print ink — set while the pride egg is complete (the
+          // rainbow gait); unset prints fall back to the default cream
+          // declared in the stylesheet.
+          ...(p.color ? { color: p.color } : {}),
         }"
       >
         <svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true">

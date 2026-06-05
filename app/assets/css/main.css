@@ -38,6 +38,9 @@
   --color-pop-orange: #ff6c2f; /* riso fluorescent orange */
   --color-pop-orange-soft: #ffb999;
   --color-pop-blue: #3d5dc9; /* riso federal blue */
+  --color-pop-red: #f15060; /* riso bright red — real ink-chart color */
+  --color-pop-green: #00a95c; /* riso green — real ink-chart color */
+  --color-pop-violet: #765ba7; /* riso violet — real ink-chart color */
 
   /* Per-project accents */
   --color-hinterland: var(--color-pop-orange);
@@ -538,6 +541,252 @@
     animation: none;
     transform: none;
     text-shadow: 0.05em 0.05em 0 var(--color-pop-yellow), -0.04em -0.04em 0 #5ec8e5;
+  }
+}
+
+/* ==========================================================================
+   Pride pass — html.egg-pride
+   Toggled by the six-pins egg in HeroDisplay.vue once all six WOLVES
+   letters wear a pin. This is the "second ink pass": ambient surfaces
+   re-ink in flag colors. Deliberately narrow — we never remap the
+   @theme --color-pop-* tokens themselves, because per-project accents
+   (--color-hinterland/owlat/draw) and the :focus-visible ring alias
+   them and must not shift under the flag.
+   ========================================================================== */
+
+/* Text selection — violet ink instead of yellow */
+html.egg-pride ::selection {
+  background: var(--color-pop-violet);
+  color: var(--color-cream);
+}
+
+/* Header/footer tape stripes — the warning tape re-stripes to six flag
+   inks. Same -45deg geometry and 8px stripe width as the base utility,
+   just a longer period (6 × 8px). Unlayered rule, so it wins over the
+   @utility's layered declaration without specificity games. */
+html.egg-pride .tape-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-pop-red) 0,
+    var(--color-pop-red) 8px,
+    var(--color-pop-orange) 8px,
+    var(--color-pop-orange) 16px,
+    var(--color-pop-yellow) 16px,
+    var(--color-pop-yellow) 24px,
+    var(--color-pop-green) 24px,
+    var(--color-pop-green) 32px,
+    var(--color-pop-blue) 32px,
+    var(--color-pop-blue) 40px,
+    var(--color-pop-violet) 40px,
+    var(--color-pop-violet) 48px
+  );
+}
+
+/* Riso cursor — the registration dots take red/yellow/violet. The
+   magenta dot re-inks by remapping its token ON THE CURSOR ROOT ONLY;
+   hover ring, press disc, glows, and the pulse keyframes all follow
+   because RisoCursor's accents are color-mix() over the same token.
+   The cyan ghost is hardcoded in the component's scoped styles, so it
+   gets explicit per-state overrides. Yellow stays yellow — it's
+   already a flag color. */
+html.egg-pride .riso-cursor-root {
+  --color-pop-magenta: var(--color-pop-red);
+}
+html.egg-pride .riso-cursor-root .riso-cursor--cyan {
+  background: var(--color-pop-violet);
+}
+html.egg-pride .riso-cursor-root.is-hover .riso-cursor--cyan {
+  background: transparent;
+  border-color: var(--color-pop-violet);
+}
+html.egg-pride .riso-cursor-root.is-pressed .riso-cursor--cyan {
+  background: var(--color-pop-violet);
+  border-color: transparent;
+}
+
+/* ==========================================================================
+   Held, not said — the not-all-men plate
+   Press-and-hold egg on the homepage big-quote block. While the visitor
+   holds, the quote's ink bleeds (registration ghosts slide apart, a
+   fraction of blur) ramping with --hold (0..1, written from JS each
+   frame). At full hold a quiet plate develops over the section —
+   absolute inset-0 inside the section's existing overflow-hidden box,
+   so it can only cover, never extend. All hold feedback animates
+   filter/text-shadow/transform exclusively; no layout properties.
+   The plate is unbranded by design: the statement, nothing else.
+   ========================================================================== */
+
+.house-quote-hold {
+  /* The quote is no longer copy-selectable — the long-press IS the
+     interaction, and iOS would otherwise pop selection/callout UI
+     mid-hold. Documented tradeoff. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.house-quote-ink {
+  transition: transform 240ms var(--ease-pop);
+  text-shadow:
+    calc(var(--hold, 0) * 0.06em) calc(var(--hold, 0) * 0.045em) 0
+      rgb(255 72 105 / calc(var(--hold, 0) * 0.6)),
+    calc(var(--hold, 0) * -0.05em) calc(var(--hold, 0) * -0.035em) 0
+      rgb(94 200 229 / calc(var(--hold, 0) * 0.5));
+  filter: blur(calc(var(--hold, 0) * 1.1px));
+}
+
+/* The commit beat — one deep letterpress press-in as the hold completes.
+   Scale only; inside the quote's own box. */
+.house-quote-hold.is-committing .house-quote-ink {
+  transform: scale(0.99);
+}
+
+/* Released early — the ink settles back rather than popping. The base
+   rule transitions transform only (per-frame raf writes must not lag);
+   this class is added exactly for the single write back to --hold: 0
+   and removed when the next hold begins. */
+.house-quote-hold.is-settling .house-quote-ink {
+  transition:
+    transform 240ms var(--ease-pop),
+    text-shadow 260ms ease-out,
+    filter 260ms ease-out;
+}
+
+/* Keyboard / AT doorway to the held statement — absolutely positioned
+   (zero flow impact), clipped away until focused, then a small mono
+   chip in the section's corner. */
+.plate-key-trigger {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 5;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+.plate-key-trigger:focus-visible {
+  width: auto;
+  height: auto;
+  clip-path: none;
+  padding: 0.4rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: var(--color-pop-yellow);
+  color: var(--color-ink);
+}
+
+/* While the plate is up, the section goes still: the big quote-mark's
+   shimmy pauses. On a page where everything dances, the freeze is the
+   weight. */
+.held-plate-open .big-quote-mark.in-view {
+  animation: none;
+}
+
+/* The plate itself — cream broadside, ink only. The single magenta
+   full stop in the markup is the entire color budget. */
+.held-plate {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+.held-plate:focus {
+  outline: none; /* focus target for a11y choreography, not a control */
+}
+/* Plate-local selection — the global pop-yellow flash would break the
+   monochrome contract if text on the plate is selected. The second
+   selector out-specifies `html.egg-pride ::selection` (0,1,1 + later
+   in source), so the plate stays monochrome even mid-pride. */
+.held-plate ::selection,
+html .held-plate ::selection {
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+
+/* Deboss — the deflection is pressed INTO the paper, not printed on it:
+   light catches the lower edge of the impression. */
+.plate-deboss {
+  text-shadow:
+    0 1px 0 rgb(255 255 255 / 0.5),
+    0 -1px 0 rgb(13 12 10 / 0.25);
+}
+
+/* Hand-ruled underline under the correction — a hairline that isn't
+   quite straight, like a rule drawn against a worn straightedge. */
+.plate-rule {
+  position: relative;
+  display: inline-block;
+}
+.plate-rule::after {
+  content: "";
+  position: absolute;
+  left: -0.05em;
+  right: -0.05em;
+  bottom: -0.12em;
+  height: 2px;
+  background: var(--color-ink);
+  transform: rotate(-0.35deg);
+}
+
+/* Develop, don't pop — the plate fades in slower than the site's
+   default transitions, like ink developing rather than UI appearing. */
+.plate-enter-active {
+  transition: opacity 480ms ease-out;
+}
+.plate-leave-active {
+  transition: opacity 300ms ease-in;
+}
+.plate-enter-from,
+.plate-leave-to {
+  opacity: 0;
+}
+
+/* Lines develop in sequence — opacity only, never position, and every
+   line is in the DOM from the first frame (the deflection must never
+   render without its correction; they share the same --line beat).
+   Muted lines tint via color-alpha, not opacity utilities — the
+   animation owns the opacity channel and fills at 1. */
+.plate-line {
+  opacity: 0;
+  animation: plate-line-in 420ms ease-out both;
+  animation-delay: calc(180ms + var(--line, 0) * 320ms);
+}
+
+@keyframes plate-line-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The bleed ramp is decoration; the hold duration is intent-gating
+     and stays. Progress feedback becomes a static outline at half-hold
+     so the press never feels dead. */
+  .house-quote-ink {
+    text-shadow: none !important;
+    filter: none !important;
+    transition: none;
+  }
+  .house-quote-hold.is-committing .house-quote-ink {
+    transform: none;
+  }
+  .house-quote-hold.is-half .house-quote-ink {
+    outline: 1px solid rgb(241 233 216 / 0.35);
+    outline-offset: 10px;
+  }
+  .plate-enter-active,
+  .plate-leave-active {
+    transition: none;
+  }
+  /* All lines land together, instantly. */
+  .plate-line {
+    animation: none;
+    opacity: 1;
   }
 }
 

@@ -7,14 +7,47 @@ export const site = {
   manifesto: "Ideas are meaningless if you don't execute them.",
   quotes: {
     marquee: 'Less talking. More shipping.',
+    /**
+     * Swapped in by the counting-to-a-billion egg (click the ∞ stat
+     * three times): the house slogan grammar, turned on capital. The
+     * swap persists for the visit — discovered politics don't
+     * un-discover.
+     */
+    marqueeRich: 'Less hoarding. More sharing. Eat the rich.',
     bigBlock: {
       pre: "We don't pitch",
       highlightA: 'decks.',
       mid: 'We push',
       highlightB: 'commits.',
     },
+    /**
+     * Held beneath the big-quote block — revealed by pressing and
+     * holding it (see index.vue). Deliberately unbranded: no eyebrow,
+     * no signature, no house framing — the plate carries the statement
+     * and nothing else. The deflection line never renders without its
+     * correction.
+     *
+     * The texture lines are the everyday arithmetic of moving through
+     * the world as a woman (in the territory of "3 Sekunden" — Céline
+     * & Paula Hartmann): keys between fingers, the shared location,
+     * the seconds it takes to read a street.
+     */
+    notAllMen: {
+      deflection: 'Not all men,',
+      correction: 'But always men',
+      aside: 'Keys between fingers. Location shared. The long way home, because it\'s lit.',
+      beat: 'Three seconds to read a street. Every street. Every night.',
+      closing: 'None of this should be necessary. All of it is.',
+    },
     footer: 'Made loud, made open, made for the curious.',
   },
+  /**
+   * Pack-call marquee (the second, reversed band) and its pride-pass
+   * variant — swapped while all six wordmark pins are in. The house
+   * slogan answering itself in its own meter.
+   */
+  packCall: 'Stay curious · Ship anyway · Howl twice',
+  packCallPride: 'Stay proud · Ship loud · Howl louder',
   positioning: 'UX-driven applications. Mostly open source. Where learning meets teaching.',
   tagline: 'A small studio. A loud voice. A pack of three projects.',
   founder: 'Marcel',

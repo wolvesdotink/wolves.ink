@@ -17,6 +17,143 @@ const hoveredIndex = ref<number | null>(null)
 const activeIndex = computed(() => hoveredIndex.value)
 
 /**
+ * Six pins — the pride easter egg.
+ *
+ * Each letter can be pinned like a jacket: click (or Enter/Space — the
+ * letters already carry tabindex=0) pushes a small enamel pin-back
+ * button into the letter's shoulder, one flag stripe per letter, any
+ * order. The sixth pin fires the second ink pass: a quick CMYK
+ * misregistration shimmer crosses the wordmark and WOLVES floods
+ * stripe-by-stripe into the six flag colors. Four of those inks the
+ * site already owned — pride only adds riso green and riso violet.
+ * Unpinning any letter folds the takeover back; celebratory,
+ * reversible, never a trap.
+ *
+ * Shared state lives in `usePridePins` because the completion effects
+ * reach far outside this component (footer colophon, paw trail gait,
+ * ticker, second marquee, html.egg-pride ambient pass).
+ */
+const { pinned, pinnedCount, prideOn, togglePin, pinAll, unpinAll, attachPrideClass } = usePridePins()
+
+/** Deterministic per-letter pin tilts — like they went through denim. */
+const PIN_TILTS = [-12, 9, -8, 14, -10, 11] as const
+
+/** Pin SVGs inherit their stripe via --pin-color (see PRIDE_STRIPES). */
+const pinStyle = (i: number) => ({
+  '--pin-color': PRIDE_STRIPES[i],
+  transform: `rotate(${PIN_TILTS[i]}deg)`,
+})
+
+// Visually-hidden live region — pins narrate themselves to screen
+// readers ('Pinned O — 2 of 6'), and completion gets its own line.
+const liveText = ref('')
+
+function announcePin(index: number) {
+  if (prideOn.value) {
+    liveText.value = 'All six pinned. Happy Pride.'
+  }
+  else if (pinned.value[index]) {
+    liveText.value = `Pinned ${letters.value[index]} — ${pinnedCount.value} of 6.`
+  }
+  else {
+    liveText.value = `Unpinned — ${pinnedCount.value} of 6.`
+  }
+}
+
+function onLetterActivate(index: number, ev?: Event) {
+  // A click that ends a text-selection drag across the wordmark is not
+  // a pin — let the selection stand. Pointer clicks only: keyboard
+  // activation must always toggle, even if some unrelated selection
+  // exists elsewhere on the page.
+  if (ev?.type === 'click') {
+    const sel = window.getSelection()
+    if (sel && !sel.isCollapsed) return
+  }
+  togglePin(index)
+  announcePin(index)
+  // On touch there's no mouseleave, so the focus-driven hover state
+  // would lock the tapped letter's active animation. Release it.
+  if (ev?.type === 'click' && window.matchMedia('(hover: none)').matches) {
+    hoveredIndex.value = null
+  }
+}
+
+/**
+ * Flood choreography. `is-flooding` applies the stripe-by-stripe
+ * transition-delay stagger only around the flip (both directions —
+ * the fold-back deserves the same calm), then drops so hover
+ * transitions return to their normal timing. `pride-slam` is the
+ * one-shot misregistration shimmer on completion; skipped under
+ * reduced motion (the colors then swap via the component's existing
+ * 200ms reduced-motion transitions, simultaneously).
+ */
+const isFlooding = ref(false)
+const prideSlam = ref(false)
+let floodTimer: ReturnType<typeof setTimeout> | undefined
+let slamTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(prideOn, (on) => {
+  const reduced = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reduced) return
+
+  isFlooding.value = true
+  if (floodTimer) clearTimeout(floodTimer)
+  floodTimer = setTimeout(() => { isFlooding.value = false }, 1600)
+
+  if (on) {
+    prideSlam.value = true
+    if (slamTimer) clearTimeout(slamTimer)
+    slamTimer = setTimeout(() => { prideSlam.value = false }, 900)
+  }
+})
+
+/**
+ * The incantation — typing `p r i d e` anywhere on the page pins all
+ * six letters at once (a second door for keyboard-first visitors; the
+ * pins remain the discoverable path). Esc unpins everything, but only
+ * if nothing else claimed the key (FieldPolaroid's deployed camera
+ * also listens for Esc and preventDefaults it).
+ */
+let typedBuffer = ''
+let typedTimer: ReturnType<typeof setTimeout> | undefined
+
+function onWindowKeydown(e: KeyboardEvent) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return
+  const t = e.target as HTMLElement | null
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
+
+  if (e.key === 'Escape') {
+    // This listener registers FIRST (child component, mounts before
+    // the page's plate handler and long before the lazily-hydrated
+    // FieldPolaroid), so checking defaultPrevented synchronously would
+    // always see false. Defer one task: the flag persists on the event
+    // object, so after dispatch completes we can tell whether an
+    // overlay (plate, camera) claimed the key — Esc should close one
+    // thing, not collapse the takeover as a side effect.
+    if (prideOn.value) {
+      setTimeout(() => {
+        if (e.defaultPrevented || !prideOn.value) return
+        unpinAll()
+        liveText.value = 'Unpinned all.'
+      }, 0)
+    }
+    return
+  }
+
+  if (e.key.length !== 1) return
+  typedBuffer = (typedBuffer + e.key.toLowerCase()).slice(-5)
+  if (typedTimer) clearTimeout(typedTimer)
+  typedTimer = setTimeout(() => { typedBuffer = '' }, 2000)
+
+  if (typedBuffer === 'pride' && !prideOn.value) {
+    typedBuffer = ''
+    pinAll()
+    liveText.value = 'All six pinned. Happy Pride.'
+  }
+}
+
+/**
  * Replay-safe entrance.
  *
  * The original implementation declared `animation: hero-letter-in ... both`
@@ -91,12 +228,26 @@ watch(activeIndex, (idx) => {
   else stopWStripeLoop()
 })
 
-onBeforeUnmount(stopWStripeLoop)
+onMounted(() => {
+  // Pride egg wiring — client-only by construction (SSR renders the
+  // unpinned wordmark; pin state only ever mutates post-interaction).
+  attachPrideClass()
+  window.addEventListener('keydown', onWindowKeydown)
+})
+
+onBeforeUnmount(() => {
+  stopWStripeLoop()
+  window.removeEventListener('keydown', onWindowKeydown)
+  if (floodTimer) clearTimeout(floodTimer)
+  if (slamTimer) clearTimeout(slamTimer)
+  if (typedTimer) clearTimeout(typedTimer)
+})
 </script>
 
 <template>
   <h1
     class="hero-wordmark text-display-mega flex flex-wrap items-stretch justify-center leading-[0.78]"
+    :class="{ 'is-pride': prideOn, 'is-flooding': isFlooding, 'pride-slam': prideSlam }"
     aria-label="wolves"
     style="view-transition-name: site-wordmark"
     @mouseleave="hoveredIndex = null"
@@ -107,7 +258,7 @@ onBeforeUnmount(stopWStripeLoop)
       class="hero-letter relative inline-block cursor-default"
       :class="[
         `pos-${i}`,
-        { 'is-active': i === activeIndex, entering: isEntering },
+        { 'is-active': i === activeIndex, entering: isEntering, 'is-pinned': pinned[i] },
       ]"
       :style="{
         '--i': i,
@@ -116,10 +267,35 @@ onBeforeUnmount(stopWStripeLoop)
         ...(i === 0 ? { '--hero-w-stripe-shift': `${wStripeShift}px` } : {}),
       }"
       tabindex="0"
+      role="button"
+      :aria-pressed="pinned[i] ? 'true' : 'false'"
+      :aria-label="pinned[i] ? `Unpin the ${letter}` : `Pin the ${letter}`"
+      :data-riso-label="pinnedCount > 0 ? `${pinnedCount} of 6 pinned` : undefined"
       @mouseenter="hoveredIndex = i"
       @focus="hoveredIndex = i"
-    >{{ letter }}</span>
+      @click="onLetterActivate(i, $event)"
+      @keydown.enter.prevent="onLetterActivate(i)"
+      @keydown.space.prevent="onLetterActivate(i)"
+    >{{ letter }}<!--
+      Enamel pin-back button — pushed into the letter's shoulder when
+      pinned. Decorative; the letter itself carries the a11y semantics.
+    --><span
+        v-if="pinned[i]"
+        class="letter-pin"
+        :style="pinStyle(i)"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 27" aria-hidden="true">
+          <!-- clasp shadow under the disc — it sits ON the letter -->
+          <ellipse cx="12" cy="24.5" rx="6" ry="1.8" fill="rgb(13 12 10 / 0.3)" />
+          <!-- enamel disc in the stripe color -->
+          <circle cx="12" cy="12" r="10" fill="var(--pin-color)" stroke="rgb(13 12 10 / 0.4)" stroke-width="1.2" />
+          <!-- metal-rim specular crescent -->
+          <path d="M 5.5 8.5 A 8 8 0 0 1 11 4.2" fill="none" stroke="rgb(255 255 255 / 0.6)" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </span></span>
   </h1>
+  <span class="sr-only" aria-live="polite">{{ liveText }}</span>
 </template>
 
 <style scoped>
@@ -681,6 +857,129 @@ onBeforeUnmount(stopWStripeLoop)
 }
 
 /* ============================================================
+   SIX PINS — enamel pin-back buttons + the pride flood
+   Pins sit inside the letter spans' own bounding boxes (the
+   wordmark has `contain: layout paint`, so anything outside the
+   h1's paint box would clip). The flood is pure recolor: each
+   letter keeps its visual mode (striped / stroked / filled /
+   halftone) and only its ink changes — the same morph-not-blink
+   contract the hover states honor.
+   ============================================================ */
+
+.letter-pin {
+  position: absolute;
+  top: 8%;
+  right: 2%;
+  width: 0.17em;
+  aspect-ratio: 24 / 27;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgb(13 12 10 / 0.45));
+  /* `scale` (the standalone property) composes with the inline
+     rotate tilt instead of clobbering it. */
+  animation: pin-press-in 320ms var(--ease-pop) both;
+}
+.letter-pin svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes pin-press-in {
+  0%   { opacity: 0; scale: 1.5; }
+  55%  { opacity: 1; scale: 0.9; }
+  100% { opacity: 1; scale: 1; }
+}
+
+/* Stripe-by-stripe stagger — only while the flood (or fold-back) is
+   in flight, so normal hover transitions keep their timing. */
+.hero-wordmark.is-flooding .hero-letter {
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+
+/* W — stripes re-ink flag red. The hover rAF scroll keeps marching
+   (it only drives the shift variable); the riso color-cycle is
+   locked off so the stripe holds its color. */
+.hero-wordmark.is-pride .hero-letter.pos-0 {
+  --stripe-color: var(--color-pop-red);
+}
+.hero-wordmark.is-pride .hero-letter.pos-0.is-active {
+  animation: hero-w-shear 540ms var(--ease-pop) infinite alternate;
+}
+
+/* O — stroke re-inks orange; stroke-cycle locked off, halo + shimmy stay */
+.hero-wordmark.is-pride .hero-letter.pos-1 {
+  -webkit-text-stroke-color: var(--color-pop-orange);
+}
+.hero-wordmark.is-pride .hero-letter.pos-1.is-active {
+  -webkit-text-stroke-color: var(--color-pop-orange);
+  animation:
+    hero-o-shadow-pulse 520ms var(--ease-pop) infinite alternate,
+    hero-o-shimmy 360ms var(--ease-pop) infinite alternate;
+}
+
+/* L — fills yellow; the magenta stamp-slam yields to the stripe */
+.hero-wordmark.is-pride .hero-letter.pos-2 {
+  color: var(--color-pop-yellow);
+}
+.hero-wordmark.is-pride .hero-letter.pos-2.is-active {
+  color: var(--color-pop-yellow);
+}
+
+/* V — green; the color-flip is locked off, ghost shadows + shimmy stay */
+.hero-wordmark.is-pride .hero-letter.pos-3 {
+  color: var(--color-pop-green);
+}
+.hero-wordmark.is-pride .hero-letter.pos-3.is-active {
+  color: var(--color-pop-green);
+  animation:
+    hero-v-shadow-flip 700ms steps(1, jump-none) infinite,
+    hero-v-shimmy 280ms var(--ease-pop) infinite alternate;
+}
+
+/* E — halftone dots re-ink blue; dot color-cycle locked off, drift stays */
+.hero-wordmark.is-pride .hero-letter.pos-4 {
+  --halftone-color: var(--color-pop-blue);
+}
+.hero-wordmark.is-pride .hero-letter.pos-4.is-active {
+  --halftone-color: var(--color-pop-blue);
+  animation: hero-e-halftone-scroll 2400ms linear infinite;
+}
+
+/* S — violet core; the cream offset and overprint shuffle stay */
+.hero-wordmark.is-pride .hero-letter.pos-5 {
+  color: var(--color-pop-violet);
+}
+
+/* The second ink pass — a one-shot CMYK misregistration shimmer as
+   the sixth pin lands. Lives on the letters, not the h1, so it can't
+   fight the scroll-timeline parallax animation on .hero-wordmark. */
+.hero-wordmark.pride-slam .hero-letter {
+  animation: hero-pride-slam 900ms var(--ease-pop) both;
+}
+
+@keyframes hero-pride-slam {
+  0% {
+    filter:
+      drop-shadow(0 0 0 rgba(241, 80, 96, 0))
+      drop-shadow(0 0 0 rgba(94, 200, 229, 0))
+      drop-shadow(0 0 0 rgba(255, 233, 78, 0));
+  }
+  30% {
+    filter:
+      drop-shadow(0.045em 0.045em 0 rgba(241, 80, 96, 0.55))
+      drop-shadow(-0.04em -0.04em 0 rgba(94, 200, 229, 0.45))
+      drop-shadow(0.05em -0.04em 0 rgba(255, 233, 78, 0.4));
+  }
+  100% {
+    filter:
+      drop-shadow(0 0 0 rgba(241, 80, 96, 0))
+      drop-shadow(0 0 0 rgba(94, 200, 229, 0))
+      drop-shadow(0 0 0 rgba(255, 233, 78, 0));
+  }
+}
+
+/* ============================================================
    Reduced motion — kill all the cycling, but keep one calm,
    distinctive pop per letter so the differentiation survives.
    ============================================================ */
@@ -692,6 +991,37 @@ onBeforeUnmount(stopWStripeLoop)
     animation: none;
     transition: color 200ms ease-out, text-shadow 200ms ease-out,
                 -webkit-text-stroke 200ms ease-out, background-size 200ms ease-out;
+  }
+
+  /* Per-letter kills at matching specificity. The blanket
+     `.hero-letter.is-active` above is (0,2,0) and loses to the
+     per-letter active rules' (0,3,0) animation/transform/filter
+     declarations — media queries add no cascade weight — so each
+     pos-N.is-active needs its own later-in-source tie-breaker. */
+  .hero-letter.pos-0.is-active,
+  .hero-letter.pos-1.is-active,
+  .hero-letter.pos-2.is-active,
+  .hero-letter.pos-3.is-active,
+  .hero-letter.pos-4.is-active,
+  .hero-letter.pos-5.is-active {
+    animation: none;
+    transform: none;
+    filter: none;
+  }
+
+  /* Pride under reduced motion: pins appear instantly, all six
+     letters recolor simultaneously through the 200ms transitions
+     above, and the pride-locked hover animations go still. The
+     selectors match the pride rules' specificity so they actually
+     win inside the media query. */
+  .letter-pin { animation: none; }
+  .hero-wordmark.is-flooding .hero-letter { transition-delay: 0ms; }
+  .hero-wordmark.pride-slam .hero-letter { animation: none; }
+  .hero-wordmark.is-pride .hero-letter.pos-0.is-active,
+  .hero-wordmark.is-pride .hero-letter.pos-1.is-active,
+  .hero-wordmark.is-pride .hero-letter.pos-3.is-active,
+  .hero-wordmark.is-pride .hero-letter.pos-4.is-active {
+    animation: none;
   }
   .hero-letter.is-active {
     transform: none;

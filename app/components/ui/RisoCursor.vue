@@ -236,7 +236,7 @@ html.riso-cursor-active [data-riso-target] {
 
 .riso-cursor--magenta {
   background: var(--color-pop-magenta);
-  box-shadow: 0 0 0 1px rgba(255, 72, 105, 0.4);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-pop-magenta) 40%, transparent);
 }
 .riso-cursor--yellow {
   background: var(--color-pop-yellow);
@@ -258,8 +258,8 @@ html.riso-cursor-active [data-riso-target] {
   background: transparent;
   border: 2px solid var(--color-pop-magenta);
   box-shadow:
-    0 0 0 1px rgba(255, 72, 105, 0.4),
-    inset 0 0 0 1px rgba(255, 72, 105, 0.4);
+    0 0 0 1px color-mix(in srgb, var(--color-pop-magenta) 40%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-pop-magenta) 40%, transparent);
   animation: riso-cursor-pulse 1200ms var(--ease-pop) infinite alternate;
 }
 .is-hover .riso-cursor--yellow {
@@ -283,7 +283,7 @@ html.riso-cursor-active [data-riso-target] {
   height: 18px;
   background: var(--color-pop-magenta);
   border-color: transparent;
-  box-shadow: 0 0 18px rgba(255, 72, 105, 0.55);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--color-pop-magenta) 55%, transparent);
   animation: none;
 }
 .is-pressed .riso-cursor--yellow {
@@ -302,13 +302,13 @@ html.riso-cursor-active [data-riso-target] {
 @keyframes riso-cursor-pulse {
   from {
     box-shadow:
-      0 0 0 0 rgba(255, 72, 105, 0.0),
-      inset 0 0 0 1px rgba(255, 72, 105, 0.4);
+      0 0 0 0 color-mix(in srgb, var(--color-pop-magenta) 0%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--color-pop-magenta) 40%, transparent);
   }
   to {
     box-shadow:
-      0 0 0 6px rgba(255, 72, 105, 0.18),
-      inset 0 0 0 1px rgba(255, 72, 105, 0.4);
+      0 0 0 6px color-mix(in srgb, var(--color-pop-magenta) 18%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--color-pop-magenta) 40%, transparent);
   }
 }
 
