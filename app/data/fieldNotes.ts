@@ -67,6 +67,47 @@ export interface FieldNote {
 
 const entries: FieldNote[] = [
   {
+    slug: 'boil-the-ocean',
+    number: '14',
+    date: '2026-06-07',
+    eyebrow: 'AI',
+    title: "It's time to boil the ocean.",
+    deck: "Don't boil the ocean held up for as long as code was expensive. It was a price list, and the prices just collapsed. On the small crews rebuilding the biggest tools, and what that means for the projects you never started.",
+    blurb:
+      "Don't boil the ocean: good advice, priced for a world where code was written by hand. What happens to ambition when the price collapses, and why the open-source rebuilds of the giant tools are only the start.",
+    readTime: '4 min read',
+    accent: 'pop-yellow',
+    takeaways: [
+      "Don't boil the ocean was a price list for engineering hours. It should not survive the repricing unexamined.",
+      'The deadliest moment in a big project is the estimate: the math says three years of nights and weekends, and the doc quietly closes.',
+      'The open-source rebuilds of Firebase, Calendly and Figma started before the agents. What the agents changed is who gets to attempt one.',
+      'Direction and review are the constraints now, and both respond to practice. The one constraint that never did, affording the build, is the one that fell.',
+      'Dig out the idea you filed under too big. It was priced in old money, and nobody has re-run the numbers since.',
+    ],
+    body: [
+      "Don't boil the ocean: you will spend a great deal of effort for a handful of salt. McKinsey put it in print, and software took it up as scripture. Scope it down. Ship the small thing first. For our entire working lives it has been the soundest advice in the trade, and we have given the speech ourselves, more than once, believing it every time.",
+      "What we had not noticed until this year is what the advice is actually made of. Strip it down and what is left is a price list. Don't boil the ocean is a statement about what engineering hours cost, written when every feature was hand-typed by someone expensive who could hold one subsystem in their head at a time. At those prices, scoping down was simply correct, the way not buying a boat is correct on a studio budget. But look at where the ambitious projects actually die. Not in the building. In the estimate. Someone opens a doc, sketches the true shape of the thing, multiplies it out to three years of nights and weekends, and closes the doc. Nobody mourns these projects because they never get far enough to have a name. The graveyard of software is mostly spreadsheets. You have one of these docs. Anyone who has shipped software for a decade does.",
+      "The price list expired. Simon Willison called it in March 2023, before most people had let the tools near a real repo: the striking thing about AI assistance was that it lowered his bar for which projects were worth starting at all. Ideas he would have shelved as a couple of days of work were suddenly an hour. This February, Garry Tan went further and argued the idiom itself should be retired: if the plan is to do something dramatically bigger, the machine is the best news on offer. The open-source rebuilds of the giant tools tell the same story. Supabase went at Firebase. Cal.com at Calendly. Penpot at Figma. Documenso at DocuSign. That wave started before the agents arrived, fuelled by people tired of renting; we wrote a whole note saying exactly that, back when Owlat was a bet instead of a beta. The agents changed who can afford the attempt. Taking a serious run at one of the giants used to be a funded-company bet. It is turning into a small-crew bet.",
+      "Owlat is that bet. A full email platform is six subsystems where you would normally ship one: builder, audiences, campaigns, automations, a transactional API, and the whole deliverability mess underneath. We ran the estimate twice over the years and filed it under someday both times. Under the old arithmetic the project simply does not happen; with agents on the bench we started anyway, and the someday file is one entry lighter. It is in beta now.",
+      "The half of the old advice worth keeping was never about cost. An ocean still needs a reason to be boiled, and the failure mode moved upstream: big projects now die of fuzzy goals and output nobody reads. METR measured experienced open-source developers going about a fifth slower with early-2025 tools while feeling faster, which should humble anyone, us included, and review is still the bottleneck we wrote about two notes ago. But those are problems of direction and judgement, and practice fixes those. Price was the constraint practice never touched. So: somewhere in your notes is the idea you marked too big. A bookkeeping suite. An honest CRM. A project tracker that loads in under a second. Open the doc tonight. Hand the ugliest subsystem to an agent over the weekend and see what is standing on Monday. The estimate that killed the idea has an old date on it. Run it again.",
+    ],
+    pullQuote:
+      'The graveyard of software is mostly spreadsheets.',
+    sources: [
+      {
+        title: 'Boil the Ocean',
+        author: 'Garry Tan',
+        url: 'https://garryslist.org/posts/boil-the-ocean',
+      },
+      {
+        title: 'AI-enhanced development makes me more ambitious with my projects',
+        author: 'Simon Willison',
+        url: 'https://simonwillison.net/2023/Mar/27/ai-enhanced-development/',
+      },
+    ],
+    tags: ['ai', 'open source', 'process'],
+  },
+  {
     slug: 'the-good-kind-of-lazy',
     number: '13',
     date: '2026-06-05',
