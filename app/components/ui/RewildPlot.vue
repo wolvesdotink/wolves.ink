@@ -5,15 +5,15 @@
  * Sits in the cover section's right column, where four floating sticker
  * cards used to live. At rest it's a small riso plot of land, enclosed:
  * a wire fence (a "∅" sign hung on it), neat identical rows of a
- * monoculture behind it, a couple of tilled furrows. Quiet, orderly,
- * lifeless — the eyebrow reads "Where we live", the line under it
- * "A fenced plot — for now."
+ * monoculture behind it, a couple of tilled furrows under a cold
+ * starlit night. Quiet, orderly, lifeless — captioned "A fenced plot —
+ * for now."
  *
  * Tear the fence down — one click, or Enter/Space on the plot — and the
  * land comes back: the fence topples, the rows wither, grass draws up,
- * wildflowers open, a forest grows, the sun rises, and birds drift in.
- * The eyebrow turns over to "The world is home" and a short set of
- * house rules for the wild prints over the reclaimed land:
+ * wildflowers open, a forest grows, the moon sets as the sun rises, and
+ * birds drift in. A short set of house rules for the wild then prints
+ * over the reclaimed land:
  *
  *     Tear down the fence — the land knows the way home.
  *       · Keep the forests standing.
@@ -145,14 +145,6 @@ const birds: Bird[] = [
     class="rewild-plot"
     :class="{ 'is-wild': rewilded, 'is-playing': justRewilded }"
   >
-    <!-- Eyebrow — reuses the voice of the sticker this egg replaced:
-         "Where we live" / "The world is home". The turn-over IS part of
-         the payoff. SSR renders the resting half. -->
-    <figcaption class="rw-eyebrow text-mono-eyebrow">
-      <span class="rw-eyebrow-mark" aria-hidden="true" />
-      {{ rewilded ? copy.eyebrowWild : copy.eyebrowRest }}
-    </figcaption>
-
     <!-- The plot. Crop-mark corners frame it like the rest of the
          print-shop motif (footer, held-plate). The SVG is decorative;
          the button over it carries the gesture and the label. -->
@@ -347,24 +339,6 @@ const birds: Bird[] = [
      scene size without ever adding height for the words. */
   max-width: 30rem;
 }
-
-/* ── Eyebrow ─────────────────────────────────────────────────────── */
-.rw-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  color: rgb(241 233 216 / 0.6);
-  transition: color 360ms var(--ease-pop);
-}
-.rw-eyebrow-mark {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--color-cream-dim);
-  transition: background-color 480ms var(--ease-pop);
-}
-.is-wild .rw-eyebrow { color: var(--color-pop-green); }
-.is-wild .rw-eyebrow-mark { background: var(--color-pop-green); }
 
 /* ── Frame + crop marks ──────────────────────────────────────────── */
 .rw-frame {
