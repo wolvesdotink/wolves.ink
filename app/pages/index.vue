@@ -37,6 +37,11 @@ const issue = computed(() => {
 // the masthead label and the dial's lock target can never drift.
 const { label: frequencyLabel } = useTodaysFrequency()
 
+// The hero value-word cards mount inside their own InkHighlight (anchored to
+// the word). `allFound` (useColophon) lights the whisper capstone once all
+// four value cards have been opened this visit.
+const { allFound } = useColophon()
+
 /**
  * Big quote-mark in-view: when the section scrolls into the viewport
  * we toggle a class on the opening " glyph so it gently riso-shimmies
@@ -492,22 +497,40 @@ onBeforeUnmount(() => {
       <!-- The hero subtitle as a 2-col editorial spread -->
       <div class="mx-auto max-w-[1600px] px-4 pb-20 md:px-8 md:pb-32">
         <div class="grid grid-cols-12 gap-x-6 gap-y-10">
-          <!-- Subhead -->
+          <!-- Subhead. The four highlighted words are clickable VALUES —
+               clicking one opens a small ValueCard right beside it with a
+               short, memorable line about that value (one card open at a
+               time, useInkProof). Each card anchors to its own word, so the
+               card lives inside the InkHighlight, not here. -->
           <div class="col-span-12 lg:col-span-7">
             <span class="text-mono-eyebrow text-pop-yellow">From the den</span>
-            <p
-              class="text-editorial mt-4 text-balance text-3xl text-cream md:text-5xl lg:text-6xl"
-              style="line-height: 1.05;"
-            >
-              We make
-              <InkHighlight mode="stamp" tone="magenta">UX-driven</InkHighlight>
-              applications. Most are
-              <InkHighlight mode="wavy" tone="yellow">open source.</InkHighlight>
-              Wolves is becoming the place where
-              <InkHighlight mode="lift" tone="orange">learning</InkHighlight>
-              meets
-              <InkHighlight mode="lift" tone="orange">teaching.</InkHighlight>
-            </p>
+
+            <!-- `relative` anchors the capstone line just below the sentence. -->
+            <div class="relative">
+              <p
+                class="text-editorial mt-4 text-balance text-3xl text-cream md:text-5xl lg:text-6xl"
+                style="line-height: 1.05;"
+              >
+                We make
+                <InkHighlight mode="stamp" tone="magenta">UX-driven</InkHighlight>
+                applications. Most are
+                <InkHighlight mode="wavy" tone="yellow">open source.</InkHighlight>
+                Wolves is becoming the place where
+                <InkHighlight mode="lift" tone="orange" relay="learn">learning</InkHighlight>
+                meets
+                <InkHighlight mode="lift" tone="orange" relay="teach">teaching.</InkHighlight>
+              </p>
+
+              <!-- The whisper capstone — fades in ONCE all four value cards
+                   have been opened this visit (hover labels also turn to "you
+                   already did"). Absolutely positioned so its arrival never
+                   reflows the stats below it. -->
+              <Transition name="colophon-fade">
+                <p v-if="allFound" class="ink-colophon text-mono-eyebrow text-cream/55">
+                  {{ site.quotes.colophon }}<span class="text-pop-magenta">.</span>
+                </p>
+              </Transition>
+            </div>
           </div>
 
           <!-- Margin column — "The Fence Comes Down" (nature / rewilding

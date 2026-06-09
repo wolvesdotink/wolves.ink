@@ -69,6 +69,42 @@ export const site = {
         + 'Keep the forests standing. Eat lower, go vegan. '
         + 'Take only what grows back. Rewild the rest.',
     },
+    /**
+     * VALUE CARDS — the click payoffs behind the four hero value-words
+     * (InkHighlight.vue → ValueCard.vue). Each is a small card that develops
+     * right beside the word with ONE short, memorable line about that value.
+     * Keep them tight and sticky — a thing you'd repeat to a friend. The
+     * `line` carries no trailing period: the closing full stop is added in
+     * the template in the card's accent (the whole colour budget). Keyed by
+     * the word's proofKey: ux / open / learn / teach.
+     */
+    values: {
+      ux: {
+        eyebrow: 'UX-driven',
+        line: 'Good UX is invisible — bad UX is all anyone remembers',
+      },
+      open: {
+        eyebrow: 'Open source',
+        line: 'We’d rather be forked than forgotten',
+      },
+      learn: {
+        eyebrow: 'Learning',
+        line: 'We learn out loud — the mistakes are the lesson plan',
+      },
+      teach: {
+        eyebrow: 'Teaching',
+        line: 'You only half-know it until you’ve taught it',
+      },
+    },
+    /**
+     * The whisper capstone — shown only once all four value cards have been
+     * opened this visit (useColophon). No extra plate: one quiet mono line
+     * under the sentence, and the hover labels turn knowing. `labelDone`
+     * replaces the per-word imperative ("ship it" / "fork it" / "pass it
+     * on") once you've read all four.
+     */
+    colophon: 'UX-driven. Open source. Both ways. — the whole proof', // accent stop in template
+    labelDone: 'you already did',
     footer: 'Made loud, made open, made for the curious.',
   },
   /**

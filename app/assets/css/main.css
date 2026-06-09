@@ -810,3 +810,99 @@ html .held-plate ::selection {
 @media (prefers-reduced-motion: reduce) {
   [data-sticker]:hover { transform: none; filter: none; }
 }
+
+/* ==========================================================================
+   INK PROOF — base for the hero value-word card (ValueCard.vue). A developed
+   riso plate: cream stock, ink text, a heavy registration-offset shadow. The
+   card is an absolutely-positioned popover anchored right below the word that
+   opened it (it lives inside that word's relative box). `--proof-x` is a
+   JS-measured horizontal offset (InkHighlight.placeCard) that shifts it left
+   by any right-edge overflow — the cover section is overflow-hidden, so the
+   card must never spill past the viewport edge. It develops (opacity + a
+   small settle) on mount; lines stagger in via `--line`; one accent
+   (`--accent`) carries the whole colour budget, collapsing to the closing
+   full stop (.ink-proof__stop).
+   ========================================================================== */
+.ink-proof {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: var(--proof-x, 0);
+  z-index: 30;
+  width: min(18rem, calc(100vw - 2rem));
+  padding: 0.85rem 1rem 0.95rem;
+  text-align: left;
+  /* Reset the inherited hero typography — the card sits inside the giant
+     text-6xl / line-height:1.05 sentence, so without this the inline-block
+     eyebrow chip would sit in a ~63px-tall line box (huge gap above it). */
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-ink);
+  background: var(--color-cream);
+  border: 1.5px solid var(--color-ink);
+  box-shadow: 6px 6px 0 rgba(13, 12, 10, 0.22);
+  cursor: auto;
+  outline: none;
+  animation: ink-proof-develop 460ms var(--ease-pop) both;
+}
+.ink-proof::selection,
+.ink-proof *::selection {
+  background: var(--accent, var(--color-pop-magenta));
+  color: var(--color-ink);
+}
+
+@keyframes ink-proof-develop {
+  from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Opacity-only line stagger (the plate-line idiom), keyed by --line. */
+.ink-proof__line {
+  opacity: 0;
+  animation: ink-proof-line 320ms var(--ease-pop) both;
+  animation-delay: calc(200ms + var(--line, 0) * 90ms);
+}
+@keyframes ink-proof-line {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* The lone accent full stop — the whole colour budget on a closing line. */
+.ink-proof__stop {
+  color: var(--accent, var(--color-pop-magenta));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Develop straight to the printed end-state — meaning kept, motion cut. */
+  .ink-proof,
+  .ink-proof__line {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The whisper-capstone colophon line under the hero sentence (index.vue).
+   Absolutely positioned just beneath the sentence so its one-time arrival
+   never reflows the stats row below it (zero layout shift). It sits in the
+   breathing room before the next element on every breakpoint. */
+.ink-colophon {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+}
+
+/* a quiet fade-up, once. */
+.colophon-fade-enter-active {
+  transition: opacity 700ms var(--ease-pop), transform 700ms var(--ease-pop);
+}
+.colophon-fade-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .colophon-fade-enter-active { transition: none; }
+  .colophon-fade-enter-from { transform: none; }
+}
