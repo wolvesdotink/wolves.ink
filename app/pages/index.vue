@@ -713,7 +713,7 @@ onBeforeUnmount(() => {
           class="house-quote-hold grid grid-cols-12 gap-6"
           :class="{ 'is-committing': isCommitting, 'is-half': isHalfHold, 'is-settling': isSettling }"
           data-riso-target
-          data-riso-label="Hold the press"
+          data-riso-label="Hold your breath"
           @pointerdown="onQuotePointerDown"
           @pointermove="onQuotePointerMove"
           @pointerup="onQuotePointerEnd"
