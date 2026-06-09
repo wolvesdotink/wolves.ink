@@ -39,6 +39,38 @@ export const site = {
       beat: 'Three seconds to read a street. Every street. Every night.',
       closing: 'None of this should be necessary. All of it is.',
     },
+    /**
+     * "The Fence Comes Down" — the nature / rewilding egg in the cover
+     * section's right column (see RewildPlot.vue). At rest the plot is a
+     * fenced monoculture labelled "Where we live"; tear the fence down
+     * and it rewilds, the eyebrow turning over to "The world is home"
+     * (both lines lifted from the sticker this egg replaced) and a short
+     * set of house rules for the wild developing underneath.
+     *
+     * It's a wolf studio making a vegan point — the irony is the
+     * argument: a wolf kills because it must, we have a choice. The lone
+     * magenta full stop on the slogan is the whole colour budget on the
+     * payoff, the same restraint the not-all-men plate keeps.
+     *
+     * `live` is the combined screen-reader announcement — every line in
+     * reading order the moment the fence drops.
+     */
+    rewild: {
+      eyebrowRest: 'Where we live',
+      eyebrowWild: 'The world is home',
+      hintPre: 'A fenced plot —',
+      hintSoft: 'for now.',
+      headline: 'Tear down the fence —',
+      headlineSoft: 'the land knows the way home.',
+      rules: [
+        'Keep the forests standing.',
+        'Eat lower. Go vegan.',
+        'Take only what grows back.',
+      ],
+      slogan: 'Rewild the rest',
+      live: 'The fence is down. The world is home. Keep the forests standing. '
+        + 'Eat lower, go vegan. Take only what grows back. Rewild the rest.',
+    },
     footer: 'Made loud, made open, made for the curious.',
   },
   /**

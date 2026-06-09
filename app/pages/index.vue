@@ -510,21 +510,13 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
-          <!-- Stickers / margin column -->
-          <aside class="col-span-12 flex flex-row flex-wrap items-start gap-3 lg:col-span-5 lg:flex-col lg:items-start lg:gap-4 lg:pt-12">
-            <StickerBadge tone="yellow" :tilt="-5" eyebrow="What we ship" jiggle>
-              Open source ✦
-            </StickerBadge>
-            <StickerBadge tone="cream" :tilt="4" eyebrow="How we ship">
-              UX before features
-            </StickerBadge>
-            <StickerBadge tone="magenta" :tilt="-3" eyebrow="Why we ship" jiggle>
-              Learning · Teaching
-            </StickerBadge>
-            <StickerBadge tone="ink" :tilt="2" eyebrow="Where we live">
-              The world is home
-            </StickerBadge>
-          </aside>
+          <!-- Margin column — "The Fence Comes Down" (nature / rewilding
+               egg). Replaced the four floating sticker cards that used to
+               float here: their what/how/why/where messaging is already
+               carried by the manifesto tenets below, and this egg keeps
+               the spirit of the "Where we live → The world is home"
+               sticker as its own payoff (see RewildPlot.vue). -->
+          <RewildPlot class="col-span-12 self-start lg:col-span-5" />
         </div>
 
         <!-- A row of small numbers — magazine-style stats with count-up
