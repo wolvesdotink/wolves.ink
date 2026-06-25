@@ -67,6 +67,35 @@ export interface FieldNote {
 
 const entries: FieldNote[] = [
   {
+    slug: 'the-empty-text-box',
+    number: '15',
+    date: '2026-06-25',
+    eyebrow: 'Interfaces',
+    title: 'The end of the empty text box.',
+    deck: 'The pitch comes in two flavours: the conversation eats the buttons, or the buttons are sacred and the chat box is a fad. Both are wrong in the same way. On why the screenless gadgets flopped, why menus drown the work that matters, and the interface that draws itself for one question and then disappears.',
+    blurb:
+      'Chat will not replace the button, and the button will not survive untouched. The real axis was never chat versus GUI, it is how much the machine is allowed to guess, and the missing middle is an interface that builds itself for your exact request and then throws itself away. Notes on routing each task to the paradigm it actually wants.',
+    readTime: '4 min read',
+    accent: 'pop-magenta',
+    takeaways: [
+      'The chat-versus-buttons war is the wrong frame. Interfaces are a spectrum of how much the machine is allowed to guess, and every task already sits somewhere on it.',
+      'Direct manipulation owns the simple end and always will. A paragraph of natural language cannot beat a thumb that already knows where the tap goes.',
+      'The GUI breaks at the top, not the bottom: when the options outgrow the glass you get a sea of menus built for the one person who needs each one once a year.',
+      'Generative UI is the missing middle: the machine reads the request, decides a control beats a paragraph, draws the few parts your question needs, then discards them.',
+      'Design moves from drawing finished screens to designing the rules and the kit of parts the machine assembles. Routing the task to the right paradigm becomes the craft.',
+    ],
+    body: [
+      'For a few years now the pitch has come in two flavours, and both of them are sales pitches. One says the conversation eats everything: you will talk to your computer the way you talk to a clever assistant, and the buttons, the menus, the whole painted dashboard of the last forty years go in the bin. The other says the opposite with exactly as much confidence: the graphical interface is sacred, direct manipulation is how humans were meant to compute, and the chat box is a passing fad for people who enjoy typing. We have built enough things by now to distrust anyone this certain. The screenless gadgets that bet the company on pure conversation, the lapel pendant and the little orange toy, are the tell. They did not fail because the model inside them was weak. They failed because a conversation is a terrible way to turn on a light, and everyone who bought one was back on their phone inside a week.',
+      'Direct manipulation won the simple end of computing for a reason that has not changed. You drag the file to the trash. You pinch the photo to make it bigger. The thing you want to act on is right there in front of you and you act on it directly, with no sentence in between to be misheard. A button is the humblest interface there is: it assumes nothing about you and asks for exactly one verb. For the tasks we do without thinking, the morning coffee order, the ride home, the lamp by the door, that is not friction. It is muscle memory, and a paragraph of careful prose will never beat a thumb that already knows where the tap goes. The companies trying to wedge a chatbot into those moments are answering a question nobody asked, and the market keeps telling them so, politely, by not buying the thing.',
+      'But direct manipulation has a ceiling, and we hit it daily. The trick only works while the options fit on the glass. The moment the software grows past that, the screen fills with nested panels and the interface becomes an intimidating sea, every control a thing that one person might need once a year, parked permanently in front of everyone who never will. Open a serious video editor, or any enterprise tool that has been shipping for a decade, and you are looking at a museum of features arranged for nobody in particular. This is precisely the gap where the conversation pitch starts to sound clever again, and precisely where it fails too, because a wall of prose is not a control surface either. The two ends of the spectrum break at the same place. Not on the trivial tasks and not on the genuinely enormous ones, but in the vast middle where most real work actually lives.',
+      'Here is the way we have started to think about it on the bench. The real axis was never chat against buttons. It is how much the machine is allowed to guess. A button guesses nothing and makes you do all the labour of saying what you want. A blank prompt guesses everything and makes you describe, in full sentences, a thing you would much rather just adjust. The interesting answer sits between the two, and it is only possible now that the machine can read intent: it looks at your particular request, decides a control will serve you better than a paragraph, and draws the three sliders, the one map and the single toggle that this specific question needs. Then it throws them away, because they were never meant to outlive the question. The work of design changes shape under this. You stop drawing finished screens and start designing the rules, and the kit of parts the machine assembles from on demand. It is the most interesting problem the field has had since a team at Xerox first decided a computer should look like a desk.',
+      'So the future is not one of these winning. It is all three at once, sorted by the task in front of you. A plain button where the job is a single verb you do every day. A generated, throwaway interface where the job is particular and fleeting and would otherwise drown in a menu nobody designed for it. An agent you hand the whole thing to when the work is large and dull and you would honestly rather not watch it happen. The skill that matters next is the routing: knowing, for any given moment, which of the three it wants, and having the discipline to refuse the other two. That is where we are spending our own attention now, designing fewer fixed surfaces and more rule sets, fewer finished pages and more boxes of parts the machine can build from. The empty text box everyone is so excited about was always a placeholder. It is an honest admission that we shipped the engine and skipped the dashboard. The job worth doing is to fill it back in on demand, with exactly the controls the moment calls for and nothing it does not.',
+    ],
+    pullQuote:
+      'A conversation is a terrible way to turn on a light.',
+    tags: ['design', 'ai', 'interfaces'],
+  },
+  {
     slug: 'boil-the-ocean',
     number: '14',
     date: '2026-06-07',
