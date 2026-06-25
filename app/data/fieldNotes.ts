@@ -67,6 +67,34 @@ export interface FieldNote {
 
 const entries: FieldNote[] = [
   {
+    slug: 'no-is-the-toll',
+    number: '16',
+    date: '2026-06-25',
+    eyebrow: 'Nerve',
+    title: 'No is the toll, not the verdict.',
+    deck: 'Rejection feels like a judgement on you. It is a charge on the road. Every no is the machine pointing you somewhere better, and the only thing more expensive than hearing it is never putting yourself in a position to.',
+    blurb:
+      'Rejection is not a failure, it is the price of becoming someone who could be chosen. On reading no as redirection, why fear is mostly fiction, and the quiet danger of staying exactly where you are.',
+    readTime: '3 min read',
+    accent: 'pop-orange',
+    takeaways: [
+      'Rejection is the toll, not the verdict. It is what you pay to become a better version of yourself, not a ruling on your worth.',
+      'No is redirection, not rejection. You cannot be chosen without first being overlooked, and every no readjusts your aim.',
+      'Fear is mostly False Evidence Appearing Real. You are scared of a thing that has not happened, and usually never will.',
+      'If rejection scares you, staying stuck should terrify you. Comfort has never changed anyone.',
+      'Transformation starts the moment you show up. The nerve to be told no is the whole price of admission.',
+    ],
+    body: [
+      'Rejection lands like a verdict. Someone reads your work, your pitch, your face, and the no comes back, and for a second it feels like a ruling on what you are worth. It is not. It is a toll. It is the small, ugly fee you pay at the gate for taking the road at all, and everyone who has ever gotten anywhere has a wallet full of the receipts. The people who look chosen are not the people who were never turned down. They are the people who kept paying.',
+      'So read the no as redirection, not rejection. You cannot be chosen without first being overlooked a few times, because being overlooked is how you find out where you actually fit. Every no is the world pointing, telling you to readjust the aim and go again. The yes you are after is on the far side of a pile of them, and the pile is not in your way. The pile is the path.',
+      'Most of what stops you from getting there is fiction anyway. Fear is False Evidence Appearing Real: a vivid, convincing movie about a thing that has not happened, playing to an audience of one. You are not scared of the no. You are scared of a no you have invented, in detail, in advance. The actual no, when it finally arrives, is almost always smaller and quieter than the trailer your head cut for it.',
+      'And here is the part nobody says out loud. If the idea of being rejected scares you, the idea of staying exactly where you are should terrify you. Comfort is the one place that has never changed a single person. Stuck does not hurt, which is precisely what makes it dangerous, because nothing about it ever forces your hand. The nerve to show up and risk the no is not the cost of transformation. It is the whole of it. Pay the toll. The road is the point.',
+    ],
+    pullQuote:
+      'You cannot be chosen without first being overlooked.',
+    tags: ['craft', 'nerve', 'work'],
+  },
+  {
     slug: 'chat-wont-replace-your-apps',
     number: '15',
     date: '2026-06-25',
