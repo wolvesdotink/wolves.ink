@@ -61,43 +61,43 @@ export const projects: Project[] = [
     index: '01',
     name: 'owlat.app',
     domain: 'owlat.app',
-    tagline: 'Open-source email marketing, finally.',
+    tagline: 'The whole email stack, open and yours.',
     blurb:
-      'An email marketing platform you can host, fork, theme and trust. Campaigns, automations, transactional and contacts — without the SaaS lock-in.',
+      'A self-hosted, modular email platform. Campaigns, automations, transactional, a team inbox, personal mailboxes and an AI layer — every surface behind its own feature flag, all of it Apache 2.0.',
     featured: true,
     description: [
-      'Owlat is a full email marketing stack — campaign builder, automation flows, transactional API, contact management — released under a permissive license. The bet: marketing email deserves the same care, openness and craft we give to code editors and design tools.',
-      'It works as a SaaS for teams who just want to send their newsletter, and as a self-hostable monorepo for teams who want to own every byte. The interface borrows from terminal-fluent tools: keyboard-first, dense when you want it, calm when you don\'t.',
+      'The industry sliced email into a dozen subscriptions: one tool for campaigns, one for the team inbox, one for personal mail, an AI bolt-on for each — every one of them metered per contact, per seat, per send. Owlat is the contrarian bet that email is one thing. Sending, receiving, marketing, transactional, webmail with real IMAP/SMTP, an AI agent — one platform, one repo, Apache 2.0.',
+      'Everything is a feature flag. Run it as a lean campaign sender, a shared inbox for support, a full mail server for the team — or all of it at once. The setup wizard groups flags into packs, optional services (ClamAV, the IMAP server, a local LLM) dock into the Docker stack only when their flag is on, and a single curl-to-bash takes a fresh VPS to a running instance in ten minutes. Own your data, own your domain, no per-contact pricing.',
     ],
     status: { label: 'Beta', tone: 'beta' },
     year: '2026',
-    type: 'Open Source · Marketing Email',
+    type: 'Open Source · Email Platform',
     accent: 'pop-magenta',
     links: {
       live: { href: 'https://owlat.app', label: 'owlat.app' },
       github: { href: 'https://github.com/wolvesdotink/owlat', label: 'wolvesdotink/owlat' },
     },
-    tech: ['Nuxt 4', 'Vue 3', 'Tailwind 4', 'Bun', 'Convex', 'BetterAuth', 'Postgres', 'Redis'],
+    tech: ['Nuxt 4', 'Vue 3', 'Tailwind 4', 'Bun', 'Convex', 'BetterAuth', 'Node.js', 'Docker'],
     details: [
       {
-        title: 'Campaigns + automations',
-        body: 'A block-based email builder with multi-step automation flows. Trigger on signup, on tag, on a date — branch on opens, clicks or custom events. The drag-and-drop affordances stay out of the way of the keyboard.',
+        title: 'Send: campaigns to transactional',
+        body: 'A block-based builder for broadcasts with segments, scheduling, A/B testing and public archive links. Multi-step automations trigger on whatever the contact does next, and a drop-in transactional API handles the receipts and password resets — no separate sending service required.',
       },
       {
-        title: 'Transactional API',
-        body: 'A drop-in transactional endpoint with copy-paste code snippets in JavaScript and Java right inside the dashboard. Receipts, password resets and welcome mails without standing up a separate service.',
+        title: 'Receive: inboxes, plural',
+        body: 'A shared team inbox with threading and triage sits next to per-user postboxes — a proper webmail UI backed by a custom IMAP4rev1 server, so your existing mail client connects too. Inbound bug reports become extracted code tasks; a real-time chat surface rounds out the room.',
       },
       {
-        title: 'Contacts you actually own',
-        body: 'Self-hostable contact lists with org-level permissions via BetterAuth. Import, segment, tag and export — your audience is a CSV away from leaving with you.',
+        title: 'An AI layer with approval gates',
+        body: 'Point it at any LLM provider and the agent classifies incoming mail, drafts replies, and — only once you flip the autonomous flag — sends the approved ones itself. A knowledge graph grows from your threads, and dashboards answer plain-language questions with charts.',
       },
       {
-        title: 'Keyboard-first navigation',
-        body: 'g + c for contacts, g + m for campaigns, g + t for transactional. n for new, s for save, ? for the full map. The mouse is welcome, but never required.',
+        title: 'Deliverability as a feature, not a fee',
+        body: 'SPF, DKIM and DMARC verification with DKIM auto-rotation, ClamAV file scanning, Google Safe Browsing URL checks and content scanning — the trust infrastructure the SaaS vendors charge tiers for, running on your box. Mailchimp import and Stripe sync ease the move in; nothing stops the move out.',
       },
     ],
     pullQuote:
-      "Marketing email got captured by ten companies and a billion dark patterns. We rebuilt it as a tool — open, hostable, and yours.",
+      "The industry sliced email into a dozen subscriptions. We put the whole stack back in one repo — open, self-hosted, yours.",
     cover: {
       src: 'photo-1637793492728-0cb7af658e69',
       alt: 'A grey owl perched on a branch in a dark forest, soft woodland light',
