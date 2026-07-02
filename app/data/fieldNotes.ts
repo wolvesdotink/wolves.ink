@@ -67,6 +67,34 @@ export interface FieldNote {
 
 const entries: FieldNote[] = [
   {
+    slug: 'autocomplete-all-the-way-down',
+    number: '17',
+    date: '2026-07-02',
+    eyebrow: 'AI',
+    title: 'Autocomplete all the way down.',
+    deck: 'The agent that refactored our codebase this morning runs on the same trick as the keyboard on your phone: guess the next word. On the strangest fact in computing, and the hundred-year-old tally sheet it started on.',
+    blurb:
+      'Every AI system you have ever talked to is a probability table with excellent manners. From a Russian mathematician hand-counting Pushkin in 1913 to agents that ship working software, the whole story is one move, repeated: guess the next word.',
+    readTime: '3 min read',
+    accent: 'pop-blue',
+    takeaways: [
+      'The entire training objective of a modern language model is guess the next word. Everything else, the reasoning, the code, the apology, emerges from that.',
+      'The lineage is over a century old: Markov hand-counted 20,000 letters of Pushkin in 1913, Shannon turned next-letter guessing into a science in 1951, your phone keyboard shipped the pocket version.',
+      'At every step the model scores roughly a hundred thousand possible next tokens and picks one. There is no second mechanism. That is the whole move.',
+      'An agent is that move in a loop with its output wired to tools. A shell command is just a very consequential autocomplete.',
+      'Prediction forced understanding: to guess the next line of a program, you have to model what the program does. The probability was never the small part.',
+    ],
+    body: [
+      "Start with the keyboard on your phone. You type 'how are' and it offers 'you', because in the mountain of text it was tuned on, 'you' is what usually comes next. No grammar, no meaning, just a tally of what tends to follow what. The idea is older than the computer: in 1913, the Russian mathematician Andrey Markov sat down with Pushkin's Eugene Onegin and hand-counted 20,000 letters to show that language has statistical structure, that a vowel is more likely after a consonant than after another vowel. The first language model was a tally sheet. In 1951 Claude Shannon turned it into a science with a parlour game, asking people to guess a text one letter at a time, and measured how predictable English actually is: roughly one bit per letter. Language, it turns out, is mostly pattern. That predictability is the entire natural resource this industry runs on.",
+      "Here is the part that still reads like a misprint. The models everyone now talks to all day are that same game, and nothing else. Take a neural network, feed it trillions of words, and train it on exactly one objective: given everything so far, guess the next word. The training loss is literally a measure of how surprised the model was by what came next. Nobody bolted on a reasoning module, a coding module, a politeness module. At every step the model produces a probability for each of roughly a hundred thousand possible next tokens, samples one, appends it, and goes again. The essay, the working SQL, the joke that actually lands: all of it is that single move, repeated until a stop token wins the draw.",
+      "The jump from keyboard trick to colleague happened when the guesses got chained and given hands. Wire the output to tools, teach the model that a certain shape of text runs a command, and the loop becomes an agent: it predicts a shell command, sees the result, predicts the next step, and keeps going for hours. The systems that now write applications, run their own tests, read the failure, and fix their own code are not running a different algorithm than the autocomplete. They are running it in a loop with consequences. When an agent renames a file on our bench, the decision is a string it found probable. A shell command is just a very consequential autocomplete.",
+      "The resolution to the paradox is the interesting bit. Guessing the next word sounds trivial because we imagine guessing it badly. Guessing it well is another matter: to predict the next line of a program, you have to track what the program does, what the variables hold, what the author is trying to build. To predict the next sentence of an argument, you have to follow the argument. Prediction, pushed hard enough, forces a working model of whatever produced the text, and text was produced by people doing things in a world. That is the crazy thought, sat with properly. Not that the machine is secretly more than probability, but that probability, at sufficient scale, was never less than this. The dice got so good at the game that they became the player.",
+    ],
+    pullQuote:
+      'A shell command is just a very consequential autocomplete.',
+    tags: ['ai', 'engineering', 'craft'],
+  },
+  {
     slug: 'no-is-the-toll',
     number: '16',
     date: '2026-06-25',
