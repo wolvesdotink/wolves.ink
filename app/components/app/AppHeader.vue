@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { site } from '~/data/site'
-import { formatDispatchDate } from '~/composables/useFieldNotes'
+import { formatDispatchDate } from '~/utils/dispatchDate'
 
 /**
  * AppHeader — sticky site header.
@@ -25,7 +25,19 @@ import { formatDispatchDate } from '~/composables/useFieldNotes'
  */
 
 const route = useRoute()
-const { latest } = useFieldNotes()
+
+/**
+ * Latest note for the pill. The header ships on every page, so a static
+ * `useFieldNotes()` here pulled every note's full body into the entry
+ * chunk — and the global bundle grew with each new note. The dynamic
+ * import keeps the data module in the field-notes chunk; prerender
+ * bakes these four fields into each page's payload, so the client
+ * never actually runs the import.
+ */
+const { data: latest } = await useAsyncData('latest-field-note', async () => {
+  const { latestFieldNote: n } = await import('~/data/fieldNotes')
+  return { title: n.title, eyebrow: n.eyebrow, date: n.date, readTime: n.readTime }
+})
 
 /**
  * Active-state matcher. We treat the `Field Notes` link as active for
@@ -58,7 +70,7 @@ onBeforeUnmount(() => {
 })
 
 // Latest note, shortened for the pill on small breakpoints.
-const latestMeta = computed(() => formatDispatchDate(latest.date))
+const latestMeta = computed(() => (latest.value ? formatDispatchDate(latest.value.date) : ''))
 </script>
 
 <template>
@@ -120,7 +132,7 @@ const latestMeta = computed(() => formatDispatchDate(latest.date))
             <span class="text-mono-eyebrow text-cream/55">Latest</span>
             <span class="dispatch-pipe" aria-hidden="true" />
             <span class="text-mono-meta text-cream/85 italic font-serif normal-case tracking-normal">
-              {{ latest.title }}
+              {{ latest?.title }}
             </span>
             <span class="dispatch-pipe hidden lg:inline" aria-hidden="true" />
             <span class="hidden text-mono-eyebrow text-cream/40 lg:inline">{{ latestMeta }}</span>
@@ -233,13 +245,13 @@ const latestMeta = computed(() => formatDispatchDate(latest.date))
               <span class="grid h-2 w-2 place-items-center">
                 <span class="absolute h-2 w-2 rounded-full bg-pop-magenta pulse-dot" />
               </span>
-              Latest note · {{ latest.eyebrow }}
+              Latest note · {{ latest?.eyebrow }}
             </span>
             <span class="text-editorial mt-3 block text-2xl text-cream group-hover:text-pop-yellow">
-              {{ latest.title }}
+              {{ latest?.title }}
             </span>
             <span class="text-mono-meta mt-2 block text-cream/55">
-              {{ latestMeta }} · {{ latest.readTime }}
+              {{ latestMeta }} · {{ latest?.readTime }}
             </span>
           </NuxtLink>
 

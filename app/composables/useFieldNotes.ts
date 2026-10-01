@@ -26,10 +26,3 @@ export const useFieldNotes = () => {
 
   return { list, latest, bySlug, next, prev }
 }
-
-/** Format an ISO date as "22 Apr · 2026" — the print-style meta line. */
-export const formatDispatchDate = (iso: string): string => {
-  const d = new Date(iso)
-  const month = d.toLocaleString('en-US', { month: 'short' })
-  return `${String(d.getDate()).padStart(2, '0')} ${month} · ${d.getFullYear()}`
-}
