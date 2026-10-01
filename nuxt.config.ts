@@ -127,6 +127,12 @@ export default defineNuxtConfig({
     provider: 'unsplash',
     unsplash: {
       baseURL: 'https://images.unsplash.com',
+      // `format` below only applies to <NuxtPicture>; every image on the
+      // site is a <NuxtImg>, which emitted bare `?w=…&q=…` URLs and got
+      // JPEG back. `auto=format` lets the Unsplash (imgix) CDN negotiate
+      // from the Accept header — AVIF where supported, then WebP, JPEG
+      // as the fallback. Roughly 60% fewer image bytes per card/hero.
+      modifiers: { auto: 'format' },
     },
     format: ['avif', 'webp'],
   },
