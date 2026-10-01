@@ -15,6 +15,12 @@
  * reactive `{ dx, dy }` it can bind to its own transform. When the last
  * subscriber unmounts, the rAF and listeners shut down so we don't leak.
  *
+ * The rAF only runs while an orb is still easing toward its target: it
+ * parks once every orb has settled and the next pointermove wakes it, so
+ * a resting cursor costs nothing per frame. Scroll/resize don't touch
+ * layout — they mark the cached centers stale, and the next pointermove
+ * (the only place targets are computed) re-measures them.
+ *
  * Behaviour mirrors the original `HalftoneOrb` 1:1:
  *   - Same LERP factor (0.06) toward the cursor target.
  *   - Same projection math: distance-normalised "strength" along the
@@ -48,6 +54,7 @@ let raf = 0
 let mouseX = 0
 let mouseY = 0
 let active = false
+let centersStale = false
 
 function recomputeCenter(sub: Subscriber) {
   if (!sub.el.value) return
@@ -60,9 +67,18 @@ function recomputeAll() {
   for (const sub of subscribers) recomputeCenter(sub)
 }
 
+function markCentersStale() {
+  centersStale = true
+}
+
 function onMove(e: PointerEvent) {
   mouseX = e.clientX
   mouseY = e.clientY
+
+  if (centersStale) {
+    centersStale = false
+    recomputeAll()
+  }
 
   // Recompute targets for every subscriber. This is cheap arithmetic per
   // orb (no DOM reads — centers are cached); the rAF below will LERP.
@@ -76,32 +92,40 @@ function onMove(e: PointerEvent) {
     sub.targetX = sign * (dxM / len) * strength
     sub.targetY = sign * (dyM / len) * strength
   }
+
+  if (!raf) raf = requestAnimationFrame(tick)
 }
 
 function tick() {
+  let moving = false
   for (const sub of subscribers) {
-    sub.dx.value += (sub.targetX - sub.dx.value) * 0.06
-    sub.dy.value += (sub.targetY - sub.dy.value) * 0.06
+    const ex = sub.targetX - sub.dx.value
+    const ey = sub.targetY - sub.dy.value
+    // Under a twentieth of a pixel the orb can't visibly move anymore.
+    if (Math.abs(ex) < 0.05 && Math.abs(ey) < 0.05) continue
+    sub.dx.value += ex * 0.06
+    sub.dy.value += ey * 0.06
+    moving = true
   }
-  raf = requestAnimationFrame(tick)
+  raf = moving ? requestAnimationFrame(tick) : 0
 }
 
 function start() {
   if (active) return
   active = true
   window.addEventListener('pointermove', onMove, { passive: true })
-  window.addEventListener('scroll', recomputeAll, { passive: true })
-  window.addEventListener('resize', recomputeAll, { passive: true })
-  raf = requestAnimationFrame(tick)
+  window.addEventListener('scroll', markCentersStale, { passive: true })
+  window.addEventListener('resize', markCentersStale, { passive: true })
 }
 
 function stop() {
   if (!active) return
   active = false
   cancelAnimationFrame(raf)
+  raf = 0
   window.removeEventListener('pointermove', onMove)
-  window.removeEventListener('scroll', recomputeAll)
-  window.removeEventListener('resize', recomputeAll)
+  window.removeEventListener('scroll', markCentersStale)
+  window.removeEventListener('resize', markCentersStale)
 }
 
 /**

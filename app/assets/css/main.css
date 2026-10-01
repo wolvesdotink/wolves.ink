@@ -249,6 +249,27 @@
 }
 
 /* ==========================================================================
+   Offscreen skip — `content-visibility: auto` for below-the-fold bands
+
+   The browser skips style, layout and paint for the band while it's
+   offscreen, so its infinite riso loops (jiggles, breathing orbs, TV
+   bounce) stop costing main-thread time until the reader gets there.
+   Content stays in the DOM, find-in-page and the a11y tree.
+
+   Only for bands that are already `overflow-hidden` (or have no ink
+   past their padding) and hold no `position: fixed` children — this
+   applies paint containment, which clips overflow and re-anchors fixed
+   descendants. Set `--offscreen-size` to the band's typical height so
+   the scrollbar doesn't jump; `auto` remembers the real height once
+   it's been rendered.
+   ========================================================================== */
+
+@utility skip-offscreen {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto var(--offscreen-size, 800px);
+}
+
+/* ==========================================================================
    Marquee
    ========================================================================== */
 

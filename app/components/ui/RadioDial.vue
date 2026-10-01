@@ -173,8 +173,21 @@ function tick() {
   const target = locked.value ? 0 : Math.min(1, distanceTenths.value / 60)
   // Smooth toward target so locking/unlocking eases visually.
   noise.value += (target - noise.value) * 0.12
+  // Park once the wobble has eased in — the target only moves when the
+  // dial does, and the watcher below wakes the loop again. Left running,
+  // it kept a frame scheduled on every vsync for the rest of the visit,
+  // on screen or not.
+  if (Math.abs(target - noise.value) < 0.001) {
+    noise.value = target
+    raf = 0
+    return
+  }
   raf = requestAnimationFrame(tick)
 }
+
+watch([locked, distanceTenths], () => {
+  if (active && !raf) raf = requestAnimationFrame(tick)
+})
 
 // ── Visibility — tells the mini radio to stand down while the big
 // cabinet is on screen. The threshold is generous (0.05) so the mini

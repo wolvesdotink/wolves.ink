@@ -7,8 +7,15 @@
  *
  * Implementation notes
  * - Position is driven by a rAF loop that LERPs toward the live mouse
- *   position. A second, slower loop drives the trailing yellow + cyan
- *   ghosts so the registration shifts feel mechanical, not synced.
+ *   position. The trailing yellow + cyan ghosts follow at slower rates
+ *   so the registration shifts feel mechanical, not synced.
+ * - Positions are plain numbers written straight to each span's
+ *   `style.transform`, so a moving cursor doesn't re-render the
+ *   component (and diff its template) on every frame.
+ * - The loop only runs while there's something to animate: it parks
+ *   once the ghosts have caught up and the idle fade has fired, and the
+ *   next pointermove wakes it. Left running, it kept a frame scheduled
+ *   on every vsync even with the mouse at rest.
  * - Hover state is detected by walking up from the event target each
  *   pointermove and looking for the closest `[data-riso-target]` /
  *   anchor / button / role=button.
@@ -24,15 +31,19 @@ const isHover = ref(false)
 const isPressed = ref(false)
 const labelText = ref<string>('')
 
+const magentaEl = ref<HTMLElement | null>(null)
+const yellowEl = ref<HTMLElement | null>(null)
+const cyanEl = ref<HTMLElement | null>(null)
+
 // Live target — magenta dot
-const x = ref(0)
-const y = ref(0)
+let x = 0
+let y = 0
 // Trail target — yellow ghost (slightly behind)
-const xY = ref(0)
-const yY = ref(0)
+let xY = 0
+let yY = 0
 // Trail target — cyan ghost (further behind)
-const xC = ref(0)
-const yC = ref(0)
+let xC = 0
+let yC = 0
 
 let raf = 0
 let mouseX = 0
@@ -74,6 +85,7 @@ function onPointerMove(e: PointerEvent) {
   mouseY = e.clientY
   lastMove = performance.now()
   visible.value = true
+  wake()
 
   // Fast-path: same element as last move → reuse the resolved target.
   // Only walk the DOM when the cursor crosses an element boundary.
@@ -103,23 +115,42 @@ function onPointerDown() { isPressed.value = true }
 function onPointerUp() { isPressed.value = false }
 function onLeave() { visible.value = false }
 
+const place = (el: HTMLElement | null, px: number, py: number) => {
+  if (el) el.style.transform = `translate3d(${px}px, ${py}px, 0) translate(-50%, -50%)`
+}
+
 function tick() {
   // Live magenta — fast follow
-  x.value += (mouseX - x.value) * 0.32
-  y.value += (mouseY - y.value) * 0.32
+  x += (mouseX - x) * 0.32
+  y += (mouseY - y) * 0.32
   // Yellow ghost — medium follow
-  xY.value += (mouseX - xY.value) * 0.18
-  yY.value += (mouseY - yY.value) * 0.18
+  xY += (mouseX - xY) * 0.18
+  yY += (mouseY - yY) * 0.18
   // Cyan ghost — slow follow
-  xC.value += (mouseX - xC.value) * 0.12
-  yC.value += (mouseY - yC.value) * 0.12
+  xC += (mouseX - xC) * 0.12
+  yC += (mouseY - yC) * 0.12
+
+  place(magentaEl.value, x, y)
+  place(yellowEl.value, xY, yY)
+  place(cyanEl.value, xC, yC)
 
   // After 1.6s of stillness, fade the cursor — like the press resting
   if (visible.value && performance.now() - lastMove > 1600) {
     visible.value = false
   }
 
+  // The slowest ghost trails the furthest; once it's within a tenth of
+  // a pixel nothing on screen can change until the next pointermove.
+  const settled = Math.abs(mouseX - xC) < 0.1 && Math.abs(mouseY - yC) < 0.1
+  if (settled && !visible.value) {
+    raf = 0
+    return
+  }
   raf = requestAnimationFrame(tick)
+}
+
+function wake() {
+  if (!raf && enabled.value) raf = requestAnimationFrame(tick)
 }
 
 onMounted(() => {
@@ -135,8 +166,8 @@ onMounted(() => {
   // Initialize at center to avoid a startle-jump
   mouseX = window.innerWidth / 2
   mouseY = window.innerHeight / 2
-  x.value = xY.value = xC.value = mouseX
-  y.value = yY.value = yC.value = mouseY
+  x = xY = xC = mouseX
+  y = yY = yC = mouseY
 
   window.addEventListener('pointermove', onPointerMove, { passive: true })
   window.addEventListener('pointerdown', onPointerDown, { passive: true })
@@ -151,6 +182,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (!enabled.value) return
   cancelAnimationFrame(raf)
+  raf = 0
   document.documentElement.classList.remove('riso-cursor-active')
   window.removeEventListener('pointermove', onPointerMove)
   window.removeEventListener('pointerdown', onPointerDown)
@@ -174,20 +206,11 @@ onBeforeUnmount(() => {
       aria-hidden="true"
     >
       <!-- Cyan ghost — slowest follow -->
-      <span
-        class="riso-cursor riso-cursor--cyan"
-        :style="{ transform: `translate3d(${xC}px, ${yC}px, 0) translate(-50%, -50%)` }"
-      />
+      <span ref="cyanEl" class="riso-cursor riso-cursor--cyan" />
       <!-- Yellow ghost — medium follow -->
-      <span
-        class="riso-cursor riso-cursor--yellow"
-        :style="{ transform: `translate3d(${xY}px, ${yY}px, 0) translate(-50%, -50%)` }"
-      />
+      <span ref="yellowEl" class="riso-cursor riso-cursor--yellow" />
       <!-- Live magenta core — fast follow -->
-      <span
-        class="riso-cursor riso-cursor--magenta"
-        :style="{ transform: `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)` }"
-      >
+      <span ref="magentaEl" class="riso-cursor riso-cursor--magenta">
         <span v-if="labelText" class="riso-cursor__label">{{ labelText }}</span>
       </span>
     </div>

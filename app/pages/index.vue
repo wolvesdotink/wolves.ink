@@ -638,7 +638,7 @@ onBeforeUnmount(() => {
     ====================================================================== -->
     <section
       id="manifesto"
-      class="relative scroll-mt-16 overflow-hidden border-b border-cream/10 bg-cream text-ink"
+      class="skip-offscreen relative scroll-mt-16 overflow-hidden border-b border-cream/10 bg-cream text-ink [--offscreen-size:1100px]"
     >
       <!-- Halftone backplates — parallax orbs (away pushes them off the cursor)
 
@@ -715,7 +715,7 @@ onBeforeUnmount(() => {
     ====================================================================== -->
     <section
       ref="bigQuoteRoot"
-      class="relative overflow-hidden border-b border-cream/10 py-20 md:py-32"
+      class="skip-offscreen relative overflow-hidden border-b border-cream/10 py-20 md:py-32 [--offscreen-size:480px]"
       :class="{ 'held-plate-open': plateOpen }"
     >
       <div class="mx-auto max-w-[1600px] px-4 md:px-8">
@@ -866,7 +866,7 @@ onBeforeUnmount(() => {
          eject) lives inside the component. Lazy-hydrated by visibility
          so the pointer-event wiring stays off the LCP path.
     ====================================================================== -->
-    <section class="relative overflow-hidden border-t border-cream/10">
+    <section class="skip-offscreen relative overflow-hidden border-t border-cream/10 [--offscreen-size:900px]">
       <div class="mx-auto max-w-[1600px] px-4 py-20 md:px-8 md:py-28">
         <LazyPortableTv hydrate-on-visible />
       </div>
@@ -875,7 +875,7 @@ onBeforeUnmount(() => {
     <!-- ======================================================================
          OUTRO — call to follow
     ====================================================================== -->
-    <section class="mx-auto grid max-w-[1600px] gap-12 px-4 py-24 md:grid-cols-2 md:px-8 md:py-32">
+    <section class="skip-offscreen mx-auto grid max-w-[1600px] gap-12 px-4 py-24 md:grid-cols-2 md:px-8 md:py-32 [--offscreen-size:850px]">
       <div>
         <span class="text-mono-eyebrow text-cream/60">Lookout VI — Stay close</span>
         <h2 class="text-display-xl mt-4 text-cream leading-[0.85]">
