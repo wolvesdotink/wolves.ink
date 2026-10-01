@@ -84,7 +84,7 @@ function onStamp(event: MouseEvent) {
 </script>
 
 <template>
-  <footer class="relative mt-24 overflow-hidden border-t border-cream/10 bg-ink-soft">
+  <footer class="skip-offscreen relative mt-24 overflow-hidden border-t border-cream/10 bg-ink-soft [--offscreen-size:760px]">
     <div class="relative mx-auto max-w-[1600px] px-4 pb-10 pt-20 md:px-8">
       <!-- ── Crop marks (printer's registration corners) ───────────────── -->
       <span
