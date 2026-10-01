@@ -1,0 +1,15 @@
+{
+  "name": "wolves-ink-bench",
+  "private": true,
+  "type": "module",
+  "description": "Performance benchmark for the production build. Kept out of the app's dependency tree on purpose.",
+  "scripts": {
+    "bench": "node run.mjs",
+    "compare": "node compare.mjs"
+  },
+  "dependencies": {
+    "chrome-launcher": "^1.2.0",
+    "lighthouse": "^13.0.0",
+    "playwright-core": "^1.55.0"
+  }
+}

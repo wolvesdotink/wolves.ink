@@ -24,3 +24,6 @@ logs
 Dockerfile
 .dockerignore
 README.md
+
+# Local perf harness — not part of the app image.
+bench
