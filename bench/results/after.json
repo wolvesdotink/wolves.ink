@@ -1,0 +1,106 @@
+{
+  "label": "after",
+  "date": "2026-10-01T11:45:46.067Z",
+  "runs": 5,
+  "lighthouse": {
+    "/": {
+      "score": 86,
+      "fcp": 3153.413449999999,
+      "lcp": 3228.415574999999,
+      "tbt": 11.5,
+      "si": 3153.413449999999,
+      "cls": 0.066325,
+      "bootupMs": 230.52800000000107,
+      "mainThreadMs": 1969.7239999999908,
+      "totalKB": 392.26953125,
+      "scriptKB": 148.4033203125,
+      "cssKB": 22.6640625,
+      "docKB": 27.255859375,
+      "requests": 41
+    },
+    "/projects": {
+      "score": 92,
+      "fcp": 2703.2945,
+      "lcp": 2703.2945,
+      "tbt": 20.5,
+      "si": 2703.2945,
+      "cls": 0.011351,
+      "bootupMs": 197.26000000000084,
+      "mainThreadMs": 1436.1039999999982,
+      "totalKB": 435.8427734375,
+      "scriptKB": 135.1689453125,
+      "cssKB": 22.6640625,
+      "docKB": 13.40625,
+      "requests": 40
+    },
+    "/field-notes": {
+      "score": 92,
+      "fcp": 2702.8521,
+      "lcp": 2702.8521,
+      "tbt": 17.5,
+      "si": 2702.8521,
+      "cls": 0.034243,
+      "bootupMs": 267.6800000000006,
+      "mainThreadMs": 1515.3199999999981,
+      "totalKB": 287.57421875,
+      "scriptKB": 152.015625,
+      "cssKB": 23.328125,
+      "docKB": 13.5029296875,
+      "requests": 39
+    },
+    "/field-notes/autocomplete-all-the-way-down": {
+      "score": 92,
+      "fcp": 2552.4254,
+      "lcp": 2702.4254,
+      "tbt": 10.5,
+      "si": 2552.4254,
+      "cls": 0.000412,
+      "bootupMs": 188.15200000000073,
+      "mainThreadMs": 1027.3640000000007,
+      "totalKB": 303.1123046875,
+      "scriptKB": 156.234375,
+      "cssKB": 23.328125,
+      "docKB": 11.4716796875,
+      "requests": 43
+    }
+  },
+  "runtime": {
+    "cpuThrottle": 4,
+    "cursorEnabled": true,
+    "idle": {
+      "seconds": 5.002013333999988,
+      "taskMsPerSec": 274.2997543183008,
+      "scriptMsPerSec": 0.3526579963331233,
+      "styleLayoutMsPerSec": 36.89896809419507,
+      "rafMsPerSec": 0,
+      "styleMsPerSec": 42.23199999999999,
+      "paintMsPerSec": 176.65899999999996,
+      "layerizeMsPerSec": 114.60866666666669
+    },
+    "pointer": {
+      "seconds": 4.444485667000001,
+      "taskMsPerSec": 577.0197480985596,
+      "scriptMsPerSec": 23.716580026941497,
+      "styleLayoutMsPerSec": 161.69737578835304
+    },
+    "scroll": {
+      "seconds": 4.463647750000003,
+      "taskMsPerSec": 476.00664725391886,
+      "scriptMsPerSec": 13.98161402857113,
+      "styleLayoutMsPerSec": 124.41595553771008,
+      "frames": 477,
+      "p95FrameMs": 16.800000000000182,
+      "droppedFramePct": 0
+    },
+    "navigation": {
+      "medianMs": 216.19999999552965,
+      "runs": [
+        216.19999999552965,
+        223.70000000298023,
+        215.39999999850988,
+        213.29999999701977,
+        227.39999999850988
+      ]
+    }
+  }
+}
